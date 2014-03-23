@@ -32,6 +32,13 @@ describe UsersController do
         flash[:alert].should eql("Credentials Invalid. Please try again!")
       end
     end
+    
+    describe "when username is blank" do
+      it "flashes a invalid credentials alert" do
+        post :signin, "username" => "", "password" => "test_pw"
+        flash[:alert].should eql("Credentials Invalid. Please try again!") 
+      end
+    end
   end
   
   # registration method examples
