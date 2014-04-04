@@ -26,7 +26,7 @@ describe AccountsController do
   describe "POST create" do
     before :each do
       @user = User.new(user_name: "test_user", password: "test_pw", 
-                         password_confirmation: "test_pw", user_email: "test@test.com")
+                       password_confirmation: "test_pw", user_email: "test@test.com")
       @user.save
       @user_id = User.find_by(user_name: "test_user")[:id]
       session[:current_user_id] = @user_id

@@ -73,7 +73,6 @@ div {
   text-align: center;
   border: solid 1px black;
   overflow: auto;
-  white-space:nowrap;
 }
 
 .entries_columns {

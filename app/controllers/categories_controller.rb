@@ -7,7 +7,11 @@ class CategoriesController < ApplicationController
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
         @account_names = AccountsHelper.get_account_names user_id
-        @category_name = nil
+        if @account_names.index("No Accounts")
+          flash_no_account_alert
+        else
+          @category_name = nil
+        end
       else
         redirect_to users_signin_url
       end
@@ -55,6 +59,10 @@ class CategoriesController < ApplicationController
     # Method for retrieving category form data via strong parameters
     def category_params
       params.require(:category).permit(:account_name, :category_name, :savings_goal, :savings_goal_date)
+    end
+
+    def flash_no_account_alert
+      flash.now[:alert] = "No Accounts for User.  Must create at least one account!"
     end
 
 end

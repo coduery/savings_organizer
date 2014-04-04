@@ -8,6 +8,7 @@ SavingsOrganizer::Application.routes.draw do
   get "accounts/create"
   get "categories/create"
   get "entries/add"
+  get "entries/deduct"
   get "entries/view"
 
   post "users/signin"
@@ -16,6 +17,7 @@ SavingsOrganizer::Application.routes.draw do
   post "accounts/create"
   post "categories/create"
   post "entries/add"
+  post "entries/deduct"
   post "entries/view"
 
 end

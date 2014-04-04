@@ -20,53 +20,71 @@
 
   <div id="center_private_layout">
 
-    <%= form_tag(entries_view_path) do -%>
-
-      <span class="span_left_align">* Selected Savings Account:</span>
-      <span class="span_right_align"><%= select_tag "account_name", 
-        options_for_select(@account_names, session[:account_name]), onchange: "this.form.submit();" %></span><br><br>
-
+    <% if @account_names.index("No Accounts").nil? %>
       <% if !@category_names.empty? %>
-
-        <div id="entries_table" data-number_categories="<%= @category_names.size %>">
-
-          <table>
-            <tr>
-              <th class="entries_columns">Date</th>
-              <% @category_names.each do |category_name| %>
-                <th class="entries_columns"><%= category_name %></th>
-              <% end %>
-              <th class="entries_columns">Total</th>
-            </tr>
-
-            <% if !@consolidated_entries.empty? %>
-              <% @consolidated_entries.each do |consolidated_entry| %>
+        <%= form_tag(entries_view_path) do -%>
+  
+          <span class="span_left_align">* Selected Savings Account:</span>
+          <span class="span_right_align"><%= select_tag "account_name", 
+            options_for_select(@account_names, session[:account_name]), onchange: "this.form.submit();" %></span><br><br>
+  
+        
+  
+          <div id="entries_table" data-number_categories="<%= @category_names.size %>">
+  
+            <table>
+              <thead>
                 <tr>
-                  <td><%= consolidated_entry[0] %></td>
-                  <% for i in 1..@category_names.size %>
-                    <% if !consolidated_entry[i].nil? %>
-                      <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(consolidated_entry[i], precision: 2) %></span></td>
-                    <% else %>
-                      <td><span class="span_right_align_table">-</span></td>
-                    <% end %>
+                  <th class="entries_columns">Date</th>
+                  <% @category_names.each do |category_name| %>
+                    <th class="entries_columns"><%= category_name %></th>
                   <% end %>
-                  <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(consolidated_entry[-1], precision: 2) %></span></td>
+                  <th class="entries_columns">Total</th>
                 </tr>
+              </thead>
+  
+              <% if !@consolidated_entries.empty? %>
+                <% @consolidated_entries.each do |consolidated_entry| %>
+                  <tr>
+                    <td><%= consolidated_entry[0] %></td>
+                    <% for i in 1..@category_names.size %>
+                      <% if !consolidated_entry[i].nil? %>
+                        <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(consolidated_entry[i], precision: 2) %></span></td>
+                      <% else %>
+                        <td><span class="span_right_align_table">-</span></td>
+                      <% end %>
+                    <% end %>
+                    <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(consolidated_entry[-1], precision: 2) %></span></td>
+                  </tr>
+                <% end %>
               <% end %>
-            <% end %>
-          </table>
-
-        </div>
-
-        <% if @consolidated_entries.empty? %>
-          <span class="span_left_align" id="error_notice">No Entries have been added to account categories!</span>
+              
+              
+              <tfoot>
+                <tr>
+                  <td class="entries_columns">Totals</td>
+                  <% @category_names.each do |category_name| %>
+                    <td class="entries_columns"><span class="span_right_align_table">
+                      $&nbsp<%= number_with_precision(controller.send("get_category_balance", category_name), precision: 2) %>
+                      </span>
+                    </td>
+                  <% end %>
+                  <td class="entries_columns"><span class="span_right_align_table">
+                    $&nbsp<%= number_with_precision(@account_total, precision: 2) %></td>
+                  </span>
+                </tr>
+              </tfoot>
+            </table>
+  
+          </div>
+  
+          <% if @consolidated_entries.empty? %>
+            <span class="span_left_align" id="error_notice">No Entries have been added to account categories!</span>
+          <% end %>
         <% end %>
-
-      <% else %>
-        <span class="span_left_align" id="error_notice">No Categories have been created for account!</span>
-      <% end %>
-
-    <% end -%>
+  
+      <% end -%>
+    <% end %>
 
   </div>
 
