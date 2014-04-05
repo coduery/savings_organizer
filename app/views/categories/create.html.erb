@@ -21,7 +21,7 @@
 
   <div id="center_private_layout">
 
-    <% if @account_names.index("No Accounts").nil? %>
+    <% if !@account_names.nil? %>
       <%= form_for :category, url: categories_create_path do |f| %>
   
         <span class="span_left_align">* Selected Savings Account:</span>

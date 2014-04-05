@@ -12,7 +12,6 @@ module AccountsHelper
   end
 
   def self.get_account_names(user_id)
-
     account_names = Array.new
     user_accounts = Account.where("user_id = ?", user_id)
 
@@ -21,8 +20,6 @@ module AccountsHelper
         account_names.push(account[:account_name])
       end       
       account_names.sort!
-    else
-      account_names.push("No Accounts")
     end
   end
 

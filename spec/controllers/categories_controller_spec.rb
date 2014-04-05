@@ -38,8 +38,8 @@ describe CategoriesController do
     describe "when account_name equal to session account_name," do
       describe "but user has not created savings account" do
         it "flash alert message" do
-          session[:account_name] = "No Accounts"
-          category_params = { :account_name => "No Accounts" }
+          session[:account_name] = nil
+          category_params = { :account_name => nil }
           post :create, :category => category_params
           flash[:alert].should eql "Savings account must be created prior to adding a category!"
         end

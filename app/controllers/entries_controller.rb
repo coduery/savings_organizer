@@ -6,7 +6,7 @@ class EntriesController < ApplicationController
     if request.get?
       if !session[:current_user_id].nil?
         get_account_category_info
-        if @account_names.index("No Accounts")
+        if @account_names.nil?
           flash_no_account_alert
         elsif @category_names.empty?
           flash_no_category_alert
@@ -73,13 +73,17 @@ class EntriesController < ApplicationController
         user_id = session[:current_user_id]
         @account_names = AccountsHelper.get_account_names user_id
         @category_names = CategoriesHelper.get_category_names(user_id, session[:account_name])
-        if @account_names.index("No Accounts")
+        if @account_names.nil?
           flash_no_account_alert
         elsif @category_names.empty?
           flash_no_category_alert
         else
           @consolidated_entries = EntriesHelper.get_consolidated_entries(user_id, session[:account_name])
-          @account_total = AccountsHelper.get_account_total(user_id, session[:account_name])
+          if @consolidated_entries.empty?
+            flash.now[:alert] = "No Entries have been added to account categories!"
+          else
+            @account_total = AccountsHelper.get_account_total(user_id, session[:account_name])
+          end
         end
       else
         redirect_to users_signin_url
@@ -91,7 +95,15 @@ class EntriesController < ApplicationController
         session[:account_name] = account_name
         @account_names = AccountsHelper.get_account_names user_id
         @category_names = CategoriesHelper.get_category_names(user_id, session[:account_name])
-        @consolidated_entries = EntriesHelper.get_consolidated_entries(user_id, session[:account_name])
+        if @category_names.empty?
+          flash_no_category_alert
+        else
+          @consolidated_entries = EntriesHelper.get_consolidated_entries(user_id, session[:account_name])
+            
+          if @consolidated_entries.empty?
+            flash.now[:alert] = "No Entries have been added to account categories!"
+          end
+        end
       end
     end
   end
@@ -130,7 +142,7 @@ class EntriesController < ApplicationController
       if !session[:current_user_id].nil?
         get_account_category_info
         session[:category_name] = nil
-        if @account_names.index("No Accounts")
+        if @account_names.nil?
           flash_no_account_alert
         elsif @category_names.empty?
           flash_no_category_alert
@@ -178,8 +190,12 @@ class EntriesController < ApplicationController
       else
         session[:account_name] = entry_attributes[:account_name]
         get_account_category_info
-        session[:category_name] = @category_names.first
-        get_category_balance session[:category_name]
+        if @category_names.empty?
+          flash_no_category_alert
+        else
+          session[:category_name] = @category_names.first
+          get_category_balance session[:category_name]
+        end
       end
     end
     

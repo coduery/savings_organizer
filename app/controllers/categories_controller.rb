@@ -7,7 +7,7 @@ class CategoriesController < ApplicationController
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
         @account_names = AccountsHelper.get_account_names user_id
-        if @account_names.index("No Accounts")
+        if @account_names.nil?
           flash_no_account_alert
         else
           @category_name = nil

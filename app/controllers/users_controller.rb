@@ -13,8 +13,10 @@ class UsersController < ApplicationController
       if user && user.authenticate(params[:password])
         flash[:notice] = "Sign in successful."
         session[:current_user_id] = user[:id]
-        session[:account_name] = 
-          AccountsHelper.get_account_names(user[:id]).first
+        account_names = AccountsHelper.get_account_names(user[:id])
+        if !account_names.nil?
+          session[:account_name] = account_names.first
+        end
         redirect_to users_welcome_url
       else
         flash[:alert] = "Credentials Invalid. Please try again!"
@@ -49,7 +51,9 @@ class UsersController < ApplicationController
         @account_names = AccountsHelper.get_account_names user_id
 
         if session[:account_name].nil? && request.get?
-          account_name = @account_names.first
+          if !@account_names.nil?
+            account_name = @account_names.first
+          end
         elsif request.get?
           account_name = session[:account_name]
         elsif request.post?
