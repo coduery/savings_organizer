@@ -35,7 +35,7 @@
         <span class="span_left_align">Dollar Goal Amount:</span>
         <span class="span_right_align">$<%= f.text_field :savings_goal, value: nil, class: "dollar_text_field" %></span><br><br>
   
-        <span class="span_left_align">Goal Date:</span>
+        <span class="span_left_align">Goal Target Date:</span>
         <span class="span_right_align"><%= f.date_select :savings_goal_date,  
           { start_year: Time.now.year, end_year: Time.now.year + 10, use_short_month: true, 
             order: [:month, :day, :year], include_blank: true } %>
