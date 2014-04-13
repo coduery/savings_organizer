@@ -110,7 +110,7 @@ describe UsersController do
     it "renders users/welcome view with different account" do
       session[:current_user_id] = 1
       post :welcome, "account_name" => "test_account"
-      expect(response).to render_template("welcome")
+      expect(response).to redirect_to("/users/welcome")
     end
   end
 

@@ -36,15 +36,6 @@ describe CategoriesController do
     end
     
     describe "when account_name equal to session account_name," do
-      describe "but user has not created savings account" do
-        it "flash alert message" do
-          session[:account_name] = nil
-          category_params = { :account_name => nil }
-          post :create, :category => category_params
-          flash[:alert].should eql "Savings account must be created prior to adding a category!"
-        end
-      end
-      
       describe "but category_name already exists" do
         it "flash alert message" do
           @category = Category.new(category_name: "test_category", account_id:

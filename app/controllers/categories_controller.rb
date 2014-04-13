@@ -10,7 +10,8 @@ class CategoriesController < ApplicationController
         if @account_names.nil?
           flash_no_account_alert
         else
-          @category_name = nil
+          @category_name = session[:category_name_to_add]
+          session[:category_name_to_add] = nil
         end
       else
         redirect_to users_signin_url
@@ -24,10 +25,8 @@ class CategoriesController < ApplicationController
         date_valid = CategoriesHelper.is_date_valid? category_attributes
         goal_entry_valid = CategoriesHelper.is_goal_entry_valid?(category_attributes, date_valid)
 
-        if !account
-          flash.now[:alert] = "Savings account must be created prior to adding a category!"
-        elsif CategoriesHelper.does_category_exist?(user_id, session[:account_name], category_attributes[:category_name])
-          flash.now[:alert] = "Category Name Already Exists!"
+        if CategoriesHelper.does_category_exist?(user_id, session[:account_name], category_attributes[:category_name])
+          flash[:alert] = "Category Name Already Exists!"
         elsif goal_entry_valid
           if date_valid
             savings_goal_date = Date.civil(category_attributes["savings_goal_date(1i)"].to_i,
@@ -40,17 +39,18 @@ class CategoriesController < ApplicationController
                                   :account_id        => account[:id])
           if category.valid?
             category.save
-            flash.now[:notice] = "Category Created Successfully!"
+            flash[:notice] = "Category Created Successfully!"
           else
-            flash.now[:alert] = category.errors.first[1]
+            flash[:alert] = category.errors.first[1]
           end
         elsif date_valid
-          @category_name = category_attributes[:category_name]
-          flash.now[:alert] = "Goal amount required with goal date!"
+          session[:category_name_to_add] = category_attributes[:category_name]
+          flash[:alert] = "Goal amount required with goal date!"
         end
       else
         session[:account_name] = category_attributes[:account_name]
       end
+      redirect_to categories_create_url
     end    
   end
 

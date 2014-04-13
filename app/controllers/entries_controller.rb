@@ -38,7 +38,7 @@ class EntriesController < ApplicationController
                 save_entries = !nil
               else
                 save_entries = nil
-                flash.now[:alert] = entry.errors.first[1]
+                flash[:alert] = entry.errors.first[1]
                 break;
               end
             end
@@ -48,15 +48,15 @@ class EntriesController < ApplicationController
             entries.each do |entry|
               entry.save
             end
-            flash.now[:notice] = "Entries Added Successfully!"
-          elsif flash.now[:alert].nil?
-            flash.now[:alert] = "Entry must be greater than zero!"
+            flash[:notice] = "Entries Added Successfully!"
+          elsif flash[:alert].nil?
+            flash[:alert] = "Entry must be greater than zero!"
           end
         end
       else 
         session[:account_name] = entry_attributes[:account_name]
-        redirect_to entries_add_url
       end
+      redirect_to entries_add_url
     end  
   end
   
@@ -99,11 +99,8 @@ class EntriesController < ApplicationController
           flash_no_category_alert
         else
           @consolidated_entries = EntriesHelper.get_consolidated_entries(user_id, session[:account_name])
-            
-          if @consolidated_entries.empty?
-            flash.now[:alert] = "No Entries have been added to account categories!"
-          end
         end
+        redirect_to entries_view_url
       end
     end
   end
@@ -141,13 +138,14 @@ class EntriesController < ApplicationController
     def deduct_request_get(request)
       if !session[:current_user_id].nil?
         get_account_category_info
-        session[:category_name] = nil
         if @account_names.nil?
           flash_no_account_alert
         elsif @category_names.empty?
           flash_no_category_alert
         else
-           session[:category_name] = @category_names.first
+           if session[:category_name].nil?
+             session[:category_name] = @category_names.first
+           end
            get_category_balance session[:category_name]
         end
       else
@@ -176,12 +174,12 @@ class EntriesController < ApplicationController
           if !entry.nil?
             entry.save
             get_category_balance session[:category_name]
-            flash.now[:notice] = "Entry Deducted Successfully!"
-          elsif flash.now[:alert].nil?
-            flash.now[:alert] = "Deduction amount cannot be blank and must be positive!"
+            flash[:notice] = "Entry Deducted Successfully!"
+          elsif flash[:alert].nil?
+            flash[:alert] = "Deduction amount cannot be blank and must be positive!"
           end
         elsif entry_attributes[:entry_amount].to_f > @category_balance
-          flash.now[:alert] = "Invalid deduction amount.  Amount exceeds category balance!"
+          flash[:alert] = "Invalid deduction amount.  Amount exceeds category balance!"
         end
       elsif session[:account_name] == entry_attributes[:account_name]
         session[:category_name] = entry_attributes[:category_name]
@@ -197,6 +195,7 @@ class EntriesController < ApplicationController
           get_category_balance session[:category_name]
         end
       end
+      redirect_to entries_deduct_url
     end
     
     def flash_no_account_alert

@@ -11,18 +11,19 @@ class AccountsController < ApplicationController
       user_id = session[:current_user_id]
       account_attributes = account_params
       if AccountsHelper.does_account_exist?(user_id, account_attributes[:account_name])
-        flash.now[:alert] = "Account Name Already Exists!"
+        flash[:alert] = "Account Name Already Exists!"
       else
         account_attributes[:user_id] = user_id
         account = Account.new(account_attributes)
         if account.valid?
           account.save
           session[:account_name] = account_attributes[:account_name]
-          flash.now[:notice] = "Account Created Successfully!"
+          flash[:notice] = "Account Created Successfully!"
         else
-          flash.now[:alert] = account.errors.first[1]
+          flash[:alert] = account.errors.first[1]
         end
       end
+      redirect_to accounts_create_url
     end
   end
 

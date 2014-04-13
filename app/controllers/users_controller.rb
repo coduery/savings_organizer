@@ -4,7 +4,6 @@ class UsersController < ApplicationController
   # Method for handling get and post actions for "signin" web page
   def signin
     if request.get?
-      flash[:alert] = nil
       session[:current_user_id] = nil
     elsif request.post?
       session[:username] = params[:username]
@@ -21,15 +20,14 @@ class UsersController < ApplicationController
       else
         flash[:alert] = "Credentials Invalid. Please try again!"
         session[:current_user_id] = nil
+        redirect_to root_url
       end
     end
   end
 
   # Method for handling get and post actions for "registration" web page
   def registration
-  	if request.get?
-      flash[:alert] = nil
-	  elsif request.post?
+  	if request.post?
       user = User.new(user_params)
       if user.valid?
         user.save
@@ -37,8 +35,8 @@ class UsersController < ApplicationController
         redirect_to root_url
       else
         flash[:alert] = user.errors.first[1]
+        redirect_to users_registration_url
       end
-
   	end	
   end
 
@@ -70,6 +68,9 @@ class UsersController < ApplicationController
         last_entry = EntriesHelper.get_last_entry(user_id, account_name)
         @last_entry_date = last_entry[0]
         @last_entry_amount = last_entry[1]
+        if request.post?
+          redirect_to users_welcome_url
+        end
       else
         redirect_to users_signin_url
       end
