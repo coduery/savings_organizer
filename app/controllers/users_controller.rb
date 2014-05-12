@@ -47,18 +47,7 @@ class UsersController < ApplicationController
         user_id = session[:current_user_id]
         @user_name = session[:username]
         @account_names = AccountsHelper.get_account_names user_id
-
-        if session[:account_name].nil? && request.get?
-          if !@account_names.nil?
-            account_name = @account_names.first
-          end
-        elsif request.get?
-          account_name = session[:account_name]
-        elsif request.post?
-          account_name = params[:account_name]
-          session[:account_name] = account_name
-        end
-
+        account_name = get_account_name
         @account_total = 
           AccountsHelper.get_account_total(user_id, account_name)
         @number_of_catagories = 
@@ -68,7 +57,7 @@ class UsersController < ApplicationController
         last_entry = EntriesHelper.get_last_entry(user_id, account_name)
         @last_entry_date = last_entry[0]
         @last_entry_amount = last_entry[1]
-        if request.post?
+        if request.post? 
           redirect_to users_welcome_url
         end
       else
@@ -83,6 +72,17 @@ class UsersController < ApplicationController
     def user_params
       params.require(:user).permit(:user_name, :password, 
                                    :password_confirmation, :user_email)
+    end
+    
+    def get_account_name
+      if session[:account_name].nil? && request.get? && !@account_names.nil?
+        account_name = @account_names.first
+      elsif request.get?
+        account_name = session[:account_name]
+      elsif request.post?
+        account_name = params[:account_name]
+        session[:account_name] = account_name
+      end
     end
 
 end
