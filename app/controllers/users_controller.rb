@@ -74,14 +74,15 @@ class UsersController < ApplicationController
                                    :password_confirmation, :user_email)
     end
     
+    # Method for getting the current account name
     def get_account_name
       if session[:account_name].nil? && request.get? && !@account_names.nil?
         account_name = @account_names.first
       elsif request.get?
         account_name = session[:account_name]
       elsif request.post?
-        account_name = params[:account_name]
-        session[:account_name] = account_name
+        session[:account_name] = params[:account_name]
+        account_name = params[:account_name]        
       end
     end
 
