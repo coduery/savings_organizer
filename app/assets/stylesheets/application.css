@@ -136,3 +136,10 @@ div {
 #select_account {
   font-size: 95%;
 }
+
+#piechart {
+  display: block;
+  margin: auto;
+  font-size: small;
+  /* border: 1px solid #000000; */
+}

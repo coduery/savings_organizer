@@ -25,7 +25,7 @@ class EntriesController < ApplicationController
           @category_names.each do |category_name|
             attribute_string = "#{category_name}"
             attribute_symbol = attribute_string.to_sym
-            if !entry_attributes[attribute_symbol].blank? && entry_attributes[attribute_symbol].to_i > 0
+            if !entry_attributes[attribute_symbol].blank? && entry_attributes[attribute_symbol].to_f > 0
               category_id = CategoriesHelper.get_category_id(session[:current_user_id], entry_attributes[:account_name], attribute_string)
               entry_date = Date.civil(entry_attributes["entry_date(1i)"].to_i,
                                       entry_attributes["entry_date(2i)"].to_i,
@@ -161,7 +161,7 @@ class EntriesController < ApplicationController
       if session[:account_name] == entry_attributes[:account_name] && 
          session[:category_name] == entry_attributes[:category_name]
         if !@category_names.empty? && entry_attributes[:entry_amount].to_f <= @category_balance
-            if !entry_attributes[:entry_amount].blank? && entry_attributes[:entry_amount].to_i > 0
+            if !entry_attributes[:entry_amount].blank? && entry_attributes[:entry_amount].to_f > 0
               category_id = CategoriesHelper.get_category_id(session[:current_user_id], 
                             entry_attributes[:account_name], entry_attributes[:category_name])
               entry_date = Date.civil(entry_attributes["entry_date(1i)"].to_i,

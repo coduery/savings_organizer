@@ -100,5 +100,15 @@ module EntriesHelper
     end
     category_name_id_map
   end
+  
+  def self.get_category_name_saved_amount_mapping(user_id, account_name)
+    account_categories = CategoriesHelper.get_categories(user_id, account_name)
+    category_name_saved_amount_map = {}
+    account_categories.each do |category|
+      category_name_saved_amount_map[category[:category_name]] = 
+        CategoriesHelper.get_category_entries_total(category[:id])
+    end
+    category_name_saved_amount_map.sort
+  end
 
 end

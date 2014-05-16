@@ -50,13 +50,15 @@ class UsersController < ApplicationController
         account_name = get_account_name
         @account_total = 
           AccountsHelper.get_account_total(user_id, account_name)
-        @number_of_catagories = 
+        @number_of_categories = 
           CategoriesHelper.get_categories(user_id, account_name).size
         @number_of_entries = 
           EntriesHelper.get_number_of_entries(user_id, account_name)
         last_entry = EntriesHelper.get_last_entry(user_id, account_name)
         @last_entry_date = last_entry[0]
         @last_entry_amount = last_entry[1]
+        @category_saved_amount_array = EntriesHelper
+          .get_category_name_saved_amount_mapping(user_id, account_name)
         if request.post? 
           redirect_to users_welcome_url
         end
