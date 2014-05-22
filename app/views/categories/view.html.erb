@@ -1,0 +1,61 @@
+<% provide(:title, "View Category") %>
+
+<h2>View Category</h2>
+
+<div id="main_layout">
+
+  <%= render "shared/menu" %>
+
+  <div id="center_private_layout">
+      
+    <% if !@account_names.nil? %>
+      
+      <%= form_tag(categories_view_path) do %>
+  
+        <span class="span_left_align">* Selected Savings Account:</span>
+        <span class="span_right_align"><%= select_tag "account_name", 
+          options_for_select(@account_names, session[:account_name]), onchange: "this.form.submit();" %>
+        </span><br><br>
+        
+        <span class="span_left_align">* Selected Category:</span>
+        <span class="span_right_align"><%= select_tag "category_name", 
+          options_for_select(@category_names, session[:category_name]), onchange: "this.form.submit();" %>
+        </span><br><br>
+        
+        <div id="entries_table" data-number_categories="3">
+        
+          <table>
+            <thead>
+              <tr>
+                <th class="entries_columns">Date</th>
+                <th class="entries_columns">Deduction</th>
+                <th class="entries_columns">Addition</th>
+                <th class="entries_columns">Update</th>
+                <th class="entries_columns">Delete</th>
+              </tr>
+            </thead>
+            
+            <% @category_entries.each do |category_entry| %>    
+              <tr>
+                <td><%= category_entry[:entry_date] %></td>
+                <% if category_entry[:entry_amount] < 0 %>
+                  <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(category_entry[:entry_amount], precision: 2) %></span></td>
+                  <td><span class="span_right_align_table">-</span></td>
+                <% else %>
+                  <td><span class="span_right_align_table">-</span></td> 
+                  <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(category_entry[:entry_amount], precision: 2) %></span></td>              
+                <% end %>
+                <td>Update Link</td>
+                <td>Delete Link</td>              
+              </tr>
+            <% end %>
+          </table> 
+        
+        </div>       
+        
+      <% end %>
+    <% end %>
+  
+  </div>
+  
+</div>

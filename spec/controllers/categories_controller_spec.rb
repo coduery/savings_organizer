@@ -75,7 +75,8 @@ describe CategoriesController do
           post :create, :category => category_params
           flash[:alert].should eql "Goal amount required with goal date!"
         end
-      end
+      end    
+      
     end
     
     describe "when account_name not equal to session account_name" do
@@ -87,5 +88,13 @@ describe CategoriesController do
       end
     end
   end
+    
+  describe "GET view" do
+    it "renders categories/view" do
+      session[:current_user_id] = 1
+      get :view
+      expect(response).to render_template("categories/view");
+    end
+  end  
 
 end

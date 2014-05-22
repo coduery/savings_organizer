@@ -53,6 +53,36 @@ class CategoriesController < ApplicationController
       redirect_to categories_create_url
     end    
   end
+  
+  def view
+    if request.get?
+      if !session[:current_user_id].nil?
+        user_id = session[:current_user_id]
+        @account_names = AccountsHelper.get_account_names user_id
+        
+        if !@account_names.nil?
+          @category_names = CategoriesHelper.get_category_names(user_id, session[:account_name])
+          if session[:category_name].nil?
+            session[:category_name] = @category_names.first
+          end
+          if !@category_names.nil?
+            category_id = CategoriesHelper.get_category_id(user_id, session[:account_name], session[:category_name])
+            @category_entries = CategoriesHelper.get_category_entries category_id
+          end
+        end
+      else
+        redirect_to users_signin_url
+      end
+    else request.post?
+      if session[:account_name] == params[:account_name]
+        session[:category_name] = params[:category_name]  
+      else
+        session[:account_name] = params[:account_name]
+        session[:category_name] = nil        
+      end
+      redirect_to categories_view_url
+    end
+  end
 
   private
 

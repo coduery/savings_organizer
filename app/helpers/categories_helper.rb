@@ -58,7 +58,7 @@ module CategoriesHelper
   end
 
   def self.get_category_entries_total(category_id)
-    category_entries = Entry.where("category_id = ?", category_id)
+    category_entries = get_category_entries category_id
     category_entries_total = 0
     category_entries.each do |category_entry|
       category_entries_total += category_entry[:entry_amount]
@@ -67,8 +67,12 @@ module CategoriesHelper
   end
 
   def self.get_number_of_entries(category_id)
-    category_entries = Entry.where("category_id = ?", category_id)
+    category_entries = get_category_entries category_id
     category_entries.size
+  end
+  
+  def self.get_category_entries(category_id)
+    category_entries = Entry.where("category_id = ?", category_id).order("entry_date DESC, created_at DESC")
   end
 
 end
