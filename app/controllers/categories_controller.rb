@@ -58,23 +58,36 @@ class CategoriesController < ApplicationController
     if request.get?
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
-        @account_names = AccountsHelper.get_account_names user_id
-        
+        @account_names = AccountsHelper.get_account_names user_id    
         if !@account_names.nil?
           @category_names = CategoriesHelper.get_category_names(user_id, session[:account_name])
           if session[:category_name].nil?
             session[:category_name] = @category_names.first
           end
-          if !@category_names.nil?
+          if @category_names.size > 0
             category_id = CategoriesHelper.get_category_id(user_id, session[:account_name], session[:category_name])
             @category_entries = CategoriesHelper.get_category_entries category_id
+            if @category_entries.size == 0
+              flash.now[:alert] = "No Entries for Selected Category!"
+            end
+          else
+            flash.now[:alert] = "No Categories for Selected Account!" 
           end
+        else
+          flash_no_account_alert
         end
       else
         redirect_to users_signin_url
       end
     else request.post?
-      if session[:account_name] == params[:account_name]
+      if session[:account_name] == params[:account_name] && session[:category_name] = params[:category_name]
+        if !params[:delete].nil?
+          rows_deleted = Entry.delete(params[:delete].keys.first);
+          if rows_deleted == 1
+            flash[:notice] = "Entry deleted successfully!";
+          end
+        end
+      elsif session[:account_name] == params[:account_name]
         session[:category_name] = params[:category_name]  
       else
         session[:account_name] = params[:account_name]

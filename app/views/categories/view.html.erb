@@ -2,6 +2,18 @@
 
 <h2>View Category</h2>
 
+<% if flash[:alert] %>
+  <div id="error_notice">
+    <h3><%= flash[:alert] %></h3>
+  </div>
+<% end %>
+
+<% if flash[:notice] %>
+  <div id="success_notice">
+    <h3><%= flash[:notice] %></h3>
+  </div>
+<% end %>
+
 <div id="main_layout">
 
   <%= render "shared/menu" %>
@@ -17,42 +29,44 @@
           options_for_select(@account_names, session[:account_name]), onchange: "this.form.submit();" %>
         </span><br><br>
         
-        <span class="span_left_align">* Selected Category:</span>
-        <span class="span_right_align"><%= select_tag "category_name", 
-          options_for_select(@category_names, session[:category_name]), onchange: "this.form.submit();" %>
-        </span><br><br>
+        <% if @category_names.size > 0 %>
         
-        <div id="entries_table" data-number_categories="3">
-        
-          <table>
-            <thead>
-              <tr>
-                <th class="entries_columns">Date</th>
-                <th class="entries_columns">Deduction</th>
-                <th class="entries_columns">Addition</th>
-                <th class="entries_columns">Update</th>
-                <th class="entries_columns">Delete</th>
-              </tr>
-            </thead>
-            
-            <% @category_entries.each do |category_entry| %>    
-              <tr>
-                <td><%= category_entry[:entry_date] %></td>
-                <% if category_entry[:entry_amount] < 0 %>
-                  <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(category_entry[:entry_amount], precision: 2) %></span></td>
-                  <td><span class="span_right_align_table">-</span></td>
-                <% else %>
-                  <td><span class="span_right_align_table">-</span></td> 
-                  <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(category_entry[:entry_amount], precision: 2) %></span></td>              
-                <% end %>
-                <td>Update Link</td>
-                <td>Delete Link</td>              
-              </tr>
-            <% end %>
-          </table> 
-        
-        </div>       
-        
+          <span class="span_left_align">* Selected Category:</span>
+          <span class="span_right_align"><%= select_tag "category_name", 
+            options_for_select(@category_names, session[:category_name]), onchange: "this.form.submit();" %>
+          </span><br><br>
+          
+          <div id="entries_table" data-number_categories="3">
+          
+            <table>
+              <thead>
+                <tr>
+                  <th class="entries_columns">Date</th>
+                  <th class="entries_columns">Deduction</th>
+                  <th class="entries_columns">Addition</th>
+                  <th class="entries_columns">Update</th>
+                  <th class="entries_columns">Delete</th>
+                </tr>
+              </thead>
+              
+              <% @category_entries.each do |category_entry| %>    
+                <tr>
+                  <td><%= category_entry[:entry_date] %></td>
+                  <% if category_entry[:entry_amount] < 0 %>
+                    <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(category_entry[:entry_amount], precision: 2) %></span></td>
+                    <td><span class="span_right_align_table">-</span></td>
+                  <% else %>
+                    <td><span class="span_right_align_table">-</span></td> 
+                    <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(category_entry[:entry_amount], precision: 2) %></span></td>              
+                  <% end %>
+                  <td>Update Link</td>
+                  <td><%= submit_tag "Delete Entry", name: "delete[#{category_entry[:id]}]", data: {confirm: "Proceed with Deleting Entry?" } %></td>             
+                </tr>
+              <% end %>
+            </table> 
+          
+          </div>       
+        <% end %>        
       <% end %>
     <% end %>
   
