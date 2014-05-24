@@ -1,7 +1,7 @@
 class Category < ActiveRecord::Base
 
   belongs_to :account
-  has_many :entries
+  has_many :entries, dependent: :destroy
 
   validates :category_name, 
     presence: { message: "Category Name is Required!" },

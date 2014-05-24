@@ -57,6 +57,15 @@ module CategoriesHelper
     category_id
   end
 
+  def self.get_category_name_id_mapping(user_id, account_name)
+    account_categories = CategoriesHelper.get_categories(user_id, account_name)
+    category_name_id_map = {}
+    account_categories.each do |category|
+      category_name_id_map[category[:category_name]] = category[:id]
+    end
+    category_name_id_map
+  end
+
   def self.get_category_entries_total(category_id)
     category_entries = get_category_entries category_id
     category_entries_total = 0

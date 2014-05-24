@@ -55,6 +55,11 @@ div {
   /* background-color: magenta;  */  /* For diagnostics only  */
 }
 
+.span_left_align_table {
+  font-size: small;
+  float: left;
+}
+
 .span_right_align_table {
   float: right;
   font-size: small;

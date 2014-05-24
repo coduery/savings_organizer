@@ -50,7 +50,7 @@ module EntriesHelper
     category_entries_date_set = Array.new
     consolidated_date_entries = Array.new
 
-    category_name_id_mapping = get_category_name_id_mapping(user_id, account_name).sort
+    category_name_id_mapping = CategoriesHelper.get_category_name_id_mapping(user_id, account_name).sort
 
     for i in 0..(category_entries.size - 1)
       category_entries_date_set.push(category_entries[i])
@@ -90,15 +90,6 @@ module EntriesHelper
     end
 
     consolidated_date_entries
-  end
-
-  def self.get_category_name_id_mapping(user_id, account_name)
-    account_categories = CategoriesHelper.get_categories(user_id, account_name)
-    category_name_id_map = {}
-    account_categories.each do |category|
-      category_name_id_map[category[:category_name]] = category[:id]
-    end
-    category_name_id_map
   end
   
   def self.get_category_name_saved_amount_mapping(user_id, account_name)
