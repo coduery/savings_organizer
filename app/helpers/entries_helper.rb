@@ -13,10 +13,10 @@ module EntriesHelper
     category_entries = get_entries(user_id, account_name)
     if !category_entries.empty?
       last_entry_date = category_entries.first[:entry_date]
-      last_created_date = category_entries.first[:created_at].to_i
+      last_updated_date = category_entries.first[:updated_at].to_i
       last_entry_amount = 0
       category_entries.each do |entry|
-        if entry[:entry_date] == last_entry_date && (entry[:created_at].to_i == last_created_date || entry[:created_at].to_i == last_created_date - 1)
+        if entry[:entry_date] == last_entry_date && (entry[:updated_at].to_i == last_updated_date || entry[:updated_at].to_i == last_updated_date - 1)
           last_entry_amount += entry[:entry_amount]
         else
           break;
@@ -36,7 +36,7 @@ module EntriesHelper
     account_categories.each do |category|
       category_ids.push(category[:id])
     end
-    category_entries = Entry.where("category_id IN (?)" , category_ids).order("entry_date DESC, created_at DESC")
+    category_entries = Entry.where("category_id IN (?)" , category_ids).order("entry_date DESC, updated_at DESC")
   end
 
   def self.get_consolidated_entries(user_id, account_name)
@@ -45,7 +45,7 @@ module EntriesHelper
     account_categories.each do |category|
       category_ids.push(category[:id])
     end
-    category_entries = Entry.where("category_id IN (?)" , category_ids).order("entry_date DESC, created_at DESC")
+    category_entries = Entry.where("category_id IN (?)" , category_ids).order("entry_date DESC, updated_at DESC")
 
     category_entries_date_set = Array.new
     consolidated_date_entries = Array.new
@@ -55,9 +55,9 @@ module EntriesHelper
     for i in 0..(category_entries.size - 1)
       category_entries_date_set.push(category_entries[i])
       if i < category_entries.size - 1 && category_entries[i + 1][:entry_date] == category_entries[i][:entry_date] && 
-        (category_entries[i + 1][:created_at].to_i == category_entries[i][:created_at].to_i ||
-         category_entries[i + 1][:created_at].to_i == category_entries[i][:created_at].to_i + 1 ||
-         category_entries[i + 1][:created_at].to_i == category_entries[i][:created_at].to_i - 1)
+        (category_entries[i + 1][:updated_at].to_i == category_entries[i][:updated_at].to_i ||
+         category_entries[i + 1][:updated_at].to_i == category_entries[i][:updated_at].to_i + 1 ||
+         category_entries[i + 1][:updated_at].to_i == category_entries[i][:updated_at].to_i - 1)
         next
       else
         compiled_date_entry = Array.new(category_ids.size + 2)

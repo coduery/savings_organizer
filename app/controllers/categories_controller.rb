@@ -69,6 +69,12 @@ class CategoriesController < ApplicationController
             @category_entries = CategoriesHelper.get_category_entries category_id
             if @category_entries.size == 0
               flash.now[:alert] = "No Entries for Selected Category!"
+            else
+              @deduction_category_entries_total = 
+                CategoriesHelper.get_deduction_category_entries_total @category_entries 
+              @addition_category_entries_total = 
+                CategoriesHelper.get_addition_category_entries_total @category_entries
+              @category_balance = @addition_category_entries_total + @deduction_category_entries_total                      
             end
           else
             flash.now[:alert] = "No Categories for Selected Account!" 
@@ -80,11 +86,21 @@ class CategoriesController < ApplicationController
         redirect_to users_signin_url
       end
     else request.post?
-      if session[:account_name] == params[:account_name] && session[:category_name] = params[:category_name]
+      if session[:account_name] == params[:account_name] && 
+        session[:category_name] = params[:category_name]
         if !params[:delete].nil?
-          rows_deleted = Entry.delete(params[:delete].keys.first);
-          if rows_deleted == 1
-            flash[:notice] = "Entry deleted successfully!";
+          entry_to_delete = Entry.find(params[:delete].keys.first)
+          category_id = entry_to_delete[:category_id]
+          valid_deletion = CategoriesHelper.are_revised_balances_valid? category_id, entry_to_delete
+          if valid_deletion
+            rows_deleted = Entry.delete(params[:delete].keys.first)
+            if rows_deleted == 1
+              flash[:notice] = "Entry deleted successfully!"
+            end
+          else
+            flash[:alert] = "Invalid entry deletion!<br>
+                            Deletion would result in a negative 
+                            balance in savings history.".html_safe
           end
         end
       elsif session[:account_name] == params[:account_name]

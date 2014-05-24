@@ -172,9 +172,17 @@ class EntriesController < ApplicationController
                                 :category_id  => category_id)
             end
           if !entry.nil?
-            entry.save
-            get_category_balance session[:category_name]
-            flash[:notice] = "Entry Deducted Successfully!"
+            category_entries_prior_balance = 
+              CategoriesHelper.get_category_entries_prior_balance category_id, entry_date
+            if category_entries_prior_balance >= entry_attributes[:entry_amount].to_f
+              entry.save
+              get_category_balance session[:category_name]
+              flash[:notice] = "Entry Deducted Successfully!"
+            else
+              flash[:alert] = "Invalid deduction amount for specified date!<br>
+                              Deduction would result in a negative balance in
+                              savings history.".html_safe
+            end
           elsif flash[:alert].nil?
             flash[:alert] = "Deduction amount cannot be blank and must be positive!"
           end

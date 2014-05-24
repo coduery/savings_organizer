@@ -65,6 +65,35 @@ module CategoriesHelper
     end
     category_entries_total
   end
+  
+  def self.get_category_entries_prior_balance(category_id, entry_date)
+    category_entries = get_category_entries category_id
+    category_entries_prior_balance = 0
+    category_entries.each do |category_entry|
+      if category_entry[:entry_date] <= entry_date
+        category_entries_prior_balance += category_entry[:entry_amount]
+      end
+    end
+    category_entries_prior_balance    
+  end
+  
+  def self.are_revised_balances_valid?(category_id, entry_to_delete)
+    category_entries = get_category_entries category_id
+    category_running_total = 0
+    category_entries.reverse.each do |category_entry|
+      if category_entry != entry_to_delete
+        category_running_total += category_entry[:entry_amount]
+      end
+      if entry_to_delete[:entry_amount] > 0 &&
+         (category_entry[:entry_date] > entry_to_delete[:entry_date] ||
+         (category_entry[:entry_date] == entry_to_delete[:entry_date] &&
+         category_entry[:updated_at] > entry_to_delete[:updated_at])) &&
+         category_running_total < entry_to_delete[:entry_amount]
+        return false
+      end
+    end
+    return true
+  end
 
   def self.get_number_of_entries(category_id)
     category_entries = get_category_entries category_id
@@ -72,7 +101,27 @@ module CategoriesHelper
   end
   
   def self.get_category_entries(category_id)
-    category_entries = Entry.where("category_id = ?", category_id).order("entry_date DESC, created_at DESC")
+    category_entries = Entry.where("category_id = ?", category_id).order("entry_date DESC, updated_at DESC")
+  end
+
+  def self.get_addition_category_entries_total(category_entries)
+    addition_category_entries_total = 0
+    category_entries.each do |category_entry|
+      if category_entry[:entry_amount] > 0
+        addition_category_entries_total += category_entry[:entry_amount]
+      end
+    end
+    addition_category_entries_total
+  end
+  
+  def self.get_deduction_category_entries_total(category_entries)
+    deduction_category_entries_total = 0
+    category_entries.each do |category_entry|
+      if category_entry[:entry_amount] < 0
+        deduction_category_entries_total += category_entry[:entry_amount]
+      end
+    end
+    deduction_category_entries_total
   end
 
 end
