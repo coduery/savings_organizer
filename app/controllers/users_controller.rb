@@ -67,6 +67,11 @@ class UsersController < ApplicationController
       end
     end
   end
+  
+  def view
+    get_view(request) if request.get?
+    post_view(request) if request.post?
+  end
 
   private
 
@@ -87,5 +92,34 @@ class UsersController < ApplicationController
         account_name = params[:account_name]        
       end
     end
+    
+    def get_view(request)
+      if !session[:current_user_id].nil?
+        user_id = session[:current_user_id]
+        @account_names = AccountsHelper.get_account_names(user_id)
+        if !@account_names.nil?
+          @account_name_to_savings_amount_map = 
+            UsersHelper.map_account_names_to_savings_amounts(user_id, @account_names)
+          @user_accounts_total = 
+            UsersHelper.get_user_accounts_total(@account_name_to_savings_amount_map)
+          @account_name_id_map = UsersHelper.get_account_name_id_map(user_id, @account_names)
+        else
+          flash.now[:alert] = "No Accounts for User!"
+        end
+      else
+        redirect_to users_signin_url
+      end
+    end
+    
+    def post_view(request)
+      if !params[:delete].nil?
+              print "\n\n#{params[:delete]}\n\n"
+        record_destroyed = Account.destroy(params[:delete].keys.first)
+        if record_destroyed
+          flash[:notice] = "Account Deleted Successfully!"
+        end
+      end
+      redirect_to users_view_url
+    end   
 
 end

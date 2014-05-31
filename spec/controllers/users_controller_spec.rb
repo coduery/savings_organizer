@@ -113,5 +113,16 @@ describe UsersController do
       expect(response).to redirect_to("/users/welcome")
     end
   end
+  
+  # view method examples
+  it { should respond_to :view }
+  
+  describe "GET view" do
+    it "renders users/view" do
+      session[:current_user_id] = 1
+      get :view
+      expect(response).to render_template("view")
+    end
+  end
 
 end

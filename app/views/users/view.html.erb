@@ -1,0 +1,65 @@
+<% provide(:title, "View User") %>
+
+<h2>View User</h2>
+
+<% if flash[:alert] %>
+  <div id="error_notice">
+    <h3><%= flash[:alert] %></h3>
+  </div>
+<% end %>
+
+<% if flash[:notice] %>
+  <div id="success_notice">
+    <h3><%= flash[:notice] %></h3>
+  </div>
+<% end %>
+
+<div id="main_layout">
+
+  <%= render "shared/menu" %>
+
+  <div id="center_private_layout">
+    
+    <% if !@account_names.nil? %>
+    
+      <%= form_tag(users_view_path) do %>
+      
+        <span class="span_left_align">User Total Savings: $ <%= number_with_precision(@user_accounts_total, precision: 2) %></span><br><br>
+        
+        <div id="entries_table" data-number_categories="3">
+        
+          <table>
+            <thead>
+              <tr>
+                <th class="entries_columns">Account</th>
+                <th class="entries_columns">Savings</th>
+              </tr>
+            </thead>
+            
+            <% @account_names.each do |account_name| %>    
+              <tr>
+                <td><span class="span_left_align_table"><%= account_name %></span></td>
+                <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(@account_name_to_savings_amount_map[account_name.to_sym], precision: 2) %></span></td>
+                <td><%= submit_tag "Update Account", disabled: true, name: "update[#{@account_name_id_map[account_name]}]" %></td>
+                <td><%= submit_tag "Delete Account", name: "delete[#{@account_name_id_map[account_name]}]", data: {confirm: "Proceed with Deleting Account?" } %></td>             
+              </tr>
+            <% end %>
+            
+            <tfoot>
+              <tr>
+                <td class="entries_columns">Total</td>
+                <td class="entries_columns"><span class="span_right_align_table">
+                  $&nbsp<%= number_with_precision(@user_accounts_total, precision: 2) %></td>
+                </span>
+              </tr>
+            </tfoot>
+          </table> 
+        
+        </div>      
+      
+      <% end %>
+    <% end %>
+    
+  </div>
+  
+</div>
