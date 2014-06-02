@@ -15,4 +15,5 @@
 //= require_tree .
 
 //= require_self
+//= require 'users'
 //= require 'entries'

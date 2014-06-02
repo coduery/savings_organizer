@@ -1,0 +1,61 @@
+<% provide(:title, "Manage Account") %>
+
+<h2>Manage Account</h2>
+
+<% if flash[:alert] %>
+  <div id="error_notice">
+    <h3><%= flash[:alert] %></h3>
+  </div>
+<% end %>
+
+<% if flash[:notice] %>
+  <div id="success_notice">
+    <h3><%= flash[:notice] %></h3>
+  </div>
+<% end %>
+
+<div id="main_layout">
+
+  <%= render "shared/menu" %>
+
+  <div id="center_private_layout">
+    
+    <div id="user-manage-buttons">
+      <span class="span_left_align"><input type="button" id="change-password-button" class="large_button" value="Change Password" disabled></span><br><br>
+      
+      <span class="span_left_align"><input type="button" id="change-username-button" class="large_button" value="Change Username" disabled></span><br><br>
+      
+      <span class="span_left_align"><input type="button" id="change-email-button" class="large_button" value="Change Email Address" disabled></span><br><br>
+          
+      <span class="span_left_align"><input type="button" id="delete-user-button" class="large_button" value="Delete User Account" onclick="deleteUserAccount()">
+        <span id="confirm_message">Confirmation Required</span>
+      </span>  
+    </div>
+    
+    <div id="delete-user-div" class="hidden_class">
+      <p>Delete User Account</p>
+      <p class="warning">Warning: All user account information will be deleted!</p>
+      <p>To proceed with deleting account, please enter your username<br>
+         and password, then click Submit.  This action cannot be undone!
+      </p><br>
+      <%= form_for :user, url: users_manage_path do |f| %>
+        
+        * Username:<br>
+        <%= text_field_tag "username", nil, class: "text_field" %><br><br>
+        * Password:<br>
+        <%= password_field_tag "password", nil, class: "text_field" %><br><br><br>
+  
+        <div id="bottom_layout">
+          <span class="span_left_align">* - Required Entry</span>
+          <span class="span_right_align">
+            <input type="button" class="button" value="Cancel" id="cancel-button" onclick="deleteUserAccount()">
+            <%= f.submit "Submit", class: "button", name: "delete[#{session[:current_user_id]}]", 
+              data: {confirm: "Warning you are about to delete your account. \nProceed with Deleting Your User Account?"} %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+    
+  </div>
+  
+</div>

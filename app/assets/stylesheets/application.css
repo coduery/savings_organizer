@@ -34,6 +34,17 @@ div {
   background-color: #B0C4DE;
 }
 
+.large_button {
+  width: 160px;
+  padding: 2px 0 2px 0;
+  margin: 0 10px 0 10px;
+  border-color: #000000;
+}
+
+.large_button:hover {
+  background-color: #B0C4DE;
+}
+
 .text_field {
   width: 150px;
   height: 18px;
@@ -88,6 +99,14 @@ div {
 
 .left_align_paragraph {
   text-align: left;
+}
+
+.warning {
+  color: #FF0000;
+}
+
+.hidden_class {
+  display: none;
 }
 
 #main_layout {

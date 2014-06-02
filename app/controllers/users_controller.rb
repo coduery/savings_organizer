@@ -72,6 +72,11 @@ class UsersController < ApplicationController
     get_view(request) if request.get?
     post_view(request) if request.post?
   end
+  
+  def manage
+    get_manage(request) if request.get?
+    post_manage(request) if request.post?
+  end
 
   private
 
@@ -113,7 +118,6 @@ class UsersController < ApplicationController
     
     def post_view(request)
       if !params[:delete].nil?
-              print "\n\n#{params[:delete]}\n\n"
         record_destroyed = Account.destroy(params[:delete].keys.first)
         if record_destroyed
           flash[:notice] = "Account Deleted Successfully!"
@@ -121,5 +125,27 @@ class UsersController < ApplicationController
       end
       redirect_to users_view_url
     end   
+    
+    def get_manage(request)
+      if session[:current_user_id].nil?
+        redirect_to users_signin_url
+      end
+    end
+    
+    def post_manage(request)
+      if !params[:delete].nil?
+        username = params[:username].downcase
+        user = User.find_by user_name: "#{username}"      
+        if user && user[:id] == params[:delete].keys.first.to_i && user.authenticate(params[:password])
+          record_destroyed = User.destroy(user[:id]);
+          if record_destroyed
+            flash[:notice] = "User Account Deleted Successfully!"
+          end
+          redirect_to users_signin_url
+        else
+          flash.now[:alert] = "Invalid user credentials.  Unable to delete user account.  Try again."
+        end
+      end
+    end
 
 end
