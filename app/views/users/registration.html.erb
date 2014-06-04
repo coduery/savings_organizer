@@ -3,11 +3,7 @@
 
 <h2>New User Registration</h2>
 
-<% if flash[:alert] %>
-  <div id="error_notice">
-    <h3><%= flash[:alert] %></h3>
-  </div>
-<% end %>
+<%= render "shared/flash" %>
 
 <div id="main_layout">
 

@@ -3,11 +3,7 @@
 
 <h2>Welcome <%= @user_name %>!</h2>
 
-<% if flash[:notice] %>
-  <div id="success_notice">
-    <h3><%= flash[:notice] %></h3>
-  </div>
-<% end %>
+<%= render "shared/flash" %>
 
 <div id="main_layout">
 

@@ -2,17 +2,7 @@
 
 <h2>View Category</h2>
 
-<% if flash[:alert] %>
-  <div id="error_notice">
-    <h3><%= flash[:alert] %></h3>
-  </div>
-<% end %>
-
-<% if flash[:notice] %>
-  <div id="success_notice">
-    <h3><%= flash[:notice] %></h3>
-  </div>
-<% end %>
+<%= render "shared/flash" %>
 
 <div id="main_layout">
 
