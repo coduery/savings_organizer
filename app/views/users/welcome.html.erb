@@ -33,10 +33,10 @@
       <span class="span_right_align"><%= label_tag "number_of_entries", @number_of_entries, class: "display_item" %></span><br><br>      
 
       <span class="span_left_align">Last Entry Date:</span>
-      <span class="span_right_align"><%= label_tag "last_entry_date", @last_entry_date, class: "display_item" %></span><br><br>
+      <span class="span_right_align"><%= label_tag "last_entry_date", @last_entry[0], class: "display_item" %></span><br><br>
 
       <span class="span_left_align">Last Total Entry Amount:</span>
-      <span class="span_right_align">$&nbsp<%= label_tag "last_entry_amount", number_with_precision(@last_entry_amount, precision: 2), class: "display_item" %></span><br><br>
+      <span class="span_right_align">$&nbsp<%= label_tag "last_entry_amount", number_with_precision(@last_entry[1], precision: 2), class: "display_item" %></span><br><br>
 
     <% end %>
     

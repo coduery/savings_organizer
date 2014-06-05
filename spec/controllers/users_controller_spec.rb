@@ -299,12 +299,12 @@ describe UsersController do
         end
         
         describe "if no categories exist," do
-          it "sets @last_entry_date" do
-            expect(assigns(:last_entry_date)).to eql "No Entries"
+          it "sets last_entry date" do
+            expect(assigns(:last_entry)[0]).to eql "No Entries"
           end
           
-          it "sets @last_entry_amount" do
-            expect(assigns(:last_entry_amount)).to eql 0
+          it "sets last_entry amount" do
+            expect(assigns(:last_entry)[1]).to eql 0
           end
         end
       end 
@@ -318,13 +318,13 @@ describe UsersController do
           get :welcome 
         end
         
-        it "gets @last_entry_date" do
-          last_entry_date = assigns(:last_entry_date)
+        it "gets last_entry date" do
+          last_entry_date = assigns(:last_entry)[0]
           expect(last_entry_date).to eql @entry[:entry_date].strftime("%B %-d, %Y")
         end
         
-        it "gets @last_entry_amount" do
-          expect(assigns(:last_entry_amount)).to eql @entry[:entry_amount]
+        it "gets last_entry amount" do
+          expect(assigns(:last_entry)[1]).to eql @entry[:entry_amount]
         end
         
         it "gets @category_saved_amount_map" do

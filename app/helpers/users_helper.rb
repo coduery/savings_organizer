@@ -8,7 +8,7 @@ module UsersHelper
     user_accounts_total
   end
   
-  def self.map_account_names_to_savings_amounts(user_id, account_names)
+  def self.get_account_names_to_savings_amounts_map(user_id, account_names)
     account_names_to_savings_amounts = Hash.new
     account_names.each do |account_name|
       account_names_to_savings_amounts[account_name.to_sym] = 

@@ -48,9 +48,7 @@ class UsersController < ApplicationController
           CategoriesHelper.get_categories(user_id, account_name).size
         @number_of_entries = 
           EntriesHelper.get_number_of_entries(user_id, account_name)
-        last_entry = EntriesHelper.get_last_entry(user_id, account_name)
-        @last_entry_date = last_entry[0]
-        @last_entry_amount = last_entry[1]
+        @last_entry = EntriesHelper.get_last_entry(user_id, account_name)
         @category_saved_amount_map = EntriesHelper
           .get_category_name_saved_amount_mapping(user_id, account_name)
         if request.post? 
@@ -64,6 +62,11 @@ class UsersController < ApplicationController
 
   private
 
+    def find_user
+      user_name = params[:user_name].downcase
+      User.find_by user_name: "#{user_name}" 
+    end
+    
     # Method for getting the current account name
     def get_account_name
       if session[:account_name].nil? && request.get? && !@account_names.nil?
@@ -84,18 +87,16 @@ class UsersController < ApplicationController
     
     def manage_post(request)
       if !params[:delete].nil?
-        user_name = params[:user_name].downcase
-        user = User.find_by user_name: "#{user_name}"      
+        user = find_user     
         if user && user[:id] == params[:delete].keys.first.to_i && 
                    user.authenticate(params[:password])
-          record_destroyed = User.destroy(user[:id]);
+          record_destroyed = User.destroy(user[:id])
           if record_destroyed
             flash[:notice] = "User Account Deleted Successfully!"
           end
           redirect_to users_signin_url
         else
-          flash.now[:alert] = "Invalid user credentials.  
-                               Unable to delete user account.  Try again."
+          flash.now[:alert] = "Invalid user credentials.  Unable to delete user account.  Try again."
         end
       end
     end
@@ -109,8 +110,7 @@ class UsersController < ApplicationController
     
     def signin_post(request)
       session[:user_name] = params[:user_name]
-      user_name = params[:user_name].downcase
-      user = User.find_by user_name: "#{user_name}"
+      user = find_user
       if user && user.authenticate(params[:password])
         flash[:notice] = "Sign in successful."
         session[:current_user_id] = user[:id]
@@ -131,7 +131,7 @@ class UsersController < ApplicationController
         @account_names = AccountsHelper.get_account_names(user_id)
         if !@account_names.nil?
           @account_name_to_savings_amount_map = UsersHelper
-            .map_account_names_to_savings_amounts(user_id, @account_names)
+            .get_account_names_to_savings_amounts_map(user_id, @account_names)
           @user_accounts_total = UsersHelper
             .get_user_accounts_total(@account_name_to_savings_amount_map)
           @account_name_id_map = UsersHelper
