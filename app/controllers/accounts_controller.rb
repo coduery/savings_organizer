@@ -33,8 +33,9 @@ class AccountsController < ApplicationController
         user_id = session[:current_user_id]
         @account_names = AccountsHelper.get_account_names user_id
         if !@account_names.nil?
+          categories = CategoriesHelper.get_categories(user_id, session[:account_name])
           @account_total = 
-            AccountsHelper.get_account_total user_id, session[:account_name]
+            AccountsHelper.get_account_total(categories)           
           account_name = session[:account_name]
           @category_names = 
             CategoriesHelper.get_category_names user_id, account_name

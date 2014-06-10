@@ -11,8 +11,9 @@ module UsersHelper
   def self.get_account_names_to_savings_amounts_map(user_id, account_names)
     account_names_to_savings_amounts = Hash.new
     account_names.each do |account_name|
+      categories = CategoriesHelper.get_categories(user_id, account_name)
       account_names_to_savings_amounts[account_name.to_sym] = 
-        AccountsHelper.get_account_total(user_id, account_name)
+        AccountsHelper.get_account_total(categories)      
     end
     account_names_to_savings_amounts
   end

@@ -29,11 +29,9 @@ module AccountsHelper
     !user_accounts.empty?
   end
 
-  def self.get_account_total(user_id, account_name)
-    account_categories = CategoriesHelper.get_categories(user_id, account_name)
+  def self.get_account_total(categories)
     account_total = 0
-    account_id = get_account_id(user_id, account_name)
-    account_categories.each do |category|
+    categories.each do |category|
       account_total += CategoriesHelper.get_category_entries_total(category[:id])
     end
     account_total

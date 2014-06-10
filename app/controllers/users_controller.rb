@@ -141,11 +141,9 @@ class UsersController < ApplicationController
         end
 
         @categories = CategoriesHelper.get_categories(user_id, account_name)
-        
         @account_total = 
-          AccountsHelper.get_account_total(user_id, account_name)
-        #@number_of_categories = 
-        #  CategoriesHelper.get_categories(user_id, account_name).size
+          AccountsHelper.get_account_total(@categories)        
+        
         @number_of_entries = 
           EntriesHelper.get_number_of_entries(user_id, account_name)
         @last_entry = EntriesHelper.get_last_entry(user_id, account_name)

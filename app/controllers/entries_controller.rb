@@ -82,7 +82,8 @@ class EntriesController < ApplicationController
           if @consolidated_entries.empty?
             flash.now[:alert] = "No Entries have been added to account categories!"
           else
-            @account_total = AccountsHelper.get_account_total(user_id, session[:account_name])
+            categories = CategoriesHelper.get_categories(user_id, session[:account_name])
+            @account_total = AccountsHelper.get_account_total(categories)
           end
         end
       else
