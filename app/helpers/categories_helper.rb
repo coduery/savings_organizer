@@ -104,8 +104,8 @@ module CategoriesHelper
     return true
   end
 
-  def self.get_number_of_entries(category_id)
-    category_entries = get_category_entries category_id
+  def self.get_number_of_category_entries(category_id)
+    category_entries = get_category_entries(category_id)
     category_entries.size
   end
   

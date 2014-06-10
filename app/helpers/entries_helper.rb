@@ -1,12 +1,12 @@
 module EntriesHelper
 
-  def self.get_number_of_entries(user_id, account_name)
-    account_categories = CategoriesHelper.get_categories(user_id, account_name)
-    number_of_entries = 0
-    account_categories.each do |category|
-      number_of_entries += CategoriesHelper.get_number_of_entries(category[:id])
+  def self.get_number_of_account_entries(categories)
+    number_of_account_entries = 0
+    categories.each do |category|
+      number_of_account_entries +=
+        CategoriesHelper.get_number_of_category_entries(category[:id])
     end
-    number_of_entries
+    number_of_account_entries
   end
 
   def self.get_last_entry(user_id, account_name)
@@ -16,7 +16,8 @@ module EntriesHelper
       last_updated_date = category_entries.first[:updated_at].to_i
       last_entry_amount = 0
       category_entries.each do |entry|
-        if entry[:entry_date] == last_entry_date && (entry[:updated_at].to_i == last_updated_date || entry[:updated_at].to_i == last_updated_date - 1)
+        if entry[:entry_date] == last_entry_date && (entry[:updated_at].to_i ==
+          last_updated_date || entry[:updated_at].to_i == last_updated_date - 1)
           last_entry_amount += entry[:entry_amount]
         else
           break;

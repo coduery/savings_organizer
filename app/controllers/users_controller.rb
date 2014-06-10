@@ -141,11 +141,11 @@ class UsersController < ApplicationController
         end
 
         @categories = CategoriesHelper.get_categories(user_id, account_name)
-        @account_total = 
-          AccountsHelper.get_account_total(@categories)        
-        
-        @number_of_entries = 
-          EntriesHelper.get_number_of_entries(user_id, account_name)
+        @account_total = AccountsHelper.get_account_total(@categories)
+        @number_of_account_entries =
+          EntriesHelper.get_number_of_account_entries(@categories)
+
+
         @last_entry = EntriesHelper.get_last_entry(user_id, account_name)
         @category_saved_amount_map = EntriesHelper
           .get_category_name_saved_amount_mapping(user_id, account_name)

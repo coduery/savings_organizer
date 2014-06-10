@@ -294,8 +294,8 @@ describe UsersController do
           expect(assigns(:categories).size).to be >= 0
         end      
         
-        it "gets @number_of_entries" do
-          expect(assigns(:number_of_entries)).to be >= 0
+        it "gets @number_of_account_entries" do
+          expect(assigns(:number_of_account_entries)).to be >= 0
         end
         
         describe "if no categories exist," do
