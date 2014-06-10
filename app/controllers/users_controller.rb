@@ -145,9 +145,8 @@ class UsersController < ApplicationController
         @number_of_account_entries =
           EntriesHelper.get_number_of_account_entries(@categories)
         @last_entry = EntriesHelper.get_last_entry(@categories)
-
         @category_saved_amount_map = EntriesHelper
-          .get_category_name_saved_amount_mapping(user_id, account_name)
+          .get_category_name_saved_amount_mapping(@categories)
       else
         redirect_to users_signin_url
       end
