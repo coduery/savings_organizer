@@ -9,8 +9,8 @@ module EntriesHelper
     number_of_account_entries
   end
 
-  def self.get_last_entry(user_id, account_name)
-    category_entries = get_entries(user_id, account_name)
+  def self.get_last_entry(categories)
+    category_entries = get_entries(categories)
     if !category_entries.empty?
       last_entry_date = category_entries.first[:entry_date]
       last_updated_date = category_entries.first[:updated_at].to_i
@@ -31,8 +31,7 @@ module EntriesHelper
     [ last_entry_date, last_entry_amount ]
   end
 
-  def self.get_entries(user_id, account_name)
-    account_categories = CategoriesHelper.get_categories(user_id, account_name)
+  def self.get_entries(account_categories)
     category_ids = Array.new
     account_categories.each do |category|
       category_ids.push(category[:id])
