@@ -36,6 +36,12 @@ class UsersController < ApplicationController
   
   # Method for handling get and post actions for "users/welcome" web page
   def welcome
+    welcome_get(request) if request.get?
+    welcome_post(request) if request.post?    
+  end 
+   
+=begin
+  def welcome
     if request.get? || request.post?
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
@@ -59,6 +65,7 @@ class UsersController < ApplicationController
       end
     end
   end
+=end
 
   private
 
@@ -67,6 +74,7 @@ class UsersController < ApplicationController
       User.find_by user_name: "#{user_name}" 
     end
     
+=begin
     # Method for getting the current account name
     def get_account_name
       if session[:account_name].nil? && request.get? && !@account_names.nil?
@@ -78,6 +86,7 @@ class UsersController < ApplicationController
         account_name = params[:account_name]        
       end
     end
+=end
     
     def manage_get(request)
       if session[:current_user_id].nil?
@@ -124,6 +133,12 @@ class UsersController < ApplicationController
         redirect_to root_url
       end
     end
+
+    # Method for retrieving registration form data via strong parameters
+    def user_params
+      params.require(:user).permit(:user_name, :password, 
+                                   :password_confirmation, :user_email)
+    end
     
     def view_get(request)
       if !session[:current_user_id].nil?
@@ -152,12 +167,37 @@ class UsersController < ApplicationController
         end
       end
       redirect_to users_view_url
-    end   
-    
-    # Method for retrieving registration form data via strong parameters
-    def user_params
-      params.require(:user).permit(:user_name, :password, 
-                                   :password_confirmation, :user_email)
     end
+    
+    def welcome_get(request)
+      if !session[:current_user_id].nil?
+        user_id = session[:current_user_id]
+        @user_name = session[:user_name]
+        @account_names = AccountsHelper.get_account_names(user_id)
+
+        if session[:account_name].nil? && !@account_names.nil?
+          account_name = @account_names.first
+        else
+          account_name = session[:account_name]
+        end
+
+        @account_total = 
+          AccountsHelper.get_account_total(user_id, account_name)
+        @number_of_categories = 
+          CategoriesHelper.get_categories(user_id, account_name).size
+        @number_of_entries = 
+          EntriesHelper.get_number_of_entries(user_id, account_name)
+        @last_entry = EntriesHelper.get_last_entry(user_id, account_name)
+        @category_saved_amount_map = EntriesHelper
+          .get_category_name_saved_amount_mapping(user_id, account_name)
+      else
+        redirect_to users_signin_url
+      end
+    end 
+    
+    def welcome_post(request)
+      session[:account_name] = params[:account_name]
+      redirect_to users_welcome_url
+    end     
 
 end
