@@ -290,8 +290,8 @@ describe UsersController do
           expect(assigns(:account_total)).to be >= 0
         end
               
-        it "gets @number_of_categories" do
-          expect(assigns(:number_of_categories)).to be >= 0
+        it "gets @categories" do
+          expect(assigns(:categories).size).to be >= 0
         end      
         
         it "gets @number_of_entries" do
