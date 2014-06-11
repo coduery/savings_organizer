@@ -74,7 +74,7 @@ module CategoriesHelper
     end
     category_entries_total
   end
-  
+
   def self.get_category_entries_prior_balance(category_id, entry_date)
     category_entries = get_category_entries category_id
     category_entries_prior_balance = 0
@@ -83,9 +83,9 @@ module CategoriesHelper
         category_entries_prior_balance += category_entry[:entry_amount]
       end
     end
-    category_entries_prior_balance    
+    category_entries_prior_balance
   end
-  
+
   def self.are_revised_balances_valid?(category_id, entry_to_delete)
     category_entries = get_category_entries category_id
     category_running_total = 0
@@ -97,7 +97,7 @@ module CategoriesHelper
          (category_entry[:entry_date] > entry_to_delete[:entry_date] ||
          (category_entry[:entry_date] == entry_to_delete[:entry_date] &&
          category_entry[:updated_at] > entry_to_delete[:updated_at])) &&
-         category_running_total < entry_to_delete[:entry_amount]
+         category_running_total < 0
         return false
       end
     end
@@ -108,7 +108,7 @@ module CategoriesHelper
     category_entries = get_category_entries(category_id)
     category_entries.size
   end
-  
+
   def self.get_category_entries(category_id)
     category_entries = Entry.where("category_id = ?", category_id).order("entry_date DESC, updated_at DESC")
   end
@@ -122,7 +122,7 @@ module CategoriesHelper
     end
     addition_category_entries_total
   end
-  
+
   def self.get_deduction_category_entries_total(category_entries)
     deduction_category_entries_total = 0
     category_entries.each do |category_entry|
