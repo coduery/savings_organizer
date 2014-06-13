@@ -12,36 +12,36 @@
   <div id="center_private_layout">
 
     <% if !@account_names.nil? %>
-    
+
       <%= form_for :entry, url: entries_add_path do |f| %>
-    
+
         <span class="span_left_align">* Selected Savings Account:</span>
-        <span class="span_right_align"><%= f.select :account_name, 
+        <span class="span_right_align"><%= f.select :account_name,
           options_for_select(@account_names, session[:account_name]), {}, onchange: "this.form.submit();" %>
         </span><br><br>
-    
+
         <% if !@category_names.empty? %>
 
-          <%= render "shared/entry_date_selector", f: f %> 
-  
+          <%= render "shared/entry_date_selector", f: f %>
+
           <span class="span_left_align">Savings Categories:</span><br><br>
-  
+
           <% @category_names.each do |category| %>
             <span class="span_left_align"><%= category %></span>
             <span class="span_right_align">
               $ <%= f.text_field "#{category.to_sym}", value: nil, onkeyup: "addEntries(#{@category_names})", class: "dollar_text_field" %>
             </span><br><br>
           <% end %>
-  
+
           <span class="span_left_align">Entry Total:</span>
           <span class="span_right_align">$<label id="entry_total" class="dollar_text_field" %>0.00</label></span><br><br>
-    
+
           <div id="bottom_layout">
             <span class="span_left_align">* - Required Entry</span>
             <span class="span_right_align"><%= f.submit "Submit", class: "button" %></span>
           </div>
         <% end %>
-  
+
       <% end %>
     <% end %>
 

@@ -12,37 +12,37 @@
   <div id="center_private_layout">
 
     <% if !@account_names.nil? %>
-    
+
       <%= form_for :entry, url: entries_deduct_path do |f| %>
         <span class="span_left_align">* Selected Savings Account:</span>
-        <span class="span_right_align"><%= f.select :account_name, 
+        <span class="span_right_align"><%= f.select :account_name,
           options_for_select(@account_names, session[:account_name]), {}, onchange: "this.form.submit();" %>
         </span><br><br>
-    
+
         <% if !@category_names.empty? %>
-        
+
           <span class="span_left_align">* Selected Savings Category:</span>
-          <span class="span_right_align"><%= f.select :category_name, 
+          <span class="span_right_align"><%= f.select :category_name,
             options_for_select(@category_names, session[:category_name]), {}, onchange: "this.form.submit();" %>
           </span><br><br>
-  
+
           <%= render "shared/entry_date_selector", f: f %>
-  
+
           <span class="span_left_align">Category Balance:</span>
           <span class="span_right_align">
             $&nbsp<%= label_tag "category_balance", number_with_precision(@category_balance, precision: 2), class: "display_item" %>
           </span><br><br>
-  
+
           <span class="span_left_align">* Deduction Amount:</span>
           <span class="span_right_align">
             $&nbsp<%= f.text_field :entry_amount, value: nil, onkeyup: "validateEntry()", class: "dollar_text_field" %>
           </span><br><br>
-  
+
           <div id="bottom_layout">
             <span class="span_left_align">* - Required Entry</span>
             <span class="span_right_align"><%= f.submit "Submit", class: "button" %></span>
           </div>
-        
+
         <% end %>
       <% end %>
     <% end %>

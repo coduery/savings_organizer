@@ -33,7 +33,7 @@ class CategoriesController < ApplicationController
                                            category_attributes["savings_goal_date(2i)"].to_i,
                                            category_attributes["savings_goal_date(3i)"].to_i)
           end
-          category = Category.new(:category_name     => category_attributes[:category_name], 
+          category = Category.new(:category_name     => category_attributes[:category_name],
                                   :savings_goal      => category_attributes[:savings_goal],
                                   :savings_goal_date => savings_goal_date,
                                   :account_id        => account[:id])
@@ -51,14 +51,14 @@ class CategoriesController < ApplicationController
         session[:account_name] = category_attributes[:account_name]
       end
       redirect_to categories_create_url
-    end    
+    end
   end
-  
+
   def view
     if request.get?
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
-        @account_names = AccountsHelper.get_account_names user_id    
+        @account_names = AccountsHelper.get_account_names user_id
         if !@account_names.nil?
           @category_names = CategoriesHelper.get_category_names(user_id, session[:account_name])
           if session[:category_name].nil?
@@ -70,14 +70,14 @@ class CategoriesController < ApplicationController
             if @category_entries.size == 0
               flash.now[:alert] = "No Entries for Selected Category!"
             else
-              @deduction_category_entries_total = 
-                CategoriesHelper.get_deduction_category_entries_total @category_entries 
-              @addition_category_entries_total = 
+              @deduction_category_entries_total =
+                CategoriesHelper.get_deduction_category_entries_total @category_entries
+              @addition_category_entries_total =
                 CategoriesHelper.get_addition_category_entries_total @category_entries
-              @category_balance = @addition_category_entries_total + @deduction_category_entries_total                      
+              @category_balance = @addition_category_entries_total + @deduction_category_entries_total
             end
           else
-            flash.now[:alert] = "No Categories for Selected Account!" 
+            flash.now[:alert] = "No Categories for Selected Account!"
           end
         else
           flash_no_account_alert
@@ -86,7 +86,7 @@ class CategoriesController < ApplicationController
         redirect_to users_signin_url
       end
     else request.post?
-      if session[:account_name] == params[:account_name] && 
+      if session[:account_name] == params[:account_name] &&
         session[:category_name] = params[:category_name]
         if !params[:delete].nil?
           entry_to_delete = Entry.find(params[:delete].keys.first)
@@ -99,15 +99,15 @@ class CategoriesController < ApplicationController
             end
           else
             flash[:alert] = "Invalid entry deletion!<br>
-                            Deletion would result in a negative 
+                            Deletion would result in a negative
                             balance in savings history.".html_safe
           end
         end
       elsif session[:account_name] == params[:account_name]
-        session[:category_name] = params[:category_name]  
+        session[:category_name] = params[:category_name]
       else
         session[:account_name] = params[:account_name]
-        session[:category_name] = nil        
+        session[:category_name] = nil
       end
       redirect_to categories_view_url
     end

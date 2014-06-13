@@ -13,29 +13,29 @@
 
     <% if !@account_names.nil? %>
       <%= form_for :category, url: categories_create_path do |f| %>
-  
+
         <span class="span_left_align">* Selected Savings Account:</span>
-        <span class="span_right_align"><%= f.select :account_name, options_for_select(@account_names, session[:account_name]), 
+        <span class="span_right_align"><%= f.select :account_name, options_for_select(@account_names, session[:account_name]),
                                                     {}, onchange: "this.form.submit();" %>
         </span><br><br>
-  
+
         <span class="span_left_align">* Category Name:</span>
         <span class="span_right_align"><%= f.text_field :category_name, value: @category_name, class: "text_field" %></span><br><br>
-  
+
         <span class="span_left_align">Dollar Goal Amount:</span>
         <span class="span_right_align">$<%= f.text_field :savings_goal, value: nil, class: "dollar_text_field" %></span><br><br>
-  
+
         <span class="span_left_align">Goal Target Date:</span>
-        <span class="span_right_align"><%= f.date_select :savings_goal_date,  
-          { start_year: Time.now.year, end_year: Time.now.year + 10, use_short_month: true, 
+        <span class="span_right_align"><%= f.date_select :savings_goal_date,
+          { start_year: Time.now.year, end_year: Time.now.year + 10, use_short_month: true,
             order: [:month, :day, :year], include_blank: true } %>
         </span><br><br>
-  
+
         <div id="bottom_layout">
           <span class="span_left_align">* - Required Entry</span>
           <span class="span_right_align"><%= f.submit "Submit", class: "button" %></span>
         </div>
-  
+
       <% end %>
     <% end %>
 

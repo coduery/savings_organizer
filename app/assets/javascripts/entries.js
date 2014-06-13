@@ -1,6 +1,6 @@
 // JavaScript funcntion to dyanmically add savings entries
 function addEntries(categoryNames) {
-  
+
   var total = new Number(0);
   var entryAmount;
 
@@ -21,8 +21,8 @@ function addEntries(categoryNames) {
       total += entryAmount;
     }
   }
-    
-  total = total.toFixed(2); 
+
+  total = total.toFixed(2);
   document.getElementById("entry_total").innerHTML = total;
 }
 

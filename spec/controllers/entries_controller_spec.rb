@@ -4,7 +4,7 @@ describe EntriesController do
 
   # add method examples
   it { should respond_to :add }
-  
+
   describe '#add' do
     context 'when request.get?' do
       context 'curret_user_id not nil?' do
@@ -22,19 +22,19 @@ describe EntriesController do
         end
       end
       # context 'curret_user_id nil?' do
-#         
+#
       # end
     end
-    
+
     # context 'when request.post?' do
-#       
+#
     # end
   end
-  
+
   # deduct method examples
   describe "#deduct" do
     it { should respond_to :deduct }
-    
+
     describe "GET deduct" do
       describe "with valid user id" do
         it "renders entries/deduct view" do
@@ -43,7 +43,7 @@ describe EntriesController do
           expect(response).to render_template("deduct")
         end
       end
-      
+
       describe "with invalid user id" do
         it "redirects to users/signin view" do
           session[:current_user_id] = nil
@@ -52,10 +52,10 @@ describe EntriesController do
         end
       end
     end
-    
+
     describe "POST deduct" do
       before :each do
-        @user = User.new(user_name: "test_user", password: "test_pw", 
+        @user = User.new(user_name: "test_user", password: "test_pw",
                          password_confirmation: "test_pw", user_email: "test@test.com")
         @user.save
         user_id = User.find_by(user_name: "test_user")[:id]
@@ -67,7 +67,7 @@ describe EntriesController do
         @category = Category.new(category_name: "test_category", account_id: account_id)
         @category.save
       end
-      
+
       describe "when account selection changed," do
         it "session account_name changes" do
           post :deduct, :entry => { account_name: "test_account2" }
@@ -75,7 +75,7 @@ describe EntriesController do
         end
       end
     end
-    
+
   end
-  
+
 end

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe User do
 
   before :each do
-    @user = User.new(user_name: "test_user", password: "test_pw", 
+    @user = User.new(user_name: "test_user", password: "test_pw",
                      password_confirmation: "test_pw", user_email: "test@test.com")
   end
 
@@ -49,7 +49,7 @@ describe User do
   end
 
   describe "when user name already taken" do
-    before do 
+    before do
       duplicate_user = @user.dup
       duplicate_user.save
     end
@@ -58,7 +58,7 @@ describe User do
 
   describe "when password is not present" do
     before do
-      @user = User.new(user_name: "test_user", password: " ", 
+      @user = User.new(user_name: "test_user", password: " ",
                        password_confirmation: " ", user_email: "test@test.com")
     end
     it { should_not be_valid }
@@ -66,7 +66,7 @@ describe User do
 
   describe "when passwords do not match" do
     before do
-      @user = User.new(user_name: "test_user", password: "test_pw", 
+      @user = User.new(user_name: "test_user", password: "test_pw",
                      password_confirmation: "wrong_pw", user_email: "test@test.com")
     end
     it { should_not be_valid }

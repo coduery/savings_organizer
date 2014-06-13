@@ -53,13 +53,13 @@ class EntriesController < ApplicationController
             flash[:alert] = "Entry must be greater than zero!"
           end
         end
-      else 
+      else
         session[:account_name] = entry_attributes[:account_name]
       end
       redirect_to entries_add_url
-    end  
+    end
   end
-  
+
   # Method for handling get and post actions for entries "deduct" web page
   def deduct
     deduct_request_get request if request.get?
@@ -116,7 +116,7 @@ class EntriesController < ApplicationController
         @category_names = CategoriesHelper.get_category_names(user_id, session[:account_name])
       end
     end
-    
+
     # Method for getting the dollar balance for a savings account category
     def get_category_balance(category_name)
       category_id = CategoriesHelper.get_category_id(session[:current_user_id],
@@ -134,7 +134,7 @@ class EntriesController < ApplicationController
       end
       params.require(:entry).permit(params_allowed)
     end
-    
+
     # Method for handling "deduct" web page get requests
     def deduct_request_get(request)
       if !session[:current_user_id].nil?
@@ -154,16 +154,16 @@ class EntriesController < ApplicationController
       end
     end
 
-    # Method for handling "deduct" web page post requests    
+    # Method for handling "deduct" web page post requests
     def deduct_request_post(request)
       get_account_category_info
       get_category_balance session[:category_name]
       entry_attributes = entry_params
-      if session[:account_name] == entry_attributes[:account_name] && 
+      if session[:account_name] == entry_attributes[:account_name] &&
          session[:category_name] == entry_attributes[:category_name]
         if !@category_names.empty? && entry_attributes[:entry_amount].to_f <= @category_balance
             if !entry_attributes[:entry_amount].blank? && entry_attributes[:entry_amount].to_f > 0
-              category_id = CategoriesHelper.get_category_id(session[:current_user_id], 
+              category_id = CategoriesHelper.get_category_id(session[:current_user_id],
                             entry_attributes[:account_name], entry_attributes[:category_name])
               entry_date = Date.civil(entry_attributes["entry_date(1i)"].to_i,
                                       entry_attributes["entry_date(2i)"].to_i,
@@ -173,7 +173,7 @@ class EntriesController < ApplicationController
                                 :category_id  => category_id)
             end
           if !entry.nil?
-            category_entries_prior_balance = 
+            category_entries_prior_balance =
               CategoriesHelper.get_category_entries_prior_balance category_id, entry_date
             if category_entries_prior_balance >= entry_attributes[:entry_amount].to_f
               entry.save
@@ -206,11 +206,11 @@ class EntriesController < ApplicationController
       end
       redirect_to entries_deduct_url
     end
-    
+
     def flash_no_account_alert
       flash.now[:alert] = "No Accounts for User.  Must create at least one account!"
     end
-    
+
     def flash_no_category_alert
       flash.now[:alert] = "No Categories for Savings Account.  Must create at least one category!"
     end

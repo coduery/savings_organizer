@@ -15,7 +15,7 @@
 
       <span class="span_left_align">Selected Savings Account:</span>
       <% if !@account_names.nil? %>
-        <span class="span_right_align"><%= select_tag "account_name", 
+        <span class="span_right_align"><%= select_tag "account_name",
           options_for_select(@account_names, session[:account_name]), onchange: "this.form.submit();" %>
         </span><br><br>
       <% else %>
@@ -24,7 +24,7 @@
 
       <span class="span_left_align">Current Savings Amount:</span>
       <span class="span_right_align">$&nbsp<%= label_tag "savings_amount", number_with_precision(@account_total, precision: 2), class: "display_item" %>
-      </span><br><br>   
+      </span><br><br>
 
       <span class="span_left_align">Number of Saving Categories:</span>
       <span class="span_right_align"><%= label_tag "number_categories", @categories.size, class: "display_item" %></span><br><br>
@@ -39,8 +39,8 @@
       <span class="span_right_align">$&nbsp<%= label_tag "last_entry_amount", number_with_precision(@last_entry[1], precision: 2), class: "display_item" %></span><br><br>
 
     <% end %>
-    
+
     <div id="piechart" data-account_total="<%= @account_total %>" data-categories-saved-amount-array="<%= @category_saved_amount_map %>"></div>
-    
+
   </div>
 </div>

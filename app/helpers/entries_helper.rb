@@ -54,7 +54,7 @@ module EntriesHelper
 
     for i in 0..(category_entries.size - 1)
       category_entries_date_set.push(category_entries[i])
-      if i < category_entries.size - 1 && category_entries[i + 1][:entry_date] == category_entries[i][:entry_date] && 
+      if i < category_entries.size - 1 && category_entries[i + 1][:entry_date] == category_entries[i][:entry_date] &&
         (category_entries[i + 1][:updated_at].to_i == category_entries[i][:updated_at].to_i ||
          category_entries[i + 1][:updated_at].to_i == category_entries[i][:updated_at].to_i + 1 ||
          category_entries[i + 1][:updated_at].to_i == category_entries[i][:updated_at].to_i - 1)
@@ -91,11 +91,11 @@ module EntriesHelper
 
     consolidated_date_entries
   end
-  
+
   def self.get_category_name_saved_amount_mapping(account_categories)
     category_name_saved_amount_map = {}
     account_categories.each do |category|
-      category_name_saved_amount_map[category[:category_name]] = 
+      category_name_saved_amount_map[category[:category_name]] =
         CategoriesHelper.get_category_entries_total(category[:id])
     end
     category_name_saved_amount_map.sort

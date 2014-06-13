@@ -1,12 +1,12 @@
 # Class for controlling actions related to "users" web page views
 class UsersController < ApplicationController
 
-  # Method for handling get and post actions for "users/manage" web page    
+  # Method for handling get and post actions for "users/manage" web page
   def manage
     manage_get(request) if request.get?
     manage_post(request) if request.post?
   end
-  
+
   # Method for handling get and post actions for "users/registration" web page
   def registration
     if request.post?
@@ -19,9 +19,9 @@ class UsersController < ApplicationController
         flash[:alert] = user.errors.first[1]
         redirect_to users_registration_url
       end
-    end 
+    end
   end
-  
+
   # Method for handling get and post actions for "users/signin" web page
   def signin
     signin_get(request) if request.get?
@@ -33,30 +33,30 @@ class UsersController < ApplicationController
     view_get(request) if request.get?
     view_post(request) if request.post?
   end
-  
+
   # Method for handling get and post actions for "users/welcome" web page
   def welcome
     welcome_get(request) if request.get?
-    welcome_post(request) if request.post?    
-  end 
+    welcome_post(request) if request.post?
+  end
 
   private
 
     def find_user
       user_name = params[:user_name].downcase
-      User.find_by user_name: "#{user_name}" 
+      User.find_by user_name: "#{user_name}"
     end
-    
+
     def manage_get(request)
       if session[:current_user_id].nil?
         redirect_to users_signin_url
       end
     end
-    
+
     def manage_post(request)
       if !params[:delete].nil?
-        user = find_user     
-        if user && user[:id] == params[:delete].keys.first.to_i && 
+        user = find_user
+        if user && user[:id] == params[:delete].keys.first.to_i &&
                    user.authenticate(params[:password])
           record_destroyed = User.destroy(user[:id])
           if record_destroyed
@@ -68,14 +68,14 @@ class UsersController < ApplicationController
         end
       end
     end
-    
+
     def signin_get(request)
       if !session[:current_user_id].nil? && flash[:notice].nil?
         flash[:notice] = "You have been signed out!"
       end
       session[:current_user_id] = nil
     end
-    
+
     def signin_post(request)
       session[:user_name] = params[:user_name]
       user = find_user
@@ -95,10 +95,10 @@ class UsersController < ApplicationController
 
     # Method for retrieving registration form data via strong parameters
     def user_params
-      params.require(:user).permit(:user_name, :password, 
+      params.require(:user).permit(:user_name, :password,
                                    :password_confirmation, :user_email)
     end
-    
+
     def view_get(request)
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
@@ -117,7 +117,7 @@ class UsersController < ApplicationController
         redirect_to users_signin_url
       end
     end
-    
+
     def view_post(request)
       if !params[:delete].nil?
         record_destroyed = Account.destroy(params[:delete].keys.first)
@@ -127,7 +127,7 @@ class UsersController < ApplicationController
       end
       redirect_to users_view_url
     end
-    
+
     def welcome_get(request)
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
@@ -150,11 +150,11 @@ class UsersController < ApplicationController
       else
         redirect_to users_signin_url
       end
-    end 
-    
+    end
+
     def welcome_post(request)
       session[:account_name] = params[:account_name]
       redirect_to users_welcome_url
-    end     
+    end
 
 end

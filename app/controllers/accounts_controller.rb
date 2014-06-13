@@ -1,9 +1,9 @@
 # Class for controlling actions related to "accounts" web page views
 class AccountsController < ApplicationController
-  
+
   # Method for handling get and post actions for accounts "create" web page
   def create
-    if request.get? 
+    if request.get?
       if session[:current_user_id].nil?
         redirect_to users_signin_url
       end
@@ -26,7 +26,7 @@ class AccountsController < ApplicationController
       redirect_to accounts_create_url
     end
   end
-  
+
   def view
     if request.get?
       if !session[:current_user_id].nil?
@@ -34,16 +34,16 @@ class AccountsController < ApplicationController
         @account_names = AccountsHelper.get_account_names user_id
         if !@account_names.nil?
           categories = CategoriesHelper.get_categories(user_id, session[:account_name])
-          @account_total = 
-            AccountsHelper.get_account_total(categories)           
+          @account_total =
+            AccountsHelper.get_account_total(categories)
           account_name = session[:account_name]
-          @category_names = 
+          @category_names =
             CategoriesHelper.get_category_names user_id, account_name
           if @category_names.size > 0
             @category_name_id_mapping = CategoriesHelper.get_category_name_id_mapping user_id, account_name
             @category_name_savings_amount_mapping = Hash.new
             @category_names.each do |category_name|
-              @category_name_savings_amount_mapping[category_name.to_sym] = 
+              @category_name_savings_amount_mapping[category_name.to_sym] =
                 CategoriesHelper.get_category_entries_total @category_name_id_mapping[category_name]
             end
           else
