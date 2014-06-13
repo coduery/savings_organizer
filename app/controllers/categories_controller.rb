@@ -60,7 +60,8 @@ class CategoriesController < ApplicationController
         user_id = session[:current_user_id]
         @account_names = AccountsHelper.get_account_names user_id
         if !@account_names.nil?
-          @category_names = CategoriesHelper.get_category_names(user_id, session[:account_name])
+          categories = CategoriesHelper.get_categories(user_id, session[:account_name])
+          @category_names = CategoriesHelper.get_category_names(categories)
           if session[:category_name].nil?
             session[:category_name] = @category_names.first
           end

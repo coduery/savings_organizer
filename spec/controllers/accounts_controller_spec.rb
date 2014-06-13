@@ -75,4 +75,115 @@ describe AccountsController do
     end
   end
 
+  # create method examples
+  it { should respond_to :view }
+
+  describe "GET view" do
+    describe "if user_id is not nil" do
+      before do
+        @user = User.new(user_name: "testuser", password: "testpw",
+                         password_confirmation: "testpw",
+                         user_email: "test@test.com")
+        @user.save
+        @account = Account.new(account_name: "testaccount", user_id: @user[:id])
+        @account.save
+        session[:current_user_id] = @user[:id]
+        session[:account_name] = @account[:account_name]
+      end
+
+      it "renders accounts/view" do
+        get :view
+        expect(response).to render_template "view"
+      end
+
+      it "assigns account_names" do
+        get :view
+        expect(assigns[:account_names].size).to eql 1
+      end
+
+      describe "if account_names not nil" do
+        it "assigns @account_total" do
+          get :view
+          expect(assigns[:account_total]).to be >= 0
+        end
+
+        it "assigns category_names" do
+          get :view
+          expect(assigns[:category_names].size).to be >= 0
+        end
+
+        describe "if no category names exist" do
+          it "flashes alert message" do
+            get :view
+            flash.now[:alert].should eql "No Categories for Selected Account!"
+          end
+        end
+
+        describe "if category names exist" do
+          before do
+            @category = Category.new(category_name: "testcategory", account_id: @account[:id])
+            @category.save
+            get :view
+          end
+
+          it "assigns @category_name_id_mapping key" do
+            expect(assigns[:category_name_id_mapping].keys.first).to eql @category[:category_name]
+          end
+
+          it "assigns @category_name_id_mapping value" do
+            expect(assigns[:category_name_id_mapping][@category[:category_name]]).to eql @category[:id]
+          end
+
+          it "@category_name_savings_amount_mapping should exist" do
+            expect(assigns[:category_name_savings_amount_mapping]).to_not be nil
+          end
+        end
+      end
+    end
+
+    describe "if user_id is nil" do
+      it "redirects to users/signin page" do
+        session[:current_user_id] = nil
+        get :view
+        expect(response).to redirect_to "/users/signin"
+      end
+    end
+  end
+
+  describe "POST view" do
+
+    it "redirects to accounts/view" do
+      post :view
+      expect(response).to redirect_to "/accounts/view"
+    end
+
+    describe "if session[:account_name] not equal to params[:account_name]" do
+      it "sets session[:account_name] to params[:account_name]" do
+        session[:account_name] = "testaccount1"
+        post :view, account_name: "testaccount2"
+        expect(session[:account_name]).to eql "testaccount2"
+      end
+    end
+
+    describe "if params[:delete] not nil" do
+      before do
+        @user = User.new(user_name: "testuser", password: "testpw",
+                         password_confirmation: "testpw",
+                         user_email: "test@test.com")
+        @user.save
+        @account = Account.new(account_name: "testaccount", user_id: @user[:id])
+        @account.save
+        @category = Category.new(category_name: "testcategory", account_id: @account[:id])
+        @category.save
+        #session[:current_user_id] = @user[:id]
+        session[:account_name] = @account[:account_name]
+      end
+
+      it "flashes notice message" do
+        post :view, account_name: @account[:account_name], delete: { @category[:id] => "Delete Category" }
+        flash[:notice].should eql "Category Deleted Successfully!"
+      end
+    end
+  end
+
 end

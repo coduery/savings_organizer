@@ -50,7 +50,7 @@ module EntriesHelper
     category_entries_date_set = Array.new
     consolidated_date_entries = Array.new
 
-    category_name_id_mapping = CategoriesHelper.get_category_name_id_mapping(user_id, account_name).sort
+    category_name_id_mapping = CategoriesHelper.get_category_name_id_mapping(account_categories).sort
 
     for i in 0..(category_entries.size - 1)
       category_entries_date_set.push(category_entries[i])

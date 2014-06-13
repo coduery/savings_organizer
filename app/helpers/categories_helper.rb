@@ -33,14 +33,10 @@ module CategoriesHelper
     account_categories.sort!
   end
 
-  def self.get_category_names(user_id, account_name)
-    account_id = AccountsHelper.get_account_id(user_id, account_name)
+  def self.get_category_names(account_categories)
     category_names = Array.new
-    if !account_id.nil?
-      account_categories = Category.where("account_id = ?", account_id)
-      account_categories.each do |category|
-        category_names.push(category[:category_name])
-      end
+    account_categories.each do |category|
+      category_names.push(category[:category_name])
     end
     category_names.sort!
   end
@@ -57,8 +53,7 @@ module CategoriesHelper
     category_id
   end
 
-  def self.get_category_name_id_mapping(user_id, account_name)
-    account_categories = CategoriesHelper.get_categories(user_id, account_name)
+  def self.get_category_name_id_mapping(account_categories)
     category_name_id_map = {}
     account_categories.each do |category|
       category_name_id_map[category[:category_name]] = category[:id]

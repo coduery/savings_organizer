@@ -72,7 +72,8 @@ class EntriesController < ApplicationController
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
         @account_names = AccountsHelper.get_account_names user_id
-        @category_names = CategoriesHelper.get_category_names(user_id, session[:account_name])
+        categories = CategoriesHelper.get_categories(user_id, session[:account_name])
+        @category_names = CategoriesHelper.get_category_names(categories)
         if @account_names.nil?
           flash_no_account_alert
         elsif @category_names.empty?
@@ -95,7 +96,8 @@ class EntriesController < ApplicationController
         account_name = params[:account_name]
         session[:account_name] = account_name
         @account_names = AccountsHelper.get_account_names user_id
-        @category_names = CategoriesHelper.get_category_names(user_id, session[:account_name])
+        categories = CategoriesHelper.get_categories(user_id, session[:account_name])
+        @category_names = CategoriesHelper.get_category_names(categories)
         if @category_names.empty?
           flash_no_category_alert
         else
@@ -113,7 +115,8 @@ class EntriesController < ApplicationController
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
         @account_names = AccountsHelper.get_account_names user_id
-        @category_names = CategoriesHelper.get_category_names(user_id, session[:account_name])
+        categories = CategoriesHelper.get_categories(user_id, session[:account_name])
+        @category_names = CategoriesHelper.get_category_names(categories)
       end
     end
 
