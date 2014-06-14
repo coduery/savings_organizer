@@ -102,11 +102,6 @@ describe AccountsController do
       end
 
       describe "if account_names not nil" do
-        it "assigns @account_total" do
-          get :view
-          expect(assigns[:account_total]).to be >= 0
-        end
-
         it "assigns category_names" do
           get :view
           expect(assigns[:category_names].size).to be >= 0
@@ -137,6 +132,12 @@ describe AccountsController do
           it "@category_name_savings_amount_mapping should exist" do
             expect(assigns[:category_name_savings_amount_mapping]).to_not be nil
           end
+
+          it "assigns @account_total" do
+            get :view
+          expect(assigns[:account_total]).to be >= 0
+        end
+
         end
       end
     end

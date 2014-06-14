@@ -52,16 +52,16 @@ class AccountsController < ApplicationController
         if !@account_names.nil?
           categories =
             CategoriesHelper.get_categories(user_id, session[:account_name])
-          @account_total = AccountsHelper.get_account_total(categories)
           account_name = session[:account_name]
           @category_names = CategoriesHelper.get_category_names(categories)
           if @category_names.size > 0
             @category_name_id_mapping = CategoriesHelper
               .get_category_name_id_mapping(categories)
-            @category_name_savings_amount_mapping = Hash.new
-            @category_names.each do |category_name|
-              @category_name_savings_amount_mapping[category_name.to_sym] =
-                CategoriesHelper.get_category_entries_total(@category_name_id_mapping[category_name])
+            @category_name_savings_amount_mapping = CategoriesHelper.
+              get_category_name_savings_amount_mapping(@category_names, @category_name_id_mapping)
+            @account_total = 0
+            @category_name_savings_amount_mapping.each do |key, value|
+              @account_total += value
             end
           else
             flash.now[:alert] = "No Categories for Selected Account!"

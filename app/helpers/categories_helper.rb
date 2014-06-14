@@ -128,4 +128,13 @@ module CategoriesHelper
     deduction_category_entries_total
   end
 
+  def self.get_category_name_savings_amount_mapping(category_names, category_name_id_mapping)
+    category_name_savings_amount_mapping = Hash.new
+    category_names.each do |category_name|
+      category_name_savings_amount_mapping[category_name.to_sym] =
+        CategoriesHelper.get_category_entries_total(category_name_id_mapping[category_name])
+    end
+    category_name_savings_amount_mapping
+  end
+
 end
