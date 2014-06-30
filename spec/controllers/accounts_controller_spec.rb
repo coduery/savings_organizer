@@ -28,15 +28,14 @@ describe AccountsController do
       @user = User.new(user_name: "test_user", password: "test_pw",
                        password_confirmation: "test_pw", user_email: "test@test.com")
       @user.save
-      @user_id = User.find_by(user_name: "test_user")[:id]
-      session[:current_user_id] = @user_id
+      session[:current_user_id] = @user[:id]
     end
 
     describe "when account_name does exist" do
       it "flashes alert message to user" do
-        @account = Account.new(account_name: "test_account", user_id: @user_id)
+        @account = Account.new(account_name: "test_account", user_id: @user[:id])
         @account.save
-        account_params = { account_name: @account.account_name, user_id: @user_id }
+        account_params = { account_name: @account.account_name, user_id: @user[:id] }
         post :create, :account => account_params
         flash[:alert].should eql("Account Name Already Exists!")
       end
@@ -45,7 +44,7 @@ describe AccountsController do
     describe "when account_name does not exist" do
       describe "and account is valid" do
         before do
-          account_params = { account_name: "test_account", user_id: @user_id }
+          account_params = { account_name: "test_account", user_id: @user[:id] }
           post :create, :account => account_params
         end
 
@@ -60,7 +59,7 @@ describe AccountsController do
 
       describe "and account is not valid," do
         before do
-          account_params = { account_name: "", user_id: @user_id }
+          account_params = { account_name: "", user_id: @user[:id] }
           post :create, :account => account_params
         end
 

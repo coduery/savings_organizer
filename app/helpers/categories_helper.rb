@@ -12,8 +12,7 @@ module CategoriesHelper
     (!params[:savings_goal].blank? && !date_valid)
   end
 
-  def self.does_category_exist?(user_id, account_name, category_name)
-    account_id = AccountsHelper.get_account_id(user_id, account_name)
+  def self.does_category_exist?(user_id, account_id, category_name)
     if !account_id.nil?
       account_categories = Category.where("account_id = ? AND category_name = ?",
                                           account_id, category_name)

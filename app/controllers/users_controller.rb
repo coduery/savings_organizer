@@ -72,6 +72,8 @@ class UsersController < ApplicationController
     def signin_get(request)
       if !session[:current_user_id].nil? && flash[:notice].nil?
         flash[:notice] = "You have been signed out!"
+      elsif !flash[:notice].nil?
+        flash[:notice] = nil
       end
       session[:current_user_id] = nil
     end
