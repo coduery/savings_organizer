@@ -80,6 +80,19 @@ module CategoriesHelper
     category_entries_prior_balance
   end
 
+  def self.are_future_balances_negative?(category_id, entry_to_deduct)
+    category_entries = get_category_entries category_id
+    category_running_total = 0
+    category_entries.reverse.each do |category_entry|
+      category_running_total += category_entry[:entry_amount]
+      if entry_to_deduct[:entry_date] < category_entry[:entry_date] && 
+         category_running_total + entry_to_deduct[:entry_amount] < 0
+          return true
+      end
+    end
+    return false
+  end
+
   def self.are_revised_balances_valid?(category_id, entry_to_delete)
     category_entries = get_category_entries category_id
     category_running_total = 0
