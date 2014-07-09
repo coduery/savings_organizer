@@ -71,6 +71,10 @@ class CategoriesController < ApplicationController
       redirect_to categories_create_url
     end
 
+    def flash_no_account_alert
+      flash.now[:alert] = "No Accounts for User.  Must create at least one account!"
+    end
+
     def view_get(request)
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
@@ -129,10 +133,6 @@ class CategoriesController < ApplicationController
         session[:category_name] = nil
       end
       redirect_to categories_view_url
-    end
-
-    def flash_no_account_alert
-      flash.now[:alert] = "No Accounts for User.  Must create at least one account!"
     end
 
 end
