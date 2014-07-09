@@ -139,6 +139,18 @@ describe AccountsController do
 
         end
       end
+
+      describe "if account names nil" do
+        it "flashes No Accounts alert" do
+          @user2 = User.new(user_name: "testuser2", password: "testpw",
+                  password_confirmation: "testpw",
+                  user_email: "test2@test.com")
+          @user2.save
+          session[:current_user_id] = @user2[:id]
+          get :view
+          flash[:alert].should eql "No Accounts for User.  Must create at least one account!"
+        end
+      end
     end
 
     describe "if user_id is nil" do

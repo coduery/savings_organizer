@@ -66,6 +66,8 @@ class AccountsController < ApplicationController
           else
             flash.now[:alert] = "No Categories for Selected Account!"
           end
+        else
+          flash[:alert] = "No Accounts for User.  Must create at least one account!"
         end
       else
         redirect_to users_signin_url
