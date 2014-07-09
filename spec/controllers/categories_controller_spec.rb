@@ -77,12 +77,6 @@ describe CategoriesController do
       session[:account_name] = @account.account_name
     end
 
-    it "assigns @account_names" do
-      category_params = { account_name: "test_account", category_name: "test_category" }
-      post :create, :category => category_params
-      expect(assigns[:account_names]).not_to be nil
-    end
-
     describe "when account_name equal to session account_name," do
       describe "but category_name already exists" do
         it "flash alert message" do

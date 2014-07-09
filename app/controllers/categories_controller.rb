@@ -21,8 +21,7 @@ class CategoriesController < ApplicationController
 
     def create_get(request)
       if !session[:current_user_id].nil?
-        user_id = session[:current_user_id]
-        @account_names = AccountsHelper.get_account_names user_id
+        @account_names = AccountsHelper.get_account_names session[:current_user_id]
         if @account_names.nil?
           flash_no_account_alert
         else
@@ -35,15 +34,13 @@ class CategoriesController < ApplicationController
     end
 
     def create_post(request)
-      user_id = session[:current_user_id]
-      @account_names = AccountsHelper.get_account_names user_id
       category_attributes = category_params
       if category_attributes[:account_name] == session[:account_name]
-        account = Account.find_by(account_name: session[:account_name], user_id: user_id )
+        account = Account.find_by(account_name: session[:account_name], user_id: session[:current_user_id] )
         date_valid = CategoriesHelper.is_date_valid? category_attributes
         goal_entry_valid = CategoriesHelper.is_goal_entry_valid?(category_attributes, date_valid)
 
-        if CategoriesHelper.does_category_exist?(user_id, account[:id], category_attributes[:category_name])
+        if CategoriesHelper.does_category_exist?(session[:current_user_id], account[:id], category_attributes[:category_name])
           flash[:alert] = "Category Name Already Exists!"
         elsif goal_entry_valid
           if date_valid
@@ -77,16 +74,15 @@ class CategoriesController < ApplicationController
 
     def view_get(request)
       if !session[:current_user_id].nil?
-        user_id = session[:current_user_id]
-        @account_names = AccountsHelper.get_account_names user_id
+        @account_names = AccountsHelper.get_account_names session[:current_user_id]
         if !@account_names.nil?
-          categories = CategoriesHelper.get_categories(user_id, session[:account_name])
+          categories = CategoriesHelper.get_categories(session[:current_user_id], session[:account_name])
           @category_names = CategoriesHelper.get_category_names categories
           if session[:category_name].nil?
             session[:category_name] = @category_names.first
           end
           if @category_names.size > 0
-            category_id = CategoriesHelper.get_category_id(user_id, session[:account_name], session[:category_name])
+            category_id = CategoriesHelper.get_category_id(session[:current_user_id], session[:account_name], session[:category_name])
             @category_entries = CategoriesHelper.get_category_entries category_id
             if @category_entries.size == 0
               flash.now[:alert] = "No Entries for Selected Category!"
