@@ -34,8 +34,10 @@
           </span><br><br>
 
           <span class="span_left_align">* Deduction Amount:</span>
+          <% category_name = session[:category_name].gsub(" ", "_") %>
+          <% category_text_field = (session[:category_name].gsub(" ", "_") << "_entry_amount").to_sym %>
           <span class="span_right_align">
-            $&nbsp<%= f.text_field :entry_amount, value: nil, onkeyup: "validateEntry()", class: "dollar_text_field" %>
+            $&nbsp<%= f.text_field category_text_field, value: nil, onkeyup: "validateEntry('#{category_name}')", class: "dollar_text_field" %>
           </span><br><br>
 
           <div id="bottom_layout">

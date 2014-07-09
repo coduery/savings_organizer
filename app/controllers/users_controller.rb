@@ -72,7 +72,8 @@ class UsersController < ApplicationController
     def signin_get(request)
       if !session[:current_user_id].nil? && flash[:notice].nil?
         flash[:notice] = "You have been signed out!"
-      elsif !flash[:notice].nil?
+      elsif !flash[:notice].nil? && flash[:notice] != "Registration Successful. Please Sign In!" &&
+            flash[:notice] != "User Account Deleted Successfully!"
         flash[:notice] = nil
       end
       session[:current_user_id] = nil

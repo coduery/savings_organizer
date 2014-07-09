@@ -1,20 +1,20 @@
-// JavaScript funcntion to dyanmically add savings entries
+// JavaScript function to dyanmically add savings entries
 function addEntries(categoryNames) {
 
   var total = new Number(0);
   var entryAmount;
+  var categoryId;
 
   for (var i = 0; i < categoryNames.length; i++) {
-    var categoryName = categoryNames[i];
-    categoryName = "entry_" + categoryName;
-    entryAmount = document.getElementById(categoryName).value;
+    categoryId = "entry_" + categoryNames[i].replace(/ /g, "_") + "_entry_amount";
+    entryAmount = document.getElementById(categoryId).value;
     if (isNaN(entryAmount)) {
       alert("\"" + entryAmount + "\" is not a valid number entry!");
-      document.getElementById(categoryName).value = "";
+      document.getElementById(categoryId).value = "";
       break;
     } else if (entryAmount.indexOf(".") != -1 && (entryAmount.length - entryAmount.indexOf(".") > 3 )) {
       alert("Entry cannot be more than two decimal places!");
-      document.getElementById(categoryName).value = "";
+      document.getElementById(categoryId).value = "";
       break;
     } else {
       entryAmount = new Number(entryAmount);
@@ -26,16 +26,16 @@ function addEntries(categoryNames) {
   document.getElementById("entry_total").innerHTML = total;
 }
 
-// JavaScript funcntion to validate deduct savings entries
-function validateEntry() {
-  var entryAmount;
-  entryAmount = document.getElementById("entry_entry_amount").value;
+// JavaScript function to validate deduct savings entries
+function validateEntry(categoryName) {
+  var categoryId = "entry_" + categoryName + "_entry_amount";
+  var entryAmount = document.getElementById(categoryId).value;
   if (isNaN(entryAmount)) {
     alert("\"" + entryAmount + "\" is not a valid number entry. \n\nPlease enter a positive number!");
-    document.getElementById("entry_entry_amount").value = "";
+    document.getElementById(categoryId).value = "";
   } else if (entryAmount.indexOf(".") != -1 && (entryAmount.length - entryAmount.indexOf(".") > 3 )) {
     alert("Entry cannot be more than two decimal places!");
-    document.getElementById("entry_entry_amount").value = "";
+    document.getElementById(categoryId).value = "";
   }
 }
 

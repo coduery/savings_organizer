@@ -39,7 +39,8 @@ describe "entries/deduct.html.erb page" do
   end
 
   it 'contains entry_amount field' do
-    expect(page).to have_field("entry[entry_amount]")
+    session[:category_name] = "test_category"
+    expect(page).to have_field("entry[test_category_entry_amount]")
   end
 
   it 'contains date selection' do
