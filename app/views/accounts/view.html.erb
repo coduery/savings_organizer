@@ -33,15 +33,6 @@
                 </tr>
               </thead>
 
-              <% @category_names.each do |category_name| %>
-                <tr>
-                  <td><span class="span_left_align_table"><%= category_name %></span></td>
-                  <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(@category_name_savings_amount_mapping[category_name.to_sym], precision: 2) %></span></td>
-                  <td><%= submit_tag "Update Category", disabled: true, name: "update[#{@category_name_id_mapping[category_name]}]" %></td>
-                  <td><%= submit_tag "Delete Category", name: "delete[#{@category_name_id_mapping[category_name]}]", data: {confirm: "Proceed with Deleting Category?" } %></td>
-                </tr>
-              <% end %>
-
               <tfoot>
                 <tr>
                   <td class="entries_columns">Total</td>
@@ -50,6 +41,17 @@
                   </span>
                 </tr>
               </tfoot>
+
+              <tbody>
+                <% @category_names.each do |category_name| %>
+                  <tr>
+                    <td><span class="span_left_align_table"><%= category_name %></span></td>
+                    <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(@category_name_savings_amount_mapping[category_name.to_sym], precision: 2) %></span></td>
+                    <td class="table_button"><%= submit_tag "Update", disabled: true, name: "update[#{@category_name_id_mapping[category_name]}]" %></td>
+                    <td class="table_button"><%= submit_tag "Delete", name: "delete[#{@category_name_id_mapping[category_name]}]", data: {confirm: "Proceed with Deleting Category?" } %></td>
+                  </tr>
+                <% end %>
+              </tbody>
             </table>
 
           </div>

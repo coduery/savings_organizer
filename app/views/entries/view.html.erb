@@ -34,23 +34,6 @@
                 </tr>
               </thead>
 
-              <% if !@consolidated_entries.empty? %>
-                <% @consolidated_entries.each do |consolidated_entry| %>
-                  <tr>
-                    <td><%= consolidated_entry[0] %></td>
-                    <% for i in 1..@category_names.size %>
-                      <% if !consolidated_entry[i].nil? %>
-                        <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(consolidated_entry[i], precision: 2) %></span></td>
-                      <% else %>
-                        <td><span class="span_right_align_table">-</span></td>
-                      <% end %>
-                    <% end %>
-                    <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(consolidated_entry[-1], precision: 2) %></span></td>
-                  </tr>
-                <% end %>
-              <% end %>
-
-
               <tfoot>
                 <tr>
                   <td class="entries_columns">Totals</td>
@@ -65,6 +48,24 @@
                   </span>
                 </tr>
               </tfoot>
+
+              <tbody>
+                <% if !@consolidated_entries.empty? %>
+                  <% @consolidated_entries.each do |consolidated_entry| %>
+                    <tr>
+                      <td><%= consolidated_entry[0] %></td>
+                      <% for i in 1..@category_names.size %>
+                        <% if !consolidated_entry[i].nil? %>
+                          <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(consolidated_entry[i], precision: 2) %></span></td>
+                        <% else %>
+                          <td><span class="span_right_align_table">-</span></td>
+                        <% end %>
+                      <% end %>
+                      <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(consolidated_entry[-1], precision: 2) %></span></td>
+                    </tr>
+                  <% end %>
+                <% end %>
+              </tbody>
             </table>
           </div>
         <% end %>

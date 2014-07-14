@@ -66,35 +66,10 @@ div {
   /* background-color: magenta;  */  /* For diagnostics only  */
 }
 
-.span_left_align_table {
-  font-size: small;
-  float: left;
-}
-
-.span_right_align_table {
-  float: right;
-  font-size: small;
-  margin-right: 20px;
-}
-
 .dollar_text_field {
   width: 150px;
   height: 18px;
   text-align: right;
-}
-
-#entries_table {
-  height: 400px;
-  font-size: small;
-  text-align: center;
-  border: solid 1px black;
-  overflow: auto;
-}
-
-.entries_columns {
-  min-width: 100px;
-  max-width: 100px;
-  border: solid 1px black;
 }
 
 .left_align_paragraph {
@@ -166,4 +141,58 @@ div {
   margin: auto;
   font-size: small;
   /* border: 1px solid #000000; */
+}
+
+/* Table formatting */
+
+#entries_table {
+  height: 400px;
+  overflow: auto;
+}
+
+.entries_columns {
+  min-width: 100px;
+  max-width: 100px;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  background-color: #C0C0C0;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: small;
+  text-align: center;
+}
+
+th, td {
+  padding: 4px 0 4px 0;
+}
+
+tr:nth-child(even) {
+  background-color: #C0C0C0;
+}
+
+tr:nth-child(odd) {
+  background-color: #D0D0D0;
+}
+
+tfoot {
+  font-weight: bold;
+}
+
+.table_button {
+  background-color: #E6E6FA;
+  padding-left: 20px;
+}
+
+.span_left_align_table {
+  font-size: small;
+  float: left;
+ margin-left: 10px;
+}
+
+.span_right_align_table {
+  float: right;
+  font-size: small;
+  margin-right: 20px;
 }
