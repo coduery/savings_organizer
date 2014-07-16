@@ -16,20 +16,20 @@
 
         <span class="span_left_align">User Total Savings: $ <%= number_with_precision(@user_accounts_total, precision: 2) %></span><br><br>
 
-        <div id="entries_table" data-number_categories="3">
+        <div id="data_table" data-number_categories="3">
 
           <table>
             <thead>
               <tr>
-                <th class="entries_columns">Account</th>
-                <th class="entries_columns">Savings</th>
+                <th class="data_columns">Account</th>
+                <th class="data_columns">Savings</th>
               </tr>
             </thead>
 
             <tfoot>
               <tr>
-                <td class="entries_columns">Total</td>
-                <td class="entries_columns"><span class="span_right_align_table">
+                <td class="data_columns">Total</td>
+                <td class="data_columns"><span class="span_right_align_table">
                   $&nbsp<%= number_with_precision(@user_accounts_total, precision: 2) %></td>
                 </span>
               </tr>

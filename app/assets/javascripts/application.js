@@ -16,4 +16,5 @@
 
 //= require_self
 //= require 'users'
+//= require 'categories'
 //= require 'entries'

@@ -26,34 +26,44 @@
             options_for_select(@category_names, session[:category_name]), onchange: "this.form.submit();" %>
           </span><br><br>
 
-          <span class="span_left_align">Category Total Savings: $ <%= number_with_precision(@category_balance, precision: 2) %></span><br><br>
+          <span class="span_left_align"><%= session[:category_name] %> Total Savings: $ <%= number_with_precision(@category_balance, precision: 2) %></span><br><br>
 
-          <div id="entries_table" data-number_categories="3">
+          <div id="data_table" data-number_categories="4">
 
             <table>
               <thead>
                 <tr>
-                  <th class="entries_columns">Date</th>
-                  <th class="entries_columns">Deduction</th>
-                  <th class="entries_columns">Addition</th>
+                  <th class="data_columns">Date</th>
+                  <th class="data_columns">Deduction</th>
+                  <th class="data_columns">Addition</th>
+                  <th class="data_columns">Total Amount</th>
                 </tr>
               </thead>
 
               <tfoot>
                 <tr>
-                  <td class="entries_columns">Totals</td>
-                  <td class="entries_columns"><span class="span_right_align_table">
-                    $&nbsp<%= number_with_precision(@deduction_category_entries_total, precision: 2) %>
+                  <td class="data_columns">Totals</td>
+                  <td class="data_columns">
+                    <span class="span_right_align_table">
+                      $&nbsp<%= number_with_precision(@deduction_category_entries_total, precision: 2) %>
                     </span>
                   </td>
-                  <td class="entries_columns"><span class="span_right_align_table">
-                    $&nbsp<%= number_with_precision(@addition_category_entries_total, precision: 2) %></td>
-                  </span>
+                  <td class="data_columns">
+                    <span class="span_right_align_table">
+                      $&nbsp<%= number_with_precision(@addition_category_entries_total, precision: 2) %>
+                    </span>
+                  </td>
+                  <td class="data_columns">
+                    <span class="span_right_align_table">
+                      $&nbsp<%= number_with_precision(@category_balance, precision: 2) %>
+                    </span>
+                  </td>
                 </tr>
               </tfoot>
 
               <tbody>
-                <% @category_entries.each do |category_entry| %>
+                <% total_amount = 0 %>
+                <% @category_entries.reverse.each do |category_entry| %>
                   <tr>
                     <td><%= category_entry[:entry_date].strftime("%-m/%-d/%Y") %></td>
                     <% if category_entry[:entry_amount] < 0 %>
@@ -63,14 +73,18 @@
                       <td><span class="span_right_align_table">-</span></td>
                       <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(category_entry[:entry_amount], precision: 2) %></span></td>
                     <% end %>
+                    <% total_amount += category_entry[:entry_amount] %>
+                    <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(total_amount, precision: 2) %></span></td>
                     <td class="table_button"><%= submit_tag "Update", disabled: true, name: "update[#{category_entry[:id]}]" %></td>
                     <td class="table_button"><%= submit_tag "Delete", name: "delete[#{category_entry[:id]}]", data: {confirm: "Proceed with Deleting Entry?" } %></td>
                   </tr>
                 <% end %>
               </tbody>
             </table>
-
           </div>
+
+          <div id="linechart" data-category-name="<%= session[:category_name] %>" data-category-entries-dates-cumulative-amounts="<%= @category_entries_dates_cumulative_amounts.to_json %>"></div>
+
         <% end %>
       <% end %>
     <% end %>

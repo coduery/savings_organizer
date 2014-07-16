@@ -238,6 +238,11 @@ describe CategoriesController do
             it "assigns @category_balance" do
               expect(assigns[:category_balance]).to eql(@entryAdd[:entry_amount] + @entryDeduct[:entry_amount])
             end
+
+            it "assigns @category_entries_dates_cumulative_amounts" do
+              expect(assigns[:category_entries_dates_cumulative_amounts].last.last).to eql 100.0
+            end
+
           end
 
           describe "if there are no category_entries" do

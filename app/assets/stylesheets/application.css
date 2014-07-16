@@ -86,10 +86,10 @@ div {
 
 #main_layout {
   display: inline-block;
-  height: 600px;
+  height: 800px;
   width: 800px;
   text-align: center;
-  /* background-color: pink;  */  /* For diagnostics only */
+  /* background-color: pink;  */ /* For diagnostics only */
 }
 
 #left_menu {
@@ -143,14 +143,21 @@ div {
   /* border: 1px solid #000000; */
 }
 
+#linechart {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  width: 570px;
+  height: 300px;
+}
+
 /* Table formatting */
 
-#entries_table {
-  height: 400px;
+#data_table {
+  max-height: 400px;
   overflow: auto;
 }
 
-.entries_columns {
+.data_columns {
   min-width: 100px;
   max-width: 100px;
   border-top: 1px solid black;

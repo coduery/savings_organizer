@@ -52,6 +52,18 @@ module CategoriesHelper
     category_entries = Entry.where("category_id = ?", category_id).order("entry_date DESC, updated_at DESC")
   end
 
+  def self.get_category_entries_dates_cumulative_amounts(category_entries)
+    category_entries = category_entries.reverse
+    category_entries_date_cumulative_amounts = []
+    category_entries_date_cumulative_amounts << ["Date", "Cumulative Amount"]
+    cumulative_amount = 0
+    category_entries.each do |entry|
+      cumulative_amount += entry[:entry_amount]
+      category_entries_date_cumulative_amounts << [entry[:entry_date].strftime("%-m/%-d/%Y"), cumulative_amount.round(2)]
+    end
+    category_entries_date_cumulative_amounts
+  end
+
   def self.get_category_entries_prior_balance(category_entries, entry_date)
     category_entries_prior_balance = 0
     category_entries.each do |category_entry|

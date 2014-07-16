@@ -21,29 +21,29 @@
 
         <% if !@category_names.empty? %>
 
-          <div id="entries_table" data-number_categories="<%= @category_names.size %>">
+          <div id="data_table" data-number_categories="<%= @category_names.size %>">
 
             <table>
               <thead>
                 <tr>
-                  <th class="entries_columns">Date</th>
+                  <th class="data_columns">Date</th>
                   <% @category_names.each do |category_name| %>
-                    <th class="entries_columns"><%= category_name %></th>
+                    <th class="data_columns"><%= category_name %></th>
                   <% end %>
-                  <th class="entries_columns">Total</th>
+                  <th class="data_columns">Total</th>
                 </tr>
               </thead>
 
               <tfoot>
                 <tr>
-                  <td class="entries_columns">Totals</td>
+                  <td class="data_columns">Totals</td>
                   <% @category_names.each do |category_name| %>
-                    <td class="entries_columns"><span class="span_right_align_table">
+                    <td class="data_columns"><span class="span_right_align_table">
                       $&nbsp<%= number_with_precision(controller.send("get_category_balance", category_name), precision: 2) %>
                       </span>
                     </td>
                   <% end %>
-                  <td class="entries_columns"><span class="span_right_align_table">
+                  <td class="data_columns"><span class="span_right_align_table">
                     $&nbsp<%= number_with_precision(@account_total, precision: 2) %></td>
                   </span>
                 </tr>
@@ -51,7 +51,7 @@
 
               <tbody>
                 <% if !@consolidated_entries.empty? %>
-                  <% @consolidated_entries.each do |consolidated_entry| %>
+                  <% @consolidated_entries.reverse.each do |consolidated_entry| %>
                     <tr>
                       <td><%= consolidated_entry[0] %></td>
                       <% for i in 1..@category_names.size %>
@@ -68,6 +68,9 @@
               </tbody>
             </table>
           </div>
+          
+          <div id="linechart" data-account-name="<%= session[:account_name] %>" data-category-names="<%= @category_names.to_json %>" data-consolidated-entries="<%= @consolidated_entries.reverse.to_json %>"></div>
+          
         <% end %>
       <% end -%>
     <% end %>

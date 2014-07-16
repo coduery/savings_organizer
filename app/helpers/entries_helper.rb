@@ -45,7 +45,7 @@ module EntriesHelper
     account_categories.each do |category|
       category_ids.push(category[:id])
     end
-    category_entries = Entry.where("category_id IN (?)" , category_ids).order("entry_date DESC, updated_at DESC")
+    category_entries = Entry.where("category_id IN (?)", category_ids).order("entry_date DESC, updated_at DESC")
 
     category_entries_date_set = Array.new
     consolidated_date_entries = Array.new
