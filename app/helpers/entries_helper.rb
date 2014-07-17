@@ -1,5 +1,13 @@
 module EntriesHelper
 
+  def self.get_category_ids(account_categories)
+    category_ids = Array.new
+    account_categories.each do |category|
+      category_ids.push(category[:id])
+    end
+    category_ids
+  end
+
   def self.get_number_of_account_entries(categories)
     number_of_account_entries = 0
     categories.each do |category|
@@ -10,7 +18,8 @@ module EntriesHelper
   end
 
   def self.get_last_entry(categories)
-    category_entries = get_entries(categories)
+    category_ids = get_category_ids categories
+    category_entries = get_entries(category_ids)
     if !category_entries.empty?
       last_entry_date = category_entries.first[:entry_date]
       last_updated_date = category_entries.first[:updated_at].to_i
@@ -31,21 +40,14 @@ module EntriesHelper
     [ last_entry_date, last_entry_amount ]
   end
 
-  def self.get_entries(account_categories)
-    category_ids = Array.new
-    account_categories.each do |category|
-      category_ids.push(category[:id])
-    end
+  def self.get_entries(category_ids)
     category_entries = Entry.where("category_id IN (?)" , category_ids).order("entry_date DESC, updated_at DESC")
   end
 
   def self.get_consolidated_entries(user_id, account_name)
-    account_categories = CategoriesHelper.get_categories(user_id, account_name) # TODO: need to get rid of duplication of get_entries above
-    category_ids = Array.new
-    account_categories.each do |category|
-      category_ids.push(category[:id])
-    end
-    category_entries = Entry.where("category_id IN (?)", category_ids).order("entry_date DESC, updated_at DESC")
+    account_categories = CategoriesHelper.get_categories(user_id, account_name)
+    category_ids = get_category_ids account_categories
+    category_entries = get_entries category_ids
 
     category_entries_date_set = Array.new
     consolidated_date_entries = Array.new

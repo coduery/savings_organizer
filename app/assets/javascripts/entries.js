@@ -56,6 +56,7 @@ $(document).ready(function() {
 $(document).ready(function() {
     $.getScript('https://www.google.com/jsapi', function() {
         var accountConsolidatedEntries = $('#linechart').data('consolidated-entries');
+        alert(accountConsolidatedEntries);
         var accountName = $('#linechart').data('account-name');
         var categoryNames = $('#linechart').data('category-names');
 
@@ -85,13 +86,14 @@ $(document).ready(function() {
             }
             tempChartData[i + 1] = entryArray;
         }
-
+alert(tempChartData);
         var chartData = [];
         chartData[0] = tempChartData[0];
         chartData[1] = tempChartData[1];
         var totalChartData = [];
         i = 2;
-        for (j = 2; j < tempChartData.length; j++) {
+        //for (j = 2; j < tempChartData.length; j++) {
+        for (j = 3; j < tempChartData.length; j++) {
             for (k = 0; k < categoryNames.length; k++) {
                 totalChartData[k] = tempChartData[j - 1][k + 1];
             }
@@ -99,7 +101,7 @@ $(document).ready(function() {
             chartData[++i] = tempChartData[j];
             i++;
         }
-
+alert(chartData);
         google.load("visualization", "1", {packages:["corechart"], "callback": 
             function drawChart() {
                 var data = google.visualization.arrayToDataTable(chartData);
