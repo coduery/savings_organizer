@@ -99,7 +99,7 @@ $(document).ready(function() {
             chartData[++i] = tempChartData[j];
             i++;
         }
-alert(chartData);
+
         google.load("visualization", "1", {packages:["corechart"], "callback": 
             function drawChart() {
                 var data = google.visualization.arrayToDataTable(chartData);
