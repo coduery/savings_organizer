@@ -80,7 +80,7 @@ module CategoriesHelper
     category_entries.each do |category_entry|
       category_entries_total += category_entry[:entry_amount]
     end
-    category_entries_total
+    category_entries_total.round(2)
   end
 
   def self.get_category_id(user_id, account_name, category_name)

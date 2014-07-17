@@ -56,10 +56,7 @@ module EntriesHelper
 
     for i in 0..(category_entries.size - 1)
       category_entries_date_set.push(category_entries[i])
-      if i < category_entries.size - 1 && category_entries[i + 1][:entry_date] == category_entries[i][:entry_date] &&
-        (category_entries[i + 1][:updated_at].to_i == category_entries[i][:updated_at].to_i ||
-         category_entries[i + 1][:updated_at].to_i == category_entries[i][:updated_at].to_i + 1 ||
-         category_entries[i + 1][:updated_at].to_i == category_entries[i][:updated_at].to_i - 1)
+      if i < category_entries.size - 1 && category_entries[i + 1][:entry_date] == category_entries[i][:entry_date]
         next
       else
         compiled_date_entry = Array.new(category_ids.size + 2)
@@ -72,7 +69,11 @@ module EntriesHelper
           category_id = entry[:category_id]
           for k in 0..(category_ids.size - 1)
             if category_id == category_name_id_mapping[k][1]
-              compiled_date_entry[k + 1] = entry[:entry_amount]
+              if compiled_date_entry[k + 1].nil?
+                compiled_date_entry[k + 1] = entry[:entry_amount]
+              else
+                compiled_date_entry[k + 1] += entry[:entry_amount]
+              end
             end
           end
         end

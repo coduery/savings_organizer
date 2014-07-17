@@ -56,7 +56,6 @@ $(document).ready(function() {
 $(document).ready(function() {
     $.getScript('https://www.google.com/jsapi', function() {
         var accountConsolidatedEntries = $('#linechart').data('consolidated-entries');
-        alert(accountConsolidatedEntries);
         var accountName = $('#linechart').data('account-name');
         var categoryNames = $('#linechart').data('category-names');
 
@@ -78,22 +77,24 @@ $(document).ready(function() {
                 } else {
                     entryAmount = accountConsolidatedEntries[i][j];
                     if (i > 0) {
-                        entryArray[j] = tempChartData[i][j] + entryAmount;
+                        entryArray[j] = Math.round((tempChartData[i][j] + entryAmount) * 100) / 100;
                     } else {
                         entryArray[j] = entryAmount;
+                    }
+                    if (entryArray[j] == 0 ) {
+                        entryArray[j] = null;
                     }
                 }
             }
             tempChartData[i + 1] = entryArray;
         }
-alert(tempChartData);
+
         var chartData = [];
         chartData[0] = tempChartData[0];
         chartData[1] = tempChartData[1];
         var totalChartData = [];
         i = 2;
-        //for (j = 2; j < tempChartData.length; j++) {
-        for (j = 3; j < tempChartData.length; j++) {
+        for (j = 2; j < tempChartData.length; j++) {
             for (k = 0; k < categoryNames.length; k++) {
                 totalChartData[k] = tempChartData[j - 1][k + 1];
             }
@@ -101,7 +102,16 @@ alert(tempChartData);
             chartData[++i] = tempChartData[j];
             i++;
         }
-alert(chartData);
+
+        for (i = 1; i < chartData.length - 1; i++) {
+            for (j = 1; j < categoryNames.length + 1; j++) {
+                if ((chartData[i][j] == null && chartData[i + 1][j] > 0) ||
+                    (i > 1 && chartData[i][j] == null && chartData[i - 1][j] > 0)) {
+                    chartData[i][j] = 0;
+                }
+            }
+        }
+
         google.load("visualization", "1", {packages:["corechart"], "callback": 
             function drawChart() {
                 var data = google.visualization.arrayToDataTable(chartData);
