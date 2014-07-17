@@ -92,7 +92,7 @@ class CategoriesController < ApplicationController
               @addition_category_entries_total =
                 CategoriesHelper.get_addition_category_entries_total @category_entries
               @category_balance = @addition_category_entries_total + @deduction_category_entries_total
-              @category_entries_dates_cumulative_amounts = 
+              @category_entries_dates_cumulative_amounts =
                 CategoriesHelper.get_category_entries_dates_cumulative_amounts @category_entries
             end
           else

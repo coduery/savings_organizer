@@ -59,19 +59,18 @@ $(document).ready(function() {
         var accountName = $('#linechart').data('account-name');
         var categoryNames = $('#linechart').data('category-names');
 
-        var i;
+        var tempChartData = [["Date"].concat(categoryNames.slice(0, categoryNames.length))];
+        var entryAmount = null;
+        var entryArray = null;
+        var i = null;
         for (i = 0; i < accountConsolidatedEntries.length; i++) {
+            entryArray = [];
+
             var dateString = accountConsolidatedEntries[i][0];
             var dateComponents = dateString.split("/");
             var date = new Date(dateComponents[2], (dateComponents[0] - 1), dateComponents[1]);
             accountConsolidatedEntries[i][0] = date;
-        }
 
-        var tempChartData = [["Date"].concat(categoryNames.slice(0, categoryNames.length))];
-        var entryAmount = null;
-        var entryArray = null;
-        for (i = 0; i < accountConsolidatedEntries.length; i++) {
-            entryArray = [];
             for (j = 0; j < categoryNames.length + 1; j++) {
                 if (j == 0) {
                     entryArray[j] = accountConsolidatedEntries[i][j];

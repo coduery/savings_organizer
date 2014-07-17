@@ -5,25 +5,24 @@ $(document).ready(function() {
         var categoryDatesCumValues = $('#linechart').data('category-entries-dates-cumulative-amounts');
         var categoryName = $('#linechart').data('category-name');
 
-        var i;
-        for (i = 1; i < categoryDatesCumValues.length; i++) {
-            var dateString = categoryDatesCumValues[i][0];
-            var dateComponents = dateString.split("/");
-            var date = new Date(dateComponents[2], (dateComponents[0] - 1), dateComponents[1]);
-            categoryDatesCumValues[i][0] = date;
-        }
-
         var chartData = [];
         chartData[0] = categoryDatesCumValues[0];
-        chartData[1] = categoryDatesCumValues[1];
-        i = 2;
-        for (j = 2; j < categoryDatesCumValues.length; j++) {
-            chartData[i] = [categoryDatesCumValues[j][0], categoryDatesCumValues[j - 1][1]];
-            chartData[++i] = categoryDatesCumValues[j];
+        var i = 1;
+        for (j = 1; j < categoryDatesCumValues.length; j++) {
+            var dateString = categoryDatesCumValues[j][0];
+            var dateComponents = dateString.split("/");
+            var date = new Date(dateComponents[2], (dateComponents[0] - 1), dateComponents[1]);
+            categoryDatesCumValues[j][0] = date;
+            if (j == 1) {
+                chartData[1] = categoryDatesCumValues[1];
+            } else {
+                chartData[i] = [categoryDatesCumValues[j][0], categoryDatesCumValues[j - 1][1]];
+                chartData[++i] = categoryDatesCumValues[j];
+            }
             i++;
         }
 
-        google.load("visualization", "1", {packages:["corechart"], "callback": 
+        google.load("visualization", "1", {packages:["corechart"], "callback":
             function drawChart() {
                 var data = google.visualization.arrayToDataTable(chartData);
 
