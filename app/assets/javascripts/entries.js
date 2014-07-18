@@ -59,13 +59,14 @@ $(document).ready(function() {
         var accountName = $('#linechart').data('account-name');
         var categoryNames = $('#linechart').data('category-names');
 
-        var tempChartData = [["Date"].concat(categoryNames.slice(0, categoryNames.length))];
+        var totaledChartData = [["Date"].concat(categoryNames.slice(0, categoryNames.length))];
         var entryAmount = null;
         var entryArray = null;
-        var i = null;
+        var categoryEntriesExist = Array.apply(null, Array(categoryNames.length)).map(Boolean.prototype.valueOf, false);
+        var i;
+        var j;
         for (i = 0; i < accountConsolidatedEntries.length; i++) {
             entryArray = [];
-
             var dateString = accountConsolidatedEntries[i][0];
             var dateComponents = dateString.split("/");
             var date = new Date(dateComponents[2], (dateComponents[0] - 1), dateComponents[1]);
@@ -77,44 +78,60 @@ $(document).ready(function() {
                 } else {
                     entryAmount = accountConsolidatedEntries[i][j];
                     if (i > 0) {
-                        entryArray[j] = Math.round((tempChartData[i][j] + entryAmount) * 100) / 100;
+                        entryArray[j] = Math.round((totaledChartData[i][j] + entryAmount) * 100) / 100;
                     } else {
                         entryArray[j] = entryAmount;
                     }
-                    if (entryArray[j] == 0 ) {
+                    if (entryArray[j] == 0 || entryArray[j] == null) {
                         entryArray[j] = null;
+                    } else if (j > 0) {
+                        categoryEntriesExist[j - 1] = true;
                     }
                 }
             }
-            tempChartData[i + 1] = entryArray;
+            totaledChartData[i + 1] = entryArray;
         }
 
-        var chartData = [];
-        chartData[0] = tempChartData[0];
-        chartData[1] = tempChartData[1];
-        var totalChartData = [];
-        i = 2;
-        for (j = 2; j < tempChartData.length; j++) {
-            for (k = 0; k < categoryNames.length; k++) {
-                totalChartData[k] = tempChartData[j - 1][k + 1];
+        var finalChartData = [[], []];
+        var newChartData = [];
+        var filteredChartData = [];
+        i = 0;
+        var k;
+        for (j = 0; j < totaledChartData.length; j++) {
+            if (j < 2) {
+                finalChartData[i][0] = totaledChartData[i][0];
+                for (k = 0; k < categoryNames.length; k++) {
+                    if (categoryEntriesExist[k] == true) {
+                        finalChartData[i].push(totaledChartData[i][k + 1]);
+                    }
+                }
+            } else {
+                for (k = 0; k < categoryNames.length; k++) {
+                    if (categoryEntriesExist[k] == true) {
+                        newChartData.push(totaledChartData[j - 1][k + 1]);
+                        filteredChartData.push(totaledChartData[j][k + 1]);
+                    }
+                }
+                finalChartData[i] = [totaledChartData[j][0]].concat(newChartData);
+                finalChartData[++i] = [totaledChartData[j][0]].concat(filteredChartData);
+                newChartData = [];
+                filteredChartData = [];
             }
-            chartData[i] = [tempChartData[j][0]].concat(totalChartData);
-            chartData[++i] = tempChartData[j];
             i++;
         }
 
-        for (i = 1; i < chartData.length - 1; i++) {
-            for (j = 1; j < categoryNames.length + 1; j++) {
-                if ((chartData[i][j] == null && chartData[i + 1][j] > 0) ||
-                    (i > 1 && chartData[i][j] == null && chartData[i - 1][j] > 0)) {
-                    chartData[i][j] = 0;
+        for (i = 1; i < finalChartData.length - 1; i++) {
+            for (j = 1; j < finalChartData[i].length + 1; j++) {
+                if ((finalChartData[i][j] == null && finalChartData[i + 1][j] > 0) ||
+                    (i > 1 && finalChartData[i][j] == null && finalChartData[i - 1][j] > 0)) {
+                    finalChartData[i][j] = 0;
                 }
             }
         }
 
         google.load("visualization", "1", {packages:["corechart"], "callback": 
             function drawChart() {
-                var data = google.visualization.arrayToDataTable(chartData);
+                var data = google.visualization.arrayToDataTable(finalChartData);
 
                 var options = {
                     chartArea: {left: '15%', top: '15%', width: '80%', height: '70%'},
@@ -122,9 +139,8 @@ $(document).ready(function() {
                     titleTextStyle: {color: 'Arial', fontSize: 16},
                     vAxis: {format: '$ #,###', title: 'Total Amount', baseline: 0, gridlines: {color: '#A8A8A8'}, titleTextStyle: {italic: false}},
                     hAxis: {format: 'M/d/y', title: "Date", gridlines: {color: '#A8A8A8'}, titleTextStyle: {italic: false}},
-                    legend: 'none',
-                    pointSize: 0,
-                    series: {0: {color: 'green'}}
+                    legend: {position: 'bottom'},
+                    pointSize: 0
                 };
 
                 var chart = new google.visualization.LineChart(document.getElementById('linechart'));
