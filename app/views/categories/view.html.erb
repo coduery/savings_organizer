@@ -75,8 +75,8 @@
                     <% end %>
                     <% total_amount += category_entry[:entry_amount] %>
                     <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(total_amount, precision: 2) %></span></td>
-                    <td class="table_button"><%= submit_tag "Update", disabled: true, name: "update[#{category_entry[:id]}]" %></td>
-                    <td class="table_button"><%= submit_tag "Delete", name: "delete[#{category_entry[:id]}]", data: {confirm: "Proceed with Deleting Entry?" } %></td>
+                    <td class="table_button_cell"><%= submit_tag "Update", disabled: true, name: "update[#{category_entry[:id]}]", class: "table_button" %></td>
+                    <td class="table_button_cell"><%= submit_tag "Delete", name: "delete[#{category_entry[:id]}]", data: {confirm: "Proceed with Deleting Entry?" }, class: "table_button" %></td>
                   </tr>
                 <% end %>
               </tbody>

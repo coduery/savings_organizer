@@ -40,8 +40,8 @@
                 <tr>
                   <td><span class="span_left_align_table"><%= account_name %></span></td>
                   <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(@account_name_to_savings_amount_map[account_name.to_sym], precision: 2) %></span></td>
-                  <td class="table_button"><%= submit_tag "Update", disabled: true, name: "update[#{@account_name_id_map[account_name]}]" %></td>
-                  <td class="table_button"><%= submit_tag "Delete", name: "delete[#{@account_name_id_map[account_name]}]", data: {confirm: "Proceed with Deleting Account?" } %></td>
+                  <td class="table_button_cell"><%= submit_tag "Update", disabled: true, name: "update[#{@account_name_id_map[account_name]}]", class: "table_button" %></td>
+                  <td class="table_button_cell"><%= submit_tag "Delete", name: "delete[#{@account_name_id_map[account_name]}]", data: {confirm: "Proceed with Deleting Account?" }, class: "table_button" %></td>
                 </tr>
               <% end %>
             </tbody>

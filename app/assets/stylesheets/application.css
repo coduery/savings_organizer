@@ -30,7 +30,7 @@ div {
   border-color: #000000;
 }
 
-.button:hover {
+.button:hover:enabled {
   background-color: #B0C4DE;
 }
 
@@ -41,7 +41,7 @@ div {
   border-color: #000000;
 }
 
-.large_button:hover {
+.large_button:hover:enabled {
   background-color: #B0C4DE;
 }
 
@@ -136,6 +136,17 @@ div {
   font-size: 95%;
 }
 
+select[id*=name] {
+  padding-left: 3px;
+  padding-top: 3px;
+  height: 24px;
+}
+
+select[id*=date] {
+  padding-top: 3px;
+  height: 24px;
+}
+
 #piechart {
   display: block;
   margin: auto;
@@ -187,9 +198,19 @@ tfoot {
   font-weight: bold;
 }
 
-.table_button {
+.table_button_cell {
   background-color: #E6E6FA;
   padding-left: 20px;
+}
+
+.table_button {
+  width: 70px;
+  height: 26px;
+  border-color: #000000;
+}
+
+.table_button:hover:enabled {
+  background-color: #B0C4DE;
 }
 
 .span_left_align_table {
