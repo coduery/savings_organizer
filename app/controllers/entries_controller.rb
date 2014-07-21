@@ -72,8 +72,9 @@ class EntriesController < ApplicationController
     end
 
     def create_entry(entry_attributes, category_name, category_entry_amount)
-      @category_id = CategoriesHelper.get_category_id(session[:current_user_id],
-                    entry_attributes[:account_name], category_name)
+      category = CategoriesHelper.get_category(session[:current_user_id],
+                 entry_attributes[:account_name], category_name)
+      @category_id = category[:id]
       @entry_date = Date.civil(entry_attributes["entry_date(1i)"].to_i,
                                entry_attributes["entry_date(2i)"].to_i,
                                entry_attributes["entry_date(3i)"].to_i)
@@ -164,9 +165,11 @@ class EntriesController < ApplicationController
 
     # Method for getting the dollar balance for a savings account category
     def get_category_balance(category_name)
-      category_id = CategoriesHelper.get_category_id(session[:current_user_id],
+      #category_id = CategoriesHelper.get_category_id(session[:current_user_id],
+      #              session[:account_name], category_name)
+      category = CategoriesHelper.get_category(session[:current_user_id],
                     session[:account_name], category_name)
-      CategoriesHelper.get_category_entries_total category_id
+      CategoriesHelper.get_category_entries_total category[:id]
     end
 
     def get_category_names

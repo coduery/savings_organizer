@@ -83,16 +83,15 @@ module CategoriesHelper
     category_entries_total.round(2)
   end
 
-  def self.get_category_id(user_id, account_name, category_name)
+  def self.get_category(user_id, account_name, category_name)
     account_id = AccountsHelper.get_account_id(user_id, account_name)
     account_categories = Category.where("account_id = ? AND category_name = ?",
                                          account_id, category_name)
     category_id = nil
     if !account_categories.empty?
       account_category = account_categories.first
-      category_id = account_category[:id]
     end
-    category_id
+    account_category
   end
 
   def self.get_category_name_id_mapping(account_categories)

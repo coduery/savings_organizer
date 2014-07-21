@@ -9,17 +9,8 @@ class UsersController < ApplicationController
 
   # Method for handling get and post actions for "users/registration" web page
   def registration
-    if request.post?
-      user = User.new(user_params)
-      if user.valid?
-        user.save
-        flash[:notice] = "Registration Successful. Please Sign In!"
-        redirect_to root_url
-      else
-        flash[:alert] = user.errors.first[1]
-        redirect_to users_registration_url
-      end
-    end
+    registration_get(request) if request.get?
+    registration_post(request) if request.post?
   end
 
   # Method for handling get and post actions for "users/signin" web page
@@ -69,14 +60,33 @@ class UsersController < ApplicationController
       end
     end
 
+    def registration_get(request)
+      flash[:notice] = nil
+    end
+
+    def registration_post(request)
+      user = User.new(user_params)
+      if user.valid?
+        user.save
+        flash[:notice] = "Registration Successful. Please Sign In!"
+        redirect_to root_url
+      else
+        flash[:alert] = user.errors.first[1]
+        redirect_to users_registration_url
+      end
+    end
+
     def signin_get(request)
       if !session[:current_user_id].nil? && flash[:notice].nil?
         flash[:notice] = "You have been signed out!"
+        flash[:alert] = nil
       elsif !flash[:notice].nil? && flash[:notice] != "Registration Successful. Please Sign In!" &&
             flash[:notice] != "User Account Deleted Successfully!"
         flash[:notice] = nil
       end
       session[:current_user_id] = nil
+      session[:account_name] = nil
+      session[:category_name] = nil
     end
 
     def signin_post(request)
@@ -125,6 +135,12 @@ class UsersController < ApplicationController
       if !params[:delete].nil?
         record_destroyed = Account.destroy(params[:delete].keys.first)
         if record_destroyed
+          account_names = AccountsHelper.get_account_names(session[:current_user_id])
+          if !account_names.nil?
+            session[:account_name] = account_names.first
+          else
+            session[:account_name] = nil
+          end
           flash[:notice] = "Account Deleted Successfully!"
         end
       end

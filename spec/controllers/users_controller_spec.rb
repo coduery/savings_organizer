@@ -5,8 +5,8 @@ describe UsersController do
   # manage method examples
   it { should respond_to :manage }
 
-  describe "GET manage" do
-    describe "if current_user_id is not nil" do
+  describe "GET manage," do
+    describe "if current_user_id is not nil," do
       it "renders users/manage page" do
         session[:current_user_id] = 1
         get :manage
@@ -14,7 +14,7 @@ describe UsersController do
       end
     end
 
-    describe "if current_user_id is nil" do
+    describe "if current_user_id is nil," do
       it "redirects to users/signin page" do
         get :manage
         expect(response).to redirect_to("/users/signin")
@@ -22,7 +22,7 @@ describe UsersController do
     end
   end
 
-  describe "POST manage" do
+  describe "POST manage," do
     before do
       @user = User.new(user_name: "test_user", password: "test_pw",
                        password_confirmation: "test_pw", user_email: "test@test.com")
@@ -30,7 +30,7 @@ describe UsersController do
     end
 
     describe "if params[:delete] not nil," do
-      describe "username and password valid" do
+      describe "username and password valid," do
         before do
           post :manage, delete: { @user[:id] => "Delete User Account" },
             "user_name" => @user.user_name, "password" => @user.password
@@ -45,7 +45,7 @@ describe UsersController do
         end
       end
 
-      describe "username or password not valid" do
+      describe "username or password not valid," do
         it "flashes error message" do
           post :manage, delete: { @user[:id] => "Delete User Account" },
             "user_name" => @user.user_name, "password" => "notvalid"
@@ -58,34 +58,39 @@ describe UsersController do
   # registration method examples
   it { should respond_to :registration }
 
-  describe "GET registration" do
+  describe "GET registration," do
     it "renders users/registration view" do
       get :registration
       expect(response).to render_template("registration")
     end
+
+    it "sets flash[:notice] to nil" do
+      flash[:notice].should eql nil
+    end
+
   end
 
-  describe "POST registration" do
+  describe "POST registration," do
     before do
       @user_params = { user_name: "test_user", password: "test_pw",
                        password_confirmation: "test_pw", user_email: "test@test.com" }
     end
 
-    describe "when successful" do
+    describe "when successful," do
       it "flashes success message" do
         post :registration, :user => @user_params
         flash[:notice].should eql "Registration Successful. Please Sign In!"
       end
     end
 
-    describe "when successful" do
+    describe "when successful," do
       it "renders users/signin view" do
         post :registration, :user => @user_params
         expect(response).to redirect_to("/")
       end
     end
 
-    describe "when not successful" do
+    describe "when not successful," do
       it "flashes a registration error message" do
         @user_params[:user_name] = ""
         post :registration, :user => @user_params
@@ -97,17 +102,24 @@ describe UsersController do
   # signin method examples
   it { should respond_to :signin }
 
-  describe "GET signin" do
+  describe "GET signin," do
     it "renders users/signin view" do
       get :signin
       expect(response).to render_template("signin")
     end
 
-    describe "when current_user_id not nil and flash[:notice] nil, " do
-      it "flashes a signed out message" do
+    describe "when current_user_id not nil and flash[:notice] nil," do
+      before do
         session[:current_user_id] = 1
         get :signin
+      end
+
+      it "flashes a signed out message" do
         flash[:notice].should eql "You have been signed out!"
+      end
+
+      it "sets flash[:alert] to nil" do
+        flash[:alert].should eql nil
       end
     end
 
@@ -115,9 +127,19 @@ describe UsersController do
       get :signin
       expect(session[:current_user_id]).to be_nil
     end
+
+    it "sets session[:account_name] to nil" do
+      get :signin
+      expect(session[:account_name]).to be_nil
+    end
+
+    it "sets session[:category_name] to nil" do
+      get :signin
+      expect(session[:category_name]).to be_nil
+    end
   end
 
-  describe "POST signin" do
+  describe "POST signin," do
     before do
       @user = User.new(user_name: "test_user", password: "test_pw",
                        password_confirmation: "test_pw", user_email: "test@test.com")
@@ -126,7 +148,7 @@ describe UsersController do
       @account.save
     end
 
-    describe "when user authenticated" do
+    describe "when user authenticated," do
       before do
         post :signin, "user_name" => @user.user_name, "password" => @user.password
       end
@@ -149,7 +171,7 @@ describe UsersController do
 
     end
 
-    describe "when user not authenticated" do
+    describe "when user not authenticated," do
       before do
         post :signin, "user_name" => @user.user_name, "password" => "invalid_pw"
       end
@@ -163,7 +185,7 @@ describe UsersController do
       end
     end
 
-    describe "when username is blank" do
+    describe "when username is blank," do
       it "flashes a invalid credentials alert" do
         post :signin, "user_name" => "", "password" => "test_pw"
         flash[:alert].should eql("Credentials Invalid. Please try again!")
@@ -174,8 +196,8 @@ describe UsersController do
   # view method examples
   it { should respond_to :view }
 
-  describe "GET view" do
-    describe "when session[:current_user_id] is not nil" do
+  describe "GET view," do
+    describe "when session[:current_user_id] is not nil," do
       before do
         @user = User.new(user_name: "test_user", password: "test_pw",
                          password_confirmation: "test_pw", user_email: "test@test.com")
@@ -220,7 +242,7 @@ describe UsersController do
       end
     end
 
-    describe "when session[:current_user_id] is nil" do
+    describe "when session[:current_user_id] is nil," do
       it "redirects to users/signin page" do
         get :view
         expect(response).to redirect_to("/users/signin")
@@ -228,13 +250,13 @@ describe UsersController do
     end
   end
 
-  describe "POST view" do
+  describe "POST view," do
     it "redirects to users/view" do
       post :view
       expect(response).to redirect_to("/users/view")
     end
 
-    describe "if params[:delete] not nil" do
+    describe "if params[:delete] not nil," do
       before do
         @user = User.new(user_name: "test_user", password: "test_pw",
                          password_confirmation: "test_pw", user_email: "test@test.com")
@@ -253,8 +275,8 @@ describe UsersController do
   # welcome method examples
   it { should respond_to :welcome }
 
-  describe "GET welcome" do
-    describe "when user_id is nil" do
+  describe "GET welcome," do
+    describe "when user_id is nil," do
       it "redirects to users/signin view" do
         session[:current_user_id] = nil
         get "welcome"
@@ -273,7 +295,7 @@ describe UsersController do
         session[:username] = @user[:user_name]
       end
 
-      describe "set/get instance variables" do
+      describe "set/get instance variables," do
         before do
           get :welcome
         end
@@ -332,7 +354,7 @@ describe UsersController do
         end
       end
 
-      describe "and account_name is nil" do
+      describe "and account_name is nil," do
         it "renders users/welcome view" do
           session[:current_user_id] = 1
           session[:account_name] = nil
@@ -341,7 +363,7 @@ describe UsersController do
         end
       end
 
-      describe "and account_name is not nil" do
+      describe "and account_name is not nil," do
         it "renders users/welcome view" do
           session[:current_user_id] = 1
           session[:account_name] = "test_account"
@@ -352,7 +374,7 @@ describe UsersController do
     end
   end
 
-  describe "POST welcome" do
+  describe "POST welcome," do
     it "redirects to users/welcome view with different account" do
       session[:current_user_id] = 1
       post :welcome, "account_name" => "test_account"

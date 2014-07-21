@@ -28,6 +28,25 @@
 
           <span class="span_left_align"><%= session[:category_name] %> Total Savings: $ <%= number_with_precision(@category_balance, precision: 2) %></span><br><br>
 
+          <% if !@category[:savings_goal].nil? %>
+            <span class="span_left_align">Dollar Goal: $ <%= number_with_precision(@category[:savings_goal], precision: 2) %></span>
+            <% if !@goal_percentage.nil? %>
+              <span class="span_right_align">Percent Reached: <%= number_with_precision(@goal_percentage, precision: 2) %> %</span>
+            <% else %>
+              <span class="span_right_align">Percent Reached: 0.00 %</span>
+            <% end %>
+          <% else %>
+            <span class="span_left_align">Dollar Goal: None</span>
+          <% end %>
+          <br><br>
+
+          <% if !@category[:savings_goal_date].nil? %>
+            <span class="span_left_align">Target Date: <%= @category[:savings_goal_date].strftime("%-m/%-d/%Y") %></span>
+          <% else %>
+            <span class="span_left_align">Target Date: None</span>
+          <% end %>
+          <br><br><br>
+
           <div id="data_table" data-number_categories="4">
 
             <table>
@@ -76,7 +95,7 @@
                     <% total_amount += category_entry[:entry_amount] %>
                     <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(total_amount, precision: 2) %></span></td>
                     <td class="table_button_cell"><%= submit_tag "Update", disabled: true, name: "update[#{category_entry[:id]}]", class: "table_button" %></td>
-                    <td class="table_button_cell"><%= submit_tag "Delete", name: "delete[#{category_entry[:id]}]", data: {confirm: "Proceed with Deleting Entry?" }, class: "table_button" %></td>
+                    <td class="table_button_cell"><%= submit_tag "Delete", name: "delete[#{category_entry[:id]}]", data: {confirm: "Warning! \nYou are about to delete the #{category_entry[:entry_date].strftime("%-m/%-d/%Y")} entry. \n\nProceed with Deleting Entry?"}, class: "table_button" %></td>
                   </tr>
                 <% end %>
               </tbody>

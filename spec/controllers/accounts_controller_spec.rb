@@ -6,7 +6,7 @@ describe AccountsController do
   it { should respond_to :create }
 
   describe "GET create" do
-    describe "when user_id is not nil" do
+    describe "when user_id is not nil," do
       it "renders accounts/create view" do
         session[:current_user_id] = 1
         get :create
@@ -14,7 +14,7 @@ describe AccountsController do
       end
     end
 
-    describe "when user_id is nil" do
+    describe "when user_id is nil," do
       it "redirects to user/signin view" do
         session[:current_user_id] = nil
         get :create
@@ -23,7 +23,7 @@ describe AccountsController do
     end
   end
 
-  describe "POST create" do
+  describe "POST create," do
     before :each do
       @user = User.new(user_name: "test_user", password: "test_pw",
                        password_confirmation: "test_pw", user_email: "test@test.com")
@@ -31,7 +31,7 @@ describe AccountsController do
       session[:current_user_id] = @user[:id]
     end
 
-    describe "when account_name does exist" do
+    describe "when account_name does exist," do
       it "flashes alert message to user" do
         @account = Account.new(account_name: "test_account", user_id: @user[:id])
         @account.save
@@ -41,8 +41,8 @@ describe AccountsController do
       end
     end
 
-    describe "when account_name does not exist" do
-      describe "and account is valid" do
+    describe "when account_name does not exist," do
+      describe "and account is valid," do
         before do
           account_params = { account_name: "test_account", user_id: @user[:id] }
           post :create, :account => account_params
@@ -78,7 +78,7 @@ describe AccountsController do
   it { should respond_to :view }
 
   describe "GET view" do
-    describe "if user_id is not nil" do
+    describe "if user_id is not nil," do
       before do
         @user = User.new(user_name: "testuser", password: "testpw",
                          password_confirmation: "testpw",
@@ -100,13 +100,13 @@ describe AccountsController do
         expect(assigns[:account_names].size).to eql 1
       end
 
-      describe "if account_names not nil" do
+      describe "if account_names not nil," do
         it "assigns category_names" do
           get :view
           expect(assigns[:category_names].size).to be >= 0
         end
 
-        describe "if no category names exist" do
+        describe "if no category names exist," do
           it "flashes alert message" do
             get :view
             flash.now[:alert].should eql "No Categories for Selected Account!"
@@ -140,7 +140,7 @@ describe AccountsController do
         end
       end
 
-      describe "if account names nil" do
+      describe "if account names nil," do
         it "flashes No Accounts alert" do
           @user2 = User.new(user_name: "testuser2", password: "testpw",
                   password_confirmation: "testpw",
@@ -153,7 +153,7 @@ describe AccountsController do
       end
     end
 
-    describe "if user_id is nil" do
+    describe "if user_id is nil," do
       it "redirects to users/signin page" do
         session[:current_user_id] = nil
         get :view
@@ -162,14 +162,14 @@ describe AccountsController do
     end
   end
 
-  describe "POST view" do
+  describe "POST view," do
 
     it "redirects to accounts/view" do
       post :view
       expect(response).to redirect_to "/accounts/view"
     end
 
-    describe "if session[:account_name] not equal to params[:account_name]" do
+    describe "if session[:account_name] not equal to params[:account_name]," do
       it "sets session[:account_name] to params[:account_name]" do
         session[:account_name] = "testaccount1"
         post :view, account_name: "testaccount2"
@@ -177,7 +177,7 @@ describe AccountsController do
       end
     end
 
-    describe "if params[:delete] not nil" do
+    describe "if params[:delete] not nil," do
       before do
         @user = User.new(user_name: "testuser", password: "testpw",
                          password_confirmation: "testpw",

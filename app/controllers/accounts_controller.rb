@@ -52,7 +52,6 @@ class AccountsController < ApplicationController
         if !@account_names.nil?
           categories =
             CategoriesHelper.get_categories(user_id, session[:account_name])
-          account_name = session[:account_name]
           @category_names = CategoriesHelper.get_category_names(categories)
           if @category_names.size > 0
             @category_name_id_mapping = CategoriesHelper
@@ -81,6 +80,12 @@ class AccountsController < ApplicationController
         if !params[:delete].nil?
           record_destroyed = Category.destroy params[:delete].keys.first
           if record_destroyed
+            categories = CategoriesHelper.get_categories(session[:current_user_id], session[:account_name])
+            if categories.size > 0
+              session[:category_name] = categories.first[:category_name]
+            else
+              session[:category_name] = nil
+            end
             flash[:notice] = "Category Deleted Successfully!"
           end
         end

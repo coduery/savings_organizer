@@ -5,8 +5,8 @@ describe CategoriesController do
   # create method examples
   it { should respond_to :create }
 
-  describe "GET create" do
-    describe "when user_id is not nil" do
+  describe "GET create," do
+    describe "when user_id is not nil," do
       before do
         @user = User.new(user_name: "testuser", password: "testpw",
           password_confirmation: "testpw", user_email: "test@test.come")
@@ -19,7 +19,7 @@ describe CategoriesController do
         expect(response).to render_template("create")
       end
 
-      describe "if @account_names is nil" do
+      describe "if @account_names is nil," do
         before do
           get :create
         end
@@ -33,7 +33,7 @@ describe CategoriesController do
         end
       end
 
-      describe "if @account_names is not nil" do
+      describe "if @account_names is not nil," do
         before do
           @account = Account.new(account_name: "testaccount", user_id: @user[:id])
           @account.save
@@ -57,7 +57,7 @@ describe CategoriesController do
       end
     end
 
-    describe "when user_id is nil" do
+    describe "when user_id is nil," do
       it "redirects to users/signin view" do
         session[:current_user_id] = nil
         get :create
@@ -66,7 +66,7 @@ describe CategoriesController do
     end
   end
 
-  describe "POST create" do
+  describe "POST create," do
     before :each do
       @user = User.new(user_name: "test_user", password: "test_pw",
         password_confirmation: "test_pw", user_email: "test@test.com")
@@ -78,7 +78,7 @@ describe CategoriesController do
     end
 
     describe "when account_name equal to session account_name," do
-      describe "but category_name already exists" do
+      describe "but category_name already exists," do
         it "flash alert message" do
           @category = Category.new(category_name: "test_category", account_id: @account[:id])
           @category.save
@@ -88,18 +88,25 @@ describe CategoriesController do
         end
       end
 
-      describe "and goal entry is valid" do
-        describe "and category is valid" do
-          it "flashes notice category creation successful" do
+      describe "and goal entry is valid," do
+        describe "and category is valid," do
+          before do
             category_params = { account_name: "test_account", category_name: "test_category",
                                 savings_goal: "123.45", "savings_goal_date(1i)" => "2020",
                                 "savings_goal_date(2i)" => "12", "savings_goal_date(3i)" => "31" }
             post :create, :category => category_params
+          end
+
+          it "flashes notice category creation successful" do
             flash[:notice].should eql "Category Created Successfully!"
+          end
+
+          it "sets session[:category_name]" do
+            expect(session[:category_name]).to eql "test_category"
           end
         end
 
-        describe "and category is not valid" do
+        describe "and category is not valid," do
           it "flashed alert message" do
             category_params = { account_name: "test_account", category_name: "" }
             post :create, :category => category_params
@@ -108,7 +115,7 @@ describe CategoriesController do
         end
       end
 
-      describe "or date entry is valid but goal not set" do
+      describe "or date entry is valid but goal not set," do
         before do
           category_params = { account_name: "test_account", category_name: "test_category",
                               "savings_goal_date(1i)" => "2020", "savings_goal_date(2i)" => "12",
@@ -126,7 +133,7 @@ describe CategoriesController do
       end
     end
 
-    describe "when account_name not equal to session account_name" do
+    describe "when account_name not equal to session account_name," do
       it "sets session account_name to account_name" do
         session[:account_name] = "test_account2"
         category_params = { :account_name => @account.account_name }
@@ -146,22 +153,22 @@ describe CategoriesController do
   # view method examples
   it { should respond_to :view }
 
-  describe "GET view" do
+  describe "GET view," do
     before do
       @user = User.new(user_name: "test_user", password: "test_pw",
         password_confirmation: "test_pw", user_email: "test@test.com")
       @user.save
     end
 
-    describe "if session[:current_user_id] is nil" do
+    describe "if session[:current_user_id] is nil," do
       it "redirects to users/signin page" do
         get :view
         expect(response).to redirect_to "/users/signin"
       end
     end
 
-    describe "if session[:current_user_id] is not nil" do
-      describe "if @account_names is nil" do
+    describe "if session[:current_user_id] is not nil," do
+      describe "if @account_names is nil," do
         it "flashes No Account alert meassage" do
           session[:current_user_id] = @user[:id]
           get :view
@@ -175,7 +182,7 @@ describe CategoriesController do
         expect(response).to render_template("categories/view");
       end
 
-      describe "if @account_names not nil" do
+      describe "if @account_names not nil," do
         before do
           session[:current_user_id] = @user[:id]
           @account = Account.new(account_name: "test_account", user_id: @user[:id])
@@ -188,9 +195,10 @@ describe CategoriesController do
           expect(assigns[:account_names][0]).to eql "test_account"
         end
 
-        describe "if there are category names" do
+        describe "if there are category names," do
           before do
-            @category = Category.new(category_name: "test_category", account_id: @account[:id])
+            @category = Category.new(category_name: "test_category", account_id: @account[:id],
+                                     savings_goal: 1000)
             @category.save
           end
 
@@ -199,14 +207,19 @@ describe CategoriesController do
             expect(assigns[:category_names][0]).to eql "test_category"
           end
 
-          describe "if session[:category_name] is nil" do
+          it "assigns @category" do
+            get :view
+            expect(assigns[:category][:category_name]).to eql "test_category"
+          end
+
+          describe "if session[:category_name] is nil," do
             it "assigns first category name to session[:category_name]" do
               get :view
               expect(session[:category_name]).to eql "test_category"
             end
           end
 
-          describe "if there are category_entries" do
+          describe "if there are category_entries," do
             before do
               @entryAdd = Entry.new("entry_date(1i)" => "2020", "entry_date(2i)" => "12",
                                     "entry_date(3i)" => "30" , entry_amount: 123.45,
@@ -243,9 +256,13 @@ describe CategoriesController do
               expect(assigns[:category_entries_dates_cumulative_amounts].last.last).to eql 100.0
             end
 
+            it "@category[:savings_goal] not nil" do
+              expect(assigns[:goal_percentage]).to eql 10.0
+            end
+
           end
 
-          describe "if there are no category_entries" do
+          describe "if there are no category_entries," do
             it "flashes No Entries alert" do
               get :view
               flash[:alert].should eql "No Entries for Selected Category!"
@@ -253,7 +270,7 @@ describe CategoriesController do
           end
         end
 
-        describe "if there are not category names" do
+        describe "if there are not category names," do
           it "flashes No Categories alert" do
             get :view
             flash[:alert].should eql "No Categories for Selected Account!"
@@ -263,8 +280,8 @@ describe CategoriesController do
     end
   end
 
-  describe "POST view" do
-    describe "if account and category name not changed" do
+  describe "POST view," do
+    describe "if account and category name not changed," do
       before do
         @user = User.new(user_name: "test_user", password: "test_pw",
           password_confirmation: "test_pw", user_email: "test@test.com")
@@ -286,8 +303,8 @@ describe CategoriesController do
         @entryDeduct.save
       end
 
-      describe "if delete entry submitted" do
-        describe "and valid deletion" do
+      describe "if delete entry submitted," do
+        describe "and valid deletion," do
           it "flashes notice message" do
             post :view, account_name: @account.account_name, category_name: @category.category_name,
                         delete: { @entryDeduct[:id] => "Delete Entry"}
@@ -295,7 +312,7 @@ describe CategoriesController do
           end
         end
 
-        describe "but not valid deletion" do
+        describe "but not valid deletion," do
           it "flashes alert message" do
             post :view, account_name: @account.account_name, category_name: @category.category_name,
                         delete: { @entryAdd[:id] => "Delete Entry"}
@@ -307,7 +324,7 @@ describe CategoriesController do
       end
     end
 
-    describe "if account not changed and category changed" do
+    describe "if account not changed and category changed," do
       it "sets session[:category_name] to submitted category name" do
         session[:account_name] = "test_account"
         session[:category_name] = "test_category1"
@@ -316,7 +333,7 @@ describe CategoriesController do
       end
     end
 
-    describe "if account changed" do
+    describe "if account changed," do
       before do
         session[:account_name] = "test_account1"
         session[:category_name] = "test_category"

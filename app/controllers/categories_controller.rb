@@ -55,6 +55,7 @@ class CategoriesController < ApplicationController
           if category.valid?
             category.save
             flash[:notice] = "Category Created Successfully!"
+            session[:category_name] = category_attributes[:category_name]
           else
             flash[:alert] = category.errors.first[1]
           end
@@ -82,8 +83,8 @@ class CategoriesController < ApplicationController
             session[:category_name] = @category_names.first
           end
           if @category_names.size > 0
-            category_id = CategoriesHelper.get_category_id(session[:current_user_id], session[:account_name], session[:category_name])
-            @category_entries = CategoriesHelper.get_category_entries category_id
+            @category = CategoriesHelper.get_category(session[:current_user_id], session[:account_name], session[:category_name])
+            @category_entries = CategoriesHelper.get_category_entries @category[:id]
             if @category_entries.size == 0
               flash.now[:alert] = "No Entries for Selected Category!"
             else
@@ -94,6 +95,9 @@ class CategoriesController < ApplicationController
               @category_balance = @addition_category_entries_total + @deduction_category_entries_total
               @category_entries_dates_cumulative_amounts =
                 CategoriesHelper.get_category_entries_dates_cumulative_amounts @category_entries
+              if !@category[:savings_goal].nil?
+                @goal_percentage = (@category_balance / @category[:savings_goal]) * 100
+              end
             end
           else
             flash.now[:alert] = "No Categories for Selected Account!"
