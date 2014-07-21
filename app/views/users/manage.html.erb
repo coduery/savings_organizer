@@ -40,7 +40,7 @@
           <span class="span_right_align">
             <input type="button" class="button" value="Cancel" id="cancel-button" onclick="deleteUserAccount()">
             <%= f.submit "Submit", class: "button", name: "delete[#{session[:current_user_id]}]",
-              data: {confirm: "Warning you are about to delete your account. \nProceed with Deleting Your User Account?"} %>
+              data: {confirm: "Warning! \nYou are about to delete your \nuser account and all its data. \n\nProceed with Deleting Your User Account?"} %>
           </span>
         </div>
       <% end %>
