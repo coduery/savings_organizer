@@ -134,7 +134,7 @@ select[id*=date] {
   color: #008000;
 }
 
-/ * Chart formatting */
+/* Chart formatting */
 
 #piechart {
   display: block;
