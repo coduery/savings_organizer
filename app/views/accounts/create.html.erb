@@ -12,8 +12,10 @@
   <div id="center_private_layout">
 
     <%= form_for :account, url: accounts_create_path do |f| %>
-      * Account Name:<br>
-      <%= f.text_field :account_name, value: nil, class: "text_field" %><br><br>
+
+      <span class="span_left_align">* Account Name:</span>
+
+      <span class="span_right_align"><%= f.text_field :account_name, value: nil, class: "text_field" %></span><br><br>
 
       <div id="bottom_layout">
         <span class="span_left_align">* - Required Entry</span>

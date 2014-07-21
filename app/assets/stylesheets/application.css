@@ -12,6 +12,8 @@
  *= require_tree .
  */
 
+/* Overall page formatting */
+
 body {
   background-color: #E6E6FA;
   font-family: arial, sans-serif;
@@ -19,41 +21,87 @@ body {
   text-align: center;
 }
 
-div {
-  font-size: inherit;
+#main_layout {
+  display: inline-block;
+  height: 800px;
+  width: 800px;
+  /* background-color: pink;  */ /* For diagnostics only */
+}
+
+#left_menu {
+  float: left;
+  height: 400px;
+  margin: 25px 50px 25px 25px;
+  width: 150px;
+  text-align: left;
+  /* background-color: yellow;  */  /* For diagnostics only */
+}
+
+#center_private_layout {
+  float: left;
+  margin: 20px 0 0 0;
+  width: 500px;
+  /* background-color: lightskyblue;  */  /* For diagnostics only */
+}
+
+#center_public_layout {
+  display: inline-block;
+  margin: 20px 0 0 0;
+  text-align: left;
+  /* background-color: greenyellow;  */  /* For diagnostics only */
+}
+
+#bottom_layout {
+  clear: both;
+  /* background-color: peru;  */  /* For diagnostics only */
+}
+
+/* Component formatting */
+
+select[id*=name] {
+  height: 24px;
+  padding-left: 3px;
+  padding-top: 3px;
+}
+
+select[id*=date] {
+  height: 24px;
+  padding-top: 3px;
 }
 
 .button {
   width: 80px;
-  padding: 2px 0 2px 0;
-  margin: 0 10px 0 10px;
-  border-color: #000000;
-}
-
-.button:hover:enabled {
-  background-color: #B0C4DE;
 }
 
 .large_button {
   width: 160px;
-  padding: 2px 0 2px 0;
-  margin: 0 10px 0 10px;
-  border-color: #000000;
 }
 
-.large_button:hover:enabled {
+.button, .large_button {
+  border-color: #000000;
+  margin: 0 10px 0 10px;
+  padding: 2px 0 2px 0;
+}
+
+.button:hover:enabled, .large_button:hover:enabled {
   background-color: #B0C4DE;
 }
 
-.text_field {
+.dollar_text_field {
+  height: 18px;
+  padding-right: 4px;
+  text-align: right;
   width: 150px;
+}
+
+.text_field {
   height: 18px;
   padding-left: 4px;
+  width: 150px;
 }
 
 .span_left_align {
   float: left;
-  font-size: medium;
   height: 20px;
   margin: 4px 0 0 4px;
   /* background-color: dodgerblue;  */  /* For diagnostics only */
@@ -61,17 +109,9 @@ div {
 
 .span_right_align {
   float: right;
-  font-size: medium;
   height: 20px;
   margin: 4px 4px 0 0;
   /* background-color: magenta;  */  /* For diagnostics only  */
-}
-
-.dollar_text_field {
-  width: 150px;
-  height: 18px;
-  text-align: right;
-  padding-right: 4px;
 }
 
 .left_align_paragraph {
@@ -86,46 +126,6 @@ div {
   display: none;
 }
 
-#main_layout {
-  display: inline-block;
-  height: 800px;
-  width: 800px;
-  text-align: center;
-  /* background-color: pink;  */ /* For diagnostics only */
-}
-
-#left_menu {
-  float: left;
-  margin: 25px 50px 25px 25px;
-  height: 400px;
-  width: 150px;
-  text-align: left;
-  font-size: medium;
-  /* background-color: yellow;  */  /* For diagnostics only */
-}
-
-#center_private_layout {
-  float: left;
-  font-size: inherit;
-  text-align: left;
-  margin: 20px 0 0 0;
-  width: 500px;
-  /* background-color: lightskyblue;  */  /* For diagnostics only */
-}
-
-#center_public_layout {
-  display: inline-block;
-  text-align: left;
-  font-size: inherit;
-  margin: 20px 0 0 0;
-  /* background-color: greenyellow;  */  /* For diagnostics only */
-}
-
-#bottom_layout {
-  clear: both;
-  /* background-color: peru;  */  /* For diagnostics only */
-}
-
 #error_notice {
   color: #FF0000;
 }
@@ -134,33 +134,19 @@ div {
   color: #008000;
 }
 
-#select_account {
-  font-size: 95%;
-}
-
-select[id*=name] {
-  padding-left: 3px;
-  padding-top: 3px;
-  height: 24px;
-}
-
-select[id*=date] {
-  padding-top: 3px;
-  height: 24px;
-}
+/ * Chart formatting */
 
 #piechart {
   display: block;
-  margin: auto;
   font-size: small;
-  /* border: 1px solid #000000; */
+  margin: auto;
 }
 
 #linechart {
-  margin-top: 50px;
-  margin-bottom: 50px;
-  width: 570px;
   height: 400px;
+  margin-bottom: 50px;
+  margin-top: 50px;
+  width: 570px;
 }
 
 /* Table formatting */
@@ -171,11 +157,11 @@ select[id*=date] {
 }
 
 .data_columns {
-  min-width: 100px;
-  max-width: 100px;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
   background-color: #C0C0C0;
+  border-bottom: 1px solid black;
+  border-top: 1px solid black;
+  max-width: 100px;
+  min-width: 100px;
 }
 
 table {
@@ -206,9 +192,9 @@ tfoot {
 }
 
 .table_button {
-  width: 70px;
-  height: 26px;
   border-color: #000000;
+  height: 26px;
+  width: 70px;
 }
 
 .table_button:hover:enabled {
@@ -216,13 +202,11 @@ tfoot {
 }
 
 .span_left_align_table {
-  font-size: small;
   float: left;
- margin-left: 10px;
+  margin-left: 10px;
 }
 
 .span_right_align_table {
   float: right;
-  font-size: small;
   margin-right: 20px;
 }
