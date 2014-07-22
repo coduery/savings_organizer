@@ -87,6 +87,11 @@ select[id*=date] {
   background-color: #B0C4DE;
 }
 
+button[type=button]:disabled, input[type=submit]:disabled, input[type=button]:disabled {
+  background: #C0C0C0;
+  color: #D8D8D8;
+}
+
 .dollar_text_field {
   height: 18px;
   padding-right: 4px;
@@ -188,6 +193,12 @@ tfoot {
 
 .table_button_cell {
   background-color: #E6E6FA;
+  padding-left: 20px;
+}
+
+.table_button_cell_no_display {
+  background-color: #E6E6FA;
+  display: none;
   padding-left: 20px;
 }
 

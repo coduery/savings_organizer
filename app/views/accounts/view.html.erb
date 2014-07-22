@@ -19,17 +19,19 @@
           options_for_select(@account_names, session[:account_name]), onchange: "this.form.submit();" %>
         </span><br><br>
 
-        <% if @category_names.size > 0 %>
+        <% if @categories.size > 0 %>
 
           <span class="span_left_align">Account Total Savings: $ <%= number_with_precision(@account_total, precision: 2) %></span><br><br>
 
-          <div id="data_table" data-number_categories="3">
+          <div id="data_table" data-number_categories="4">
 
             <table>
               <thead>
                 <tr>
                   <th class="data_columns">Category</th>
                   <th class="data_columns">Savings</th>
+                  <th class="data_columns">Dollar Goal</th>
+                  <th class="data_columns">Target Date</th>
                 </tr>
               </thead>
 
@@ -39,16 +41,39 @@
                   <td class="data_columns"><span class="span_right_align_table">
                     $&nbsp<%= number_with_precision(@account_total, precision: 2) %></td>
                   </span>
+                  <td class="data_columns"></td>
+                  <td class="data_columns"></td>
                 </tr>
               </tfoot>
 
               <tbody>
-                <% @category_names.each do |category_name| %>
+                <% @categories.each do |category| %>
                   <tr>
-                    <td><span class="span_left_align_table"><%= category_name %></span></td>
-                    <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(@category_name_savings_amount_mapping[category_name.to_sym], precision: 2) %></span></td>
-                    <td class="table_button_cell"><%= submit_tag "Update", disabled: true, name: "update[#{@category_name_id_mapping[category_name]}]", class: "table_button" %></td>
-                    <td class="table_button_cell"><%= submit_tag "Delete", name: "delete[#{@category_name_id_mapping[category_name]}]", data: {confirm: "Warning! \nYou are about to delete your #{category_name} \ncategory and all its entries. \n\nProceed with Deleting Category?" }, class: "table_button" %></td>
+                    <td><span class="span_left_align_table"><%= category[:category_name] %></span></td>
+                    <td><span class="span_right_align_table">$ <%= number_with_precision(@category_name_savings_amount_mapping[category[:category_name].to_sym], precision: 2) %></span></td>
+
+                    <% if !category[:savings_goal].nil? %>
+                      <td><span class="span_right_align_table">$ <%= number_with_precision(category[:savings_goal], precision: 2) %></span></td>
+                    <% else %>
+                      <td>None</td>
+                    <% end %>
+
+                    <% if !category[:savings_goal_date].nil? %>
+                      <td><%= category[:savings_goal_date].strftime("%-m/%-d/%Y") %></td>
+                    <% else %>
+                      <td>None</td>
+                    <% end %>
+
+                    <td class="table_button_cell"><%= button_tag "Update", type: "button", name: "update[#{@category_name_id_mapping[category[:category_name]]}]",
+                      id: "update-#{@category_name_id_mapping[category[:category_name]]}", onclick: "updateAccount('#{category[:category_name]}', '#{@category_name_id_mapping.to_json}')", class: "table_button" %></td>
+                    <td class="table_button_cell"><%= submit_tag "Delete", name: "delete[#{@category_name_id_mapping[category[:category_name]]}]",
+                      id: "delete-#{@category_name_id_mapping[category[:category_name]]}", data: {confirm: "Warning! \nYou are about to delete your #{category[:category_name]} \ncategory and all its entries. \n\nProceed with Deleting Category?" }, class: "table_button" %></td>
+
+                    <td class="table_button_cell_no_display" ><%= submit_tag "Save", name: "save-update[#{@category_name_id_mapping[category[:category_name]]}]",
+                      id: "save-update-#{@category_name_id_mapping[category[:category_name]]}", class: "table_button" %></td>
+                    <td class="table_button_cell_no_display" ><%= button_tag "Cancel", type: "button", name: "cancel-update[#{@category_name_id_mapping[category[:category_name]]}]",
+                      id: "cancel-update-#{@category_name_id_mapping[category[:category_name]]}", onclick: "cancelUpdateAccount('#{category[:category_name]}', '#{@category_name_id_mapping.to_json}')", class: "table_button" %></td>
+
                   </tr>
                 <% end %>
               </tbody>

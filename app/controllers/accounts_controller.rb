@@ -50,14 +50,14 @@ class AccountsController < ApplicationController
         user_id = session[:current_user_id]
         @account_names = AccountsHelper.get_account_names user_id
         if !@account_names.nil?
-          categories =
+          @categories =
             CategoriesHelper.get_categories(user_id, session[:account_name])
-          @category_names = CategoriesHelper.get_category_names(categories)
-          if @category_names.size > 0
+          category_names = CategoriesHelper.get_category_names(@categories)
+          if category_names.size > 0
             @category_name_id_mapping = CategoriesHelper
-              .get_category_name_id_mapping(categories)
+              .get_category_name_id_mapping(@categories)
             @category_name_savings_amount_mapping = CategoriesHelper.
-              get_category_name_savings_amount_mapping(@category_names, @category_name_id_mapping)
+              get_category_name_savings_amount_mapping(category_names, @category_name_id_mapping)
             @account_total = 0
             @category_name_savings_amount_mapping.each do |key, value|
               @account_total += value

@@ -101,11 +101,6 @@ describe AccountsController do
       end
 
       describe "if account_names not nil," do
-        it "assigns category_names" do
-          get :view
-          expect(assigns[:category_names].size).to be >= 0
-        end
-
         describe "if no category names exist," do
           it "flashes alert message" do
             get :view
@@ -118,6 +113,11 @@ describe AccountsController do
             @category = Category.new(category_name: "testcategory", account_id: @account[:id])
             @category.save
             get :view
+          end
+
+          it "assigns @categories" do
+            get :view
+            expect(assigns[:categories].first[:category_name]).to eql "testcategory"
           end
 
           it "assigns @category_name_id_mapping key" do
