@@ -48,6 +48,21 @@ module CategoriesHelper
     account_categories.sort!
   end
 
+  def self.get_category(user_id, account_name, category_name)
+    account_id = AccountsHelper.get_account_id(user_id, account_name)
+    account_categories = Category.where("account_id = ? AND category_name = ?",
+                                         account_id, category_name)
+    category_id = nil
+    if !account_categories.empty?
+      account_category = account_categories.first
+    end
+    account_category
+  end
+
+  def self.get_category_with_id(category_id)
+    Category.where("id = ?", category_id).first
+  end
+
   def self.get_category_entries(category_id)
     category_entries = Entry.where("category_id = ?", category_id).order("entry_date DESC, updated_at DESC")
   end
@@ -81,17 +96,6 @@ module CategoriesHelper
       category_entries_total += category_entry[:entry_amount]
     end
     category_entries_total.round(2)
-  end
-
-  def self.get_category(user_id, account_name, category_name)
-    account_id = AccountsHelper.get_account_id(user_id, account_name)
-    account_categories = Category.where("account_id = ? AND category_name = ?",
-                                         account_id, category_name)
-    category_id = nil
-    if !account_categories.empty?
-      account_category = account_categories.first
-    end
-    account_category
   end
 
   def self.get_category_name_id_mapping(account_categories)

@@ -165,8 +165,6 @@ class EntriesController < ApplicationController
 
     # Method for getting the dollar balance for a savings account category
     def get_category_balance(category_name)
-      #category_id = CategoriesHelper.get_category_id(session[:current_user_id],
-      #              session[:account_name], category_name)
       category = CategoriesHelper.get_category(session[:current_user_id],
                     session[:account_name], category_name)
       CategoriesHelper.get_category_entries_total category[:id]

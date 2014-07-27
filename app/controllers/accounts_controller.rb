@@ -45,6 +45,86 @@ class AccountsController < ApplicationController
       redirect_to accounts_create_url
     end
 
+    def delete_category(request)
+      record_destroyed = Category.destroy params[:delete].keys.first
+      if record_destroyed
+        categories = CategoriesHelper.get_categories(session[:current_user_id], session[:account_name])
+        if categories.size > 0
+          session[:category_name] = categories.first[:category_name]
+        else
+          session[:category_name] = nil
+        end
+        flash[:notice] = "Category Deleted Successfully!"
+      end
+    end
+
+    def update_category(request)
+      category_id = params["save-update".to_sym].keys.first
+      category = CategoriesHelper.get_category_with_id category_id
+      update_category = false
+      flash[:alert] = nil
+
+      if category[:category_name] != params[:category][:category_name]
+        account = Account.find_by(account_name: session[:account_name], user_id: session[:current_user_id])
+        if !CategoriesHelper.does_category_exist?(session[:current_user_id], account[:id], params[:category][:category_name])
+          category[:category_name] = params[:category][:category_name]
+          update_category = true
+        else
+          flash[:alert] = "Category Name Already Exists. Category Not Updated!"
+        end
+      end
+
+      if params[:category][:savings_goal].empty?
+        params[:category][:savings_goal] = nil
+      end
+      if params[:category][:savings_goal_date].empty?
+        params[:category][:savings_goal_date] = nil
+      end
+
+      if flash[:alert].nil? && category[:savings_goal] != params[:category][:savings_goal]
+        category[:savings_goal] = params[:category][:savings_goal]
+        update_category = true
+      end
+
+      if flash[:alert].nil? && category[:savings_goal_date] != params[:category][:savings_goal_date]
+        if !category[:savings_goal].nil?
+          if !params[:category][:savings_goal_date].nil?
+            begin
+              date_array = params[:category][:savings_goal_date].split('/')
+              goal_date = Date.civil(date_array[2].to_i, date_array[0].to_i, date_array[1].to_i)
+            rescue ArgumentError
+              goal_date = nil
+              flash[:alert] = "Invalid Target Date Entered!"
+            end
+          else
+            goal_date = nil
+          end
+          category[:savings_goal_date] = goal_date
+        elsif params[:category][:savings_goal_date].nil?
+          category[:savings_goal_date] = nil
+        else
+          flash[:alert] = "Savings Goal Date cannot be set without a Savings Goal!"
+        end
+        if flash[:alert].nil?
+          update_category = true
+        else
+          update_category = false
+        end
+      end
+
+      if category.valid?
+        if update_category
+          category.save
+          flash[:notice] = "Category Updated Successfully!"
+          session[:category_name] = category[:category_name]
+        elsif flash[:alert].nil?
+          flash[:alert] = "Category Parameters Unchanged. Category Not Updated!"
+        end
+      else
+        flash[:alert] = category.errors.first[1]
+      end
+    end
+
     def view_get(request)
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
@@ -74,21 +154,13 @@ class AccountsController < ApplicationController
     end
 
     def view_post(request)
-      if session[:account_name] != params[:account_name]
+      #if session[:account_name] != params[:account_name]
+      if !params[:account_name].nil? && session[:account_name] != params[:account_name]
         session[:account_name] = params[:account_name]
-      else
-        if !params[:delete].nil?
-          record_destroyed = Category.destroy params[:delete].keys.first
-          if record_destroyed
-            categories = CategoriesHelper.get_categories(session[:current_user_id], session[:account_name])
-            if categories.size > 0
-              session[:category_name] = categories.first[:category_name]
-            else
-              session[:category_name] = nil
-            end
-            flash[:notice] = "Category Deleted Successfully!"
-          end
-        end
+      elsif !params["save-update".to_sym].nil?
+        update_category request
+      elsif !params[:delete].nil?
+        delete_category request
       end
       redirect_to accounts_view_url
     end

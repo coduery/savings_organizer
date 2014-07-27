@@ -177,6 +177,136 @@ describe AccountsController do
       end
     end
 
+    describe "if params[:save-update] not nil," do
+      before do
+        @user = User.new(user_name: "testuser", password: "testpw",
+                         password_confirmation: "testpw",
+                         user_email: "test@test.com")
+        @user.save
+        session[:current_user_id] = @user[:id]
+        @account = Account.new(account_name: "testaccount", user_id: @user[:id])
+        @account.save
+        session[:account_name] = @account[:account_name]
+        @category1 = Category.new(category_name: "testcategory1", account_id: @account[:id])
+        @category1.save
+        session[:category_name] = @category1[:category_name]
+        @category2 = Category.new(category_name: "testcategory2", account_id: @account[:id])
+        @category2.save
+      end
+
+      describe "if category params have not changed," do
+        it "flashes Category Parameters Unchanged message" do
+            post :view, account_name: @account[:account_name],
+                        category: { category_name: @category1[:category_name], savings_goal: "", savings_goal_date: "" },
+                        "save-update" => { @category1[:id] => "Save" }
+            flash[:alert].should eql "Category Parameters Unchanged. Category Not Updated!"
+        end
+      end
+
+      describe "if category[:category_name] not equal to params[:category][:category_name]," do
+        describe "if category name does not exist," do
+          it "sets session[:category_name] to new submitted category name" do
+            post :view, account_name: @account[:account_name],
+                        category: { category_name: "testcategory3", savings_goal: "", savings_goal_date: "" },
+                        "save-update" => { @category2[:id] => "Save" }
+            expect(session[:category_name]).to eql "testcategory3"
+          end
+        end
+
+        describe "if category name already exists," do
+          it "flashes Category Name Already Exist message" do
+            post :view, account_name: @account[:account_name],
+                        category: { category_name: "testcategory1" , savings_goal: "", savings_goal_date: ""},
+                        "save-update" => { @category2[:id] => "Save" }
+            flash[:alert].should eql "Category Name Already Exists. Category Not Updated!"
+          end
+        end
+
+        describe "if category name is nil" do
+          it "flashes Invalid Account Name message" do
+            post :view, account_name: @account[:account_name],
+                        category: { category_name: "", savings_goal: "", savings_goal_date: "" },
+                        "save-update" => { @category2[:id] => "Save" }
+            flash[:alert].should eql "Category Name is Required!"
+          end
+        end
+      end
+
+      describe "if category[:savings_goal] not equal to params[:category][:savings_goal]," do
+        describe "if params[:category][:savings_goal] is a positive amount," do
+          it "sets session[:savings_goal] to new submitted savings goal" do
+            post :view, account_name: @account[:account_name],
+                        category: { category_name: @category1[:category_name], savings_goal: 1000.0, savings_goal_date: "" },
+                        "save-update" => { @category1[:id] => "Save" }
+            category = Category.where("id = ?", @category1[:id]).first
+            expect(category[:savings_goal]).to eql 1000.0
+          end
+        end
+
+        describe "if [:category][:savings_goal] is an empty string," do
+          describe "if params[:category][:savings_goal_date] is empty" do
+            it "flashes Category Updated Successfully message" do
+              @category3 = Category.new(category_name: "testcategory3", savings_goal: 1000.0, savings_goal_date: "1/1/2020",
+                                        account_id: @account[:id])
+              @category3.save
+              session[:category_name] = @category3[:category_name]
+              post :view, account_name: @account[:account_name],
+                          category: { category_name: @category3[:category_name], savings_goal: "", savings_goal_date: "" },
+                          "save-update" => { @category3[:id] => "Save" }
+              flash[:notice].should eql "Category Updated Successfully!"
+            end
+          end
+        end
+
+        describe "if [:category][:savings_goal] is an empty string," do
+          describe "if params[:category][:savings_goal_date] is not empty" do
+            it "flashes Savings Goal alert message" do
+              @category3 = Category.new(category_name: "testcategory3", savings_goal: 1000.0, savings_goal_date: "1/1/2020",
+                                        account_id: @account[:id])
+              @category3.save
+              session[:category_name] = @category3[:category_name]
+              post :view, account_name: @account[:account_name],
+                          category: { category_name: @category3[:category_name], savings_goal: "", savings_goal_date: "1/1/2020" },
+                          "save-update" => { @category3[:id] => "Save" }
+              flash[:alert].should eql "Savings Goal Date cannot be set without a Savings Goal!"
+            end
+          end
+        end
+      end
+
+      describe "if category[:savings_goal_date] not equal to params[:category][:savings_goal_date]," do
+        describe "if savings_goal is set," do
+          describe "if savings date is valid," do
+            it "sets session[:savings_goal_date] to new submitted savings goal date" do
+              post :view, account_name: @account[:account_name],
+                          category: { category_name: @category1[:category_name], savings_goal: 1000.0,
+                          savings_goal_date: "1/1/2020" }, "save-update" => { @category1[:id] => "Save" }
+              category = Category.where("id = ?", @category1[:id]).first
+              expect(category[:savings_goal_date].strftime("%-m/%-d/%Y")).to eql "1/1/2020"
+            end
+          end
+
+          describe "if savings date is not valid," do
+            it "flashes Invalid Date message" do
+              post :view, account_name: @account[:account_name],
+                          category: { category_name: @category1[:category_name], savings_goal: 1000.0,
+                          savings_goal_date: "111/1/2020" }, "save-update" => { @category1[:id] => "Save" }
+              flash[:alert].should eql "Invalid Target Date Entered!"
+            end
+          end
+        end
+
+        describe "if savings_goal is not set," do
+          it "flashes Savings Goal must be set alert" do
+            post :view, account_name: @account[:account_name],
+                        category: { category_name: @category1[:category_name], savings_goal: "",
+                        savings_goal_date: "1/1/2020" }, "save-update" => { @category1[:id] => "Save" }
+            flash[:alert].should eql "Savings Goal Date cannot be set without a Savings Goal!"
+          end
+        end
+      end
+    end
+
     describe "if params[:delete] not nil," do
       before do
         @user = User.new(user_name: "testuser", password: "testpw",

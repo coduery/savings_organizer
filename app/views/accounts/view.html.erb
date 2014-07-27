@@ -49,30 +49,46 @@
               <tbody>
                 <% @categories.each do |category| %>
                   <tr>
-                    <td><span class="span_left_align_table"><%= category[:category_name] %></span></td>
-                    <td><span class="span_right_align_table">$ <%= number_with_precision(@category_name_savings_amount_mapping[category[:category_name].to_sym], precision: 2) %></span></td>
+                    <td id="category-name-<%= category[:id] %>"><span class="span_left_align_table"><%= category[:category_name] %></span></td>
 
-                    <% if !category[:savings_goal].nil? %>
-                      <td><span class="span_right_align_table">$ <%= number_with_precision(category[:savings_goal], precision: 2) %></span></td>
-                    <% else %>
-                      <td>None</td>
+                    <%= form_for :category, url: accounts_view_path, namespace: ("category-" + category[:id].to_s) do |f| %>
+                      <td class="table_cell_no_display" id="category-name-<%= category[:id] %>-hidden">
+                        <%= f.text_field :category_name, value: category[:category_name], class: "table_text_field_left" %>
+                      </td>
+
+                      <td><span class="span_right_align_table">$ <%= number_with_precision(@category_name_savings_amount_mapping[category[:category_name].to_sym], precision: 2) %></span></td>
+
+                      <% if !category[:savings_goal].nil? %>
+                        <td id="savings-goal-<%= category[:id] %>"><span class="span_right_align_table">$ <%= number_with_precision(category[:savings_goal], precision: 2) %></span></td>
+                        <td class="table_cell_no_display" id="savings-goal-<%= category[:id] %>-hidden">
+                          <%= f.text_field :savings_goal, value: number_with_precision(category[:savings_goal], precision: 2), class: "table_text_field" %>
+                        </td>
+                      <% else %>
+                        <td id="savings-goal-<%= category[:id] %>">None</td>
+                        <td class="table_cell_no_display" id="savings-goal-<%= category[:id] %>-hidden">
+                          <%= f.text_field :savings_goal, value: nil, class: "table_text_field" %>
+                        </td>
+                      <% end %>
+
+                      <% if !category[:savings_goal_date].nil? %>
+                        <td id="savings-goal-date-<%= category[:id] %>"><%= category[:savings_goal_date].strftime("%-m/%-d/%Y") %></td>
+                        <td class="table_cell_no_display" id="savings-goal-date-<%= category[:id] %>-hidden">
+                          <%= f.text_field :savings_goal_date, value: category[:savings_goal_date].strftime("%-m/%-d/%Y"), class: "table_text_field" %>
+                        </td>
+                      <% else %>
+                        <td id="savings-goal-date-<%= category[:id] %>">None</td>
+                        <td class="table_cell_no_display" id="savings-goal-date-<%= category[:id] %>-hidden">
+                          <%= f.text_field :savings_goal_date, value: nil, class: "table_text_field" %>
+                        </td>
+                      <% end %>
+
+                      <td class="table_button_cell"><%= button_tag "Update", type: "button", name: "update[#{category[:id]}]", id: "update-#{category[:id]}", onclick: "updateAccount('#{category[:category_name]}', '#{@category_name_id_mapping.to_json}')", class: "table_button" %></td>
+                      <td class="table_button_cell"><%= submit_tag "Delete", name: "delete[#{category[:id]}]", id: "delete-#{category[:id]}", data: {confirm: "Warning! \nYou are about to delete your #{category[:category_name]} \ncategory and all its entries. \n\nProceed with Deleting Category?" }, class: "table_button" %></td>
+
+                      <td class="table_button_cell_no_display" ><%= f.submit "Save", name: "save-update[#{category[:id]}]", id: "save-update-#{category[:id]}", class: "table_button" %></td>
                     <% end %>
 
-                    <% if !category[:savings_goal_date].nil? %>
-                      <td><%= category[:savings_goal_date].strftime("%-m/%-d/%Y") %></td>
-                    <% else %>
-                      <td>None</td>
-                    <% end %>
-
-                    <td class="table_button_cell"><%= button_tag "Update", type: "button", name: "update[#{@category_name_id_mapping[category[:category_name]]}]",
-                      id: "update-#{@category_name_id_mapping[category[:category_name]]}", onclick: "updateAccount('#{category[:category_name]}', '#{@category_name_id_mapping.to_json}')", class: "table_button" %></td>
-                    <td class="table_button_cell"><%= submit_tag "Delete", name: "delete[#{@category_name_id_mapping[category[:category_name]]}]",
-                      id: "delete-#{@category_name_id_mapping[category[:category_name]]}", data: {confirm: "Warning! \nYou are about to delete your #{category[:category_name]} \ncategory and all its entries. \n\nProceed with Deleting Category?" }, class: "table_button" %></td>
-
-                    <td class="table_button_cell_no_display" ><%= submit_tag "Save", name: "save-update[#{@category_name_id_mapping[category[:category_name]]}]",
-                      id: "save-update-#{@category_name_id_mapping[category[:category_name]]}", class: "table_button" %></td>
-                    <td class="table_button_cell_no_display" ><%= button_tag "Cancel", type: "button", name: "cancel-update[#{@category_name_id_mapping[category[:category_name]]}]",
-                      id: "cancel-update-#{@category_name_id_mapping[category[:category_name]]}", onclick: "cancelUpdateAccount('#{category[:category_name]}', '#{@category_name_id_mapping.to_json}')", class: "table_button" %></td>
+                    <td class="table_button_cell_no_display" ><%= button_tag "Cancel", type: "button", name: "cancel-update[#{category[:id]}]", id: "cancel-update-#{category[:id]}", onclick: "updateAccount('#{category[:category_name]}', '#{@category_name_id_mapping.to_json}')", class: "table_button" %></td>
 
                   </tr>
                 <% end %>

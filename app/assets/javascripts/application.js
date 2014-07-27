@@ -16,5 +16,7 @@
 
 //= require_self
 //= require 'users'
+//= require 'accounts'
 //= require 'categories'
 //= require 'entries'
+//= require 'dateselector'

@@ -40,6 +40,7 @@ body {
 #center_private_layout {
   float: left;
   margin: 20px 0 0 0;
+  text-align: left;
   width: 500px;
   /* background-color: lightskyblue;  */  /* For diagnostics only */
 }
@@ -139,6 +140,15 @@ button[type=button]:disabled, input[type=submit]:disabled, input[type=button]:di
   color: #008000;
 }
 
+.ui-datepicker {
+  font-size: small;
+}
+
+.ui-datepicker-current-day
+{
+  background: #006600;
+}
+
 /* Chart formatting */
 
 #piechart {
@@ -189,6 +199,23 @@ tr:nth-child(odd) {
 
 tfoot {
   font-weight: bold;
+}
+
+.table_cell_no_display {
+  display: none;
+}
+
+.table_text_field {
+  height: 18px;
+  text-align: center;
+  width: 94px;
+}
+
+.table_text_field_left{
+  height: 18px;
+  padding-left: 3px;
+  text-align: left;
+  width: 94px;
 }
 
 .table_button_cell {
