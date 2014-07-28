@@ -16,12 +16,12 @@ function updateAccount(categoryName, categoryNameIdMapping) {
       var cancelButtonId = "cancel-update-" + categoryNameIdHash[key].toString();
 
       if (!updateButtonChecked) {
-        var updateButtonEnabled = document.getElementById(updateButtonId).disabled;
+        var updateButtonEnabled = $("#update-" + categoryNameIdHash[categoryName].toString()).parent().css('display').toString();
         updateButtonChecked = true;
       }
 
       if (key != categoryName) {
-        if (!updateButtonEnabled) {
+        if (updateButtonEnabled != "none") {
           document.getElementById(updateButtonId).disabled=true;
           document.getElementById(deleteButtonId).disabled=true;
         } else {
@@ -29,7 +29,7 @@ function updateAccount(categoryName, categoryNameIdMapping) {
           document.getElementById(deleteButtonId).disabled=false;
         }
       } else if (key == categoryName) {
-        if (!updateButtonEnabled) {
+        if (updateButtonEnabled != "none") {
           document.getElementById(categoryNameId).style.display="none";
           document.getElementById(savingsGoalId).style.display="none";
           document.getElementById(savingsGoalDateId).style.display="none";
