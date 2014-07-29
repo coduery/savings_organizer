@@ -41,11 +41,10 @@ module CategoriesHelper
   def self.get_categories(user_id, account_name)
     account_id = AccountsHelper.get_account_id(user_id, account_name)
     if !account_id.nil?
-      account_categories = Category.where("account_id = ?", account_id)
+      account_categories = Category.where("account_id = ?", account_id).reorder("category_name")
     else
       account_categories = []
     end
-    account_categories.sort!
   end
 
   def self.get_category(user_id, account_name, category_name)
