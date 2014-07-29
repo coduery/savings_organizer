@@ -154,7 +154,6 @@ class AccountsController < ApplicationController
     end
 
     def view_post(request)
-      #if session[:account_name] != params[:account_name]
       if !params[:account_name].nil? && session[:account_name] != params[:account_name]
         session[:account_name] = params[:account_name]
       elsif !params["save-update".to_sym].nil?

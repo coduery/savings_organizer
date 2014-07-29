@@ -256,6 +256,49 @@ describe UsersController do
       expect(response).to redirect_to("/users/view")
     end
 
+    describe "if params[:save-update] not nil," do
+      before do
+        @user = User.new(user_name: "test_user", password: "test_pw",
+                         password_confirmation: "test_pw", user_email: "test@test.com")
+        @user.save
+        session[:current_user_id] = @user[:id]
+        @account = Account.new(account_name: "test_account", user_id: @user[:id])
+        @account.save
+        @account2 = Account.new(account_name: "test_account2", user_id: @user[:id])
+        @account2.save
+      end
+
+      describe "if account[:account_name] not equal params[:account][:account_name]," do
+        describe "if account name does not already exist," do
+          before do
+            post :view, account: {account_name: "test_account3"}, "save-update" => {@account[:id] => "Save"}
+          end
+
+          it "flashes Account Updated Successfully message" do
+            flash[:notice].should eql "Account Updated Successfully!"
+          end
+
+          it "sets session[:account_name] to updated account name" do
+            expect(session[:account_name]).to eql "test_account3"
+          end
+        end
+
+        describe "if account name already exists," do
+          it "flashes Account Name Already Exists alert" do
+            post :view, account: {account_name: "test_account2"}, "save-update" => {@account[:id] => "Save"}
+            flash[:alert].should eql "Account Name Already Exists. Account Not Updated!"
+          end
+        end
+      end
+
+      describe "if account[:account_name] is equal params[:account][:account_name]," do
+        it "flashes Account Name Unchanged alert" do
+          post :view, account: {account_name: @account[:account_name]}, "save-update" => {@account[:id] => "Save"}
+          flash[:alert].should eql "Account Name Unchanged. Account Not Updated!"
+        end
+      end
+    end
+
     describe "if params[:delete] not nil," do
       before do
         @user = User.new(user_name: "test_user", password: "test_pw",

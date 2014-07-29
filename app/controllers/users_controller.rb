@@ -33,6 +33,19 @@ class UsersController < ApplicationController
 
   private
 
+    def delete_account(request)
+      record_destroyed = Account.destroy(params[:delete].keys.first)
+      if record_destroyed
+        account_names = AccountsHelper.get_account_names(session[:current_user_id])
+        if !account_names.nil?
+          session[:account_name] = account_names.first
+        else
+          session[:account_name] = nil
+        end
+        flash[:notice] = "Account Deleted Successfully!"
+      end
+    end
+
     def find_user
       user_name = params[:user_name].downcase
       User.find_by user_name: "#{user_name}"
@@ -106,6 +119,34 @@ class UsersController < ApplicationController
       end
     end
 
+    def update_account(request)
+      account_id = params["save-update".to_sym].keys.first
+      account = Account.find_by(id: account_id, user_id: session[:current_user_id])
+      update_account = false
+      flash[:alert] = nil
+
+      if account[:account_name] != params[:account][:account_name]
+        if AccountsHelper.get_user_account(session[:current_user_id], params[:account][:account_name]).empty?
+          account[:account_name] = params[:account][:account_name]
+          update_account = true
+        else
+          flash[:alert] = "Account Name Already Exists. Account Not Updated!"
+        end
+      end
+
+      if account.valid?
+        if update_account
+          account.save
+          flash[:notice] = "Account Updated Successfully!"
+          session[:account_name] = account[:account_name]
+        elsif flash[:alert].nil?
+          flash[:alert] = "Account Name Unchanged. Account Not Updated!"
+        end
+      else
+        flash[:alert] = account.errors.first[1]
+      end
+    end
+
     # Method for retrieving registration form data via strong parameters
     def user_params
       params.require(:user).permit(:user_name, :password,
@@ -132,17 +173,10 @@ class UsersController < ApplicationController
     end
 
     def view_post(request)
-      if !params[:delete].nil?
-        record_destroyed = Account.destroy(params[:delete].keys.first)
-        if record_destroyed
-          account_names = AccountsHelper.get_account_names(session[:current_user_id])
-          if !account_names.nil?
-            session[:account_name] = account_names.first
-          else
-            session[:account_name] = nil
-          end
-          flash[:notice] = "Account Deleted Successfully!"
-        end
+      if !params["save-update".to_sym].nil?
+        update_account request
+      elsif !params[:delete].nil?
+        delete_account request
       end
       redirect_to users_view_url
     end

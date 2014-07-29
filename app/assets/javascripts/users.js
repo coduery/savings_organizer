@@ -159,6 +159,55 @@ $(document).ready(function(){
   $("#piechart").append(chart);
 });
 
+// JavaScript function for updating a user's savings account name
+function updateUser(accountName, accountNameIdMapping) {
+  var accountNameIdHash = JSON.parse(accountNameIdMapping);
+  var updateButtonChecked = false;
+  for (var key in accountNameIdHash) {
+    if (accountNameIdHash.hasOwnProperty(key)) {
+      var accountNameId = "account-name-" + accountNameIdHash[key].toString();
+      var updateButtonId = "update-" + accountNameIdHash[key].toString();
+      var deleteButtonId = "delete-" + accountNameIdHash[key].toString();
+      var accountNameIdHidden = "account-name-" + accountNameIdHash[key].toString() + "-hidden";
+      var saveButtonId = "save-update-" + accountNameIdHash[key].toString();
+      var cancelButtonId = "cancel-update-" + accountNameIdHash[key].toString();
+
+      if (!updateButtonChecked) {
+        var updateButtonEnabled = $("#update-" + accountNameIdHash[accountName].toString()).parent().css('display').toString();
+        updateButtonChecked = true;
+      }
+      if (key != accountName) {
+        if (updateButtonEnabled != "none") {
+          document.getElementById(updateButtonId).disabled=true;
+          document.getElementById(deleteButtonId).disabled=true;
+        } else {
+          document.getElementById(updateButtonId).disabled=false;
+          document.getElementById(deleteButtonId).disabled=false;
+        }
+      } else if (key == accountName) {
+        if (updateButtonEnabled != "none") {
+          var width = document.getElementById(accountNameId).clientWidth;
+          document.getElementById(accountNameId).style.display="none";
+          document.getElementById(updateButtonId).parentNode.style.display="none";
+          document.getElementById(deleteButtonId).parentNode.style.display="none";
+          document.getElementById(accountNameIdHidden).getElementsByTagName("input")[0].style.width = width.toString() + "px";
+          document.getElementById(accountNameIdHidden).style.display="table-cell";
+          document.getElementById(saveButtonId).parentNode.style.display="table-cell";
+          document.getElementById(cancelButtonId).parentNode.style.display="table-cell";
+        } else {
+          document.getElementById(accountNameId).style.display="table-cell";
+          document.getElementById(updateButtonId).parentNode.style.display="table-cell";
+          document.getElementById(deleteButtonId).parentNode.style.display="table-cell";
+          document.getElementById(accountNameIdHidden).style.display="none";
+          document.getElementById(saveButtonId).parentNode.style.display="none";
+          document.getElementById(cancelButtonId).parentNode.style.display="none";
+        }
+      }
+    }
+  }
+}
+
+// JavaScript function for deleting a user's account
 function deleteUserAccount() {
   var deleteUserDiv = document.getElementById("delete-user-div");
   if (deleteUserDiv.className == "hidden_class") {

@@ -38,10 +38,22 @@
             <tbody>
               <% @account_names.each do |account_name| %>
                 <tr>
-                  <td><span class="span_left_align_table"><%= account_name %></span></td>
-                  <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(@account_name_to_savings_amount_map[account_name.to_sym], precision: 2) %></span></td>
-                  <td class="table_button_cell"><%= submit_tag "Update", disabled: true, name: "update[#{@account_name_id_map[account_name]}]", class: "table_button" %></td>
-                  <td class="table_button_cell"><%= submit_tag "Delete", name: "delete[#{@account_name_id_map[account_name]}]", data: {confirm: "Warning! \nYou are about to delete your #{account_name} \naccount and all its categories. \n\nProceed with Deleting Account?" }, class: "table_button" %></td>
+                  <td id="account-name-<%= @account_name_id_map[account_name] %>"><span class="span_left_align_table"><%= account_name %></span></td>
+
+                  <%= form_for :account, url: users_view_path, namespace: ("account-" + @account_name_id_map[account_name].to_s) do |f| %>
+                    <td class="table_cell_no_display" id="account-name-<%= @account_name_id_map[account_name] %>-hidden">
+                      <%= f.text_field :account_name, value: account_name, class: "table_text_field_left" %>
+                    </td>
+
+                    <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(@account_name_to_savings_amount_map[account_name.to_sym], precision: 2) %></span></td>
+                    <td class="table_button_cell"><%= button_tag "Update", type: "button", name: "update[#{@account_name_id_map[account_name]}]", id: "update-#{@account_name_id_map[account_name]}", onclick: "updateUser('#{account_name}', '#{@account_name_id_map.to_json}')", class: "table_button" %></td>
+                    <td class="table_button_cell"><%= submit_tag "Delete", name: "delete[#{@account_name_id_map[account_name]}]", id: "delete-#{@account_name_id_map[account_name]}", data: {confirm: "Warning! \nYou are about to delete your #{account_name} \naccount and all its categories. \n\nProceed with Deleting Account?" }, class: "table_button" %></td>
+
+                    <td class="table_button_cell_no_display" ><%= f.submit "Save", name: "save-update[#{@account_name_id_map[account_name]}]", id: "save-update-#{@account_name_id_map[account_name]}", class: "table_button" %></td>
+                  <% end %>
+
+                  <td class="table_button_cell_no_display" ><%= button_tag "Cancel", type: "button", name: "cancel-update[#{@account_name_id_map[account_name]}]", id: "cancel-update-#{@account_name_id_map[account_name]}", onclick: "updateUser('#{account_name}', '#{@account_name_id_map.to_json}')", class: "table_button" %></td>
+
                 </tr>
               <% end %>
             </tbody>
