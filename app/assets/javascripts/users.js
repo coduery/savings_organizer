@@ -2,85 +2,85 @@
 $(document).ready(function() {
     if ($('#piechart').length) {
         var accountTotal = $('#piechart').data('account_total');
-        var categoryNameAmountArray = $('#piechart').data('categories-saved-amount-array');
-
-        var categoryNamePercentageMap = {};
-        for (var i = 0; i < categoryNameAmountArray.length; i++) {
-            categoryNamePercentageMap[categoryNameAmountArray[i][0]] = categoryNameAmountArray[i][1] / accountTotal;
-        }
-
-        var svgns = "http://www.w3.org/2000/svg";
-        var chart = document.createElementNS(svgns, "svg");
-        chart.setAttribute("width", "500");
-        chart.setAttribute("height", "350");
-        chart.setAttribute("viewBox", "0 0 500 350");
-        var chartCenterXPosition = 225;
-        var chartCenterYPosition = 175;
-        var chartRadius = 100;
-        var sliceAngleDegrees = 0.0;
-        var firstSliceAngleDegrees = (categoryNameAmountArray[0][1] / accountTotal) * 360;
-        var startAngleDegrees = 100.0 - firstSliceAngleDegrees / 2;
-        var startAngleRadians = 0.0;
-        var endArcXPosition = 0.0;
-        var endArcYPosition = 0.0;
-        var usedColors = [];
-
-        var endRadialLineXPosition = chartCenterXPosition - Math.sin(degreesToRadians(startAngleDegrees)) * chartRadius;
-        var endRadialLineYPosition = chartCenterYPosition + Math.cos(degreesToRadians(startAngleDegrees)) * chartRadius;
-
-        var beginLeaderXPosition = 0.0;
-        var beginLeaderYPosition = 0.0;
-        var middleLeaderXPosition = 0.0;
-        var middleLeaderYPosition = 0.0;
-        var endLeaderXPosition = 0.0;
-        var textXPosition = 0.0;
-        var textYPosition = 0.0;
-        var textAnchor;
-        var middleSliceAngleRadians = 0.0;
-
-        // Colors from http://www.december.com/html/spec/colorsvg.html
-        var colors = ["burlywood", "cadetblue", "chartreuse", "chocolate", "coral", "crimson", "cyan",
-            "darkgray", "darkkhaki", "darkseagreen", "dodgerblue", "fuchsia", "greenyellow", "lightgreen",
-            "lightskyblue", "mediumpurple", "orange", "orangered", "orchid", "springgreen", "yellow"];
-
         if (accountTotal > 0) {
+            var categoryNameAmountArray = $('#piechart').data('categories-saved-amount-array');
+
+            var categoryNamePercentageMap = {};
+            for (var i = 0; i < categoryNameAmountArray.length; i++) {
+                categoryNamePercentageMap[categoryNameAmountArray[i][0]] = categoryNameAmountArray[i][1] / accountTotal;
+            }
+
+            var svgns = "http://www.w3.org/2000/svg";
+            var chart = document.createElementNS(svgns, "svg");
+            chart.setAttribute("width", "500");
+            chart.setAttribute("height", "350");
+            chart.setAttribute("viewBox", "0 0 500 350");
+            var chartCenterXPosition = 225;
+            var chartCenterYPosition = 175;
+            var chartRadius = 100;
+            var sliceAngleDegrees = 0.0;
+            var firstSliceAngleDegrees = (categoryNameAmountArray[0][1] / accountTotal) * 360;
+            var startAngleDegrees = 100.0 - firstSliceAngleDegrees / 2;
+            var startAngleRadians = 0.0;
+            var endArcXPosition = 0.0;
+            var endArcYPosition = 0.0;
+            var usedColors = [];
+
+            var endRadialLineXPosition = chartCenterXPosition - Math.sin(degreesToRadians(startAngleDegrees)) * chartRadius;
+            var endRadialLineYPosition = chartCenterYPosition + Math.cos(degreesToRadians(startAngleDegrees)) * chartRadius;
+
+            var beginLeaderXPosition = 0.0;
+            var beginLeaderYPosition = 0.0;
+            var middleLeaderXPosition = 0.0;
+            var middleLeaderYPosition = 0.0;
+            var endLeaderXPosition = 0.0;
+            var textXPosition = 0.0;
+            var textYPosition = 0.0;
+            var textAnchor;
+            var middleSliceAngleRadians = 0.0;
+
+            // Colors from http://www.december.com/html/spec/colorsvg.html
+            var colors = ["burlywood", "cadetblue", "chartreuse", "chocolate", "coral", "crimson", "cyan",
+                "darkgray", "darkkhaki", "darkseagreen", "dodgerblue", "fuchsia", "greenyellow", "lightgreen",
+                "lightskyblue", "mediumpurple", "orange", "orangered", "orchid", "springgreen", "yellow"];
+
             var chartTitle = document.createElementNS(svgns, "text");
             chartTitle.setAttribute("x", "4");
             chartTitle.setAttribute("y", "25");
             chartTitle.setAttribute("style", "font-size: medium; font-weight:bold;");
             chartTitle.appendChild(document.createTextNode("Category Savings Percentage Chart"));
             chart.appendChild(chartTitle);
-        }
 
-        for (var k in categoryNamePercentageMap) {
-            sliceAngleDegrees = categoryNamePercentageMap[k] * 360;
-            startAngleDegrees += sliceAngleDegrees;
-            startAngleRadians = degreesToRadians(startAngleDegrees);
-            endArcXPosition = chartCenterXPosition - Math.sin(startAngleRadians) * chartRadius;
-            endArcYPosition = chartCenterYPosition + Math.cos(startAngleRadians) * chartRadius;
-            drawPieSlice();
-            endRadialLineXPosition = endArcXPosition;
-            endRadialLineYPosition = endArcYPosition;
+            for (var k in categoryNamePercentageMap) {
+                sliceAngleDegrees = categoryNamePercentageMap[k] * 360;
+                startAngleDegrees += sliceAngleDegrees;
+                startAngleRadians = degreesToRadians(startAngleDegrees);
+                endArcXPosition = chartCenterXPosition - Math.sin(startAngleRadians) * chartRadius;
+                endArcYPosition = chartCenterYPosition + Math.cos(startAngleRadians) * chartRadius;
+                drawPieSlice();
+                endRadialLineXPosition = endArcXPosition;
+                endRadialLineYPosition = endArcYPosition;
 
-            middleSliceAngleRadians = degreesToRadians(startAngleDegrees - sliceAngleDegrees / 2);
-            beginLeaderXPosition = chartCenterXPosition - Math.sin(middleSliceAngleRadians) * (chartRadius + 5);
-            beginLeaderYPosition = chartCenterYPosition + Math.cos(middleSliceAngleRadians) * (chartRadius + 5);
-            middleLeaderXPosition = chartCenterXPosition - Math.sin(middleSliceAngleRadians) * (chartRadius + 15);
-            middleLeaderYPosition = chartCenterYPosition + Math.cos(middleSliceAngleRadians) * (chartRadius + 15);
-            if (((startAngleDegrees - sliceAngleDegrees / 2) % 360) <= 180) {
-                endLeaderXPosition = middleLeaderXPosition - 10;
-                textXPosition = endLeaderXPosition - 3;
-                textAnchor = "end";
-            } else {
-                endLeaderXPosition = middleLeaderXPosition + 10;
-                textXPosition = endLeaderXPosition + 3;
-                textAnchor = "start";
+                middleSliceAngleRadians = degreesToRadians(startAngleDegrees - sliceAngleDegrees / 2);
+                beginLeaderXPosition = chartCenterXPosition - Math.sin(middleSliceAngleRadians) * (chartRadius + 5);
+                beginLeaderYPosition = chartCenterYPosition + Math.cos(middleSliceAngleRadians) * (chartRadius + 5);
+                middleLeaderXPosition = chartCenterXPosition - Math.sin(middleSliceAngleRadians) * (chartRadius + 15);
+                middleLeaderYPosition = chartCenterYPosition + Math.cos(middleSliceAngleRadians) * (chartRadius + 15);
+                if (((startAngleDegrees - sliceAngleDegrees / 2) % 360) <= 180) {
+                    endLeaderXPosition = middleLeaderXPosition - 10;
+                    textXPosition = endLeaderXPosition - 3;
+                    textAnchor = "end";
+                } else {
+                    endLeaderXPosition = middleLeaderXPosition + 10;
+                    textXPosition = endLeaderXPosition + 3;
+                    textAnchor = "start";
+                }
+                textYPosition = middleLeaderYPosition - 4;
+                drawSliceLeader(k, categoryNamePercentageMap[k]);
             }
-            textYPosition = middleLeaderYPosition - 4;
-            drawSliceLeader(k, categoryNamePercentageMap[k]);
-        }
 
-        $('#piechart').append(chart);
+            $('#piechart').append(chart);
+        }
     }
 
     function degreesToRadians(degrees) {
