@@ -194,7 +194,7 @@ li a {
   margin: auto;
 }
 
-#linechart {
+#categories_linechart, #entries_linechart {
   height: 400px;
   margin-bottom: 50px;
   margin-top: 50px;

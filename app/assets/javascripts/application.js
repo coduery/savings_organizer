@@ -19,4 +19,5 @@
 //= require 'accounts'
 //= require 'categories'
 //= require 'entries'
+//= require 'table'
 //= require 'dateselector'
