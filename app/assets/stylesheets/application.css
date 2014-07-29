@@ -32,7 +32,7 @@ body {
   float: left;
   height: 400px;
   margin: 25px 50px 25px 25px;
-  width: 150px;
+  width: 166px;
   text-align: left;
   /* background-color: yellow;  */  /* For diagnostics only */
 }
@@ -147,6 +147,42 @@ button[type=button]:disabled, input[type=submit]:disabled, input[type=button]:di
 .ui-datepicker-current-day
 {
   background: #006600;
+}
+
+/* Menu formatting */
+
+ul {
+  padding: 0;
+}
+
+li {
+  list-style-type: none;
+}
+
+li a {
+  display: block;
+  text-decoration: none;
+}
+
+.menu_items {
+  background-color: #B2BCC2;
+  border: 1px solid black;
+  padding: 2px 0 2px 8px;
+}
+
+.submenu_items {
+  background-color: #C6D0D6;
+  border: 1px solid black;
+  border-top: none;
+  padding: 2px 0 2px 8px;
+}
+
+.submenu_items:hover {
+  background-color: #9EA8AE;
+}
+
+.submenu_items:hover a {
+  color: #FFFFFF;
 }
 
 /* Chart formatting */

@@ -1,23 +1,32 @@
 <div id=left_menu>
   <nav>
-    General:<br>
-    <%= link_to "Welcome Page", users_welcome_path %><br>
-    <%= link_to "View/Edit User", users_view_path %><br>
-    <%= link_to "Manage Account", users_manage_path %><br><br>
+    <ul>
+      <li class="menu_items">Users Account:</li>
+      <li><ul>
+        <li class="submenu_items"><%= link_to "Welcome Page", users_welcome_path %></li>
+        <li class="submenu_items"><%= link_to "View/Edit User", users_view_path %></li>
+        <li class="submenu_items"><%= link_to "Manage Account", users_manage_path %></li>
+        <li class="submenu_items"><%= link_to "Sign Out", users_signin_url %></li>
+      </ul></li><br>
+  
+      <li class="menu_items">Savings Account:</li>
+      <li><ul>
+        <li class="submenu_items"><%= link_to "Create Account", accounts_create_path %></li>
+        <li class="submenu_items"><%= link_to "View/Edit Account", accounts_view_path %></li>
+      </ul></li><br>
 
-    Savings Account:<br>
-    <%= link_to "Create Account", accounts_create_path %><br>
-    <%= link_to "View/Edit Account", accounts_view_path %><br><br>
+      <li class="menu_items">Savings Category:</li>
+      <li><ul>
+        <li class="submenu_items"><%= link_to "Create Category", categories_create_path %></li>
+        <li class="submenu_items"><%= link_to "View/Edit Category", categories_view_path %></li>
+      </ul></li><br>
 
-    Savings Category:<br>
-    <%= link_to "Create Category", categories_create_path %><br>
-    <%= link_to "View/Edit Category", categories_view_path %><br><br>
-
-    Savings Entry:<br>
-    <%= link_to "Add Entries", entries_add_path %><br>
-    <%= link_to "Deduct Entry", entries_deduct_path %><br>
-    <%= link_to "View Entries", entries_view_path %><br><br>
-
-    <%= link_to "Sign Out", users_signin_url %><br>
+      <li class="menu_items">Savings Entry:</li>
+      <li><ul>
+        <li class="submenu_items"><%= link_to "Add Entries", entries_add_path %></li>
+        <li class="submenu_items"><%= link_to "Deduct Entry", entries_deduct_path %></li>
+        <li class="submenu_items"><%= link_to "View Entries", entries_view_path %></li>
+      </ul></li>
+    </ul>
   </nav>
 </div>
