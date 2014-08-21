@@ -3,25 +3,25 @@ class EntriesController < ApplicationController
 
   # Method for handling get and post actions for entries "add" web page
   def add
-    add_get request if request.get?
-    add_post request if request.post?
+    add_get if request.get?
+    add_post if request.post?
   end
 
   # Method for handling get and post actions for entries "deduct" web page
   def deduct
-    deduct_get request if request.get?
-    deduct_post request if request.post?
+    deduct_get if request.get?
+    deduct_post if request.post?
   end
 
   # Method for handling get and post actions for entries "view" web page
   def view
-    view_get request if request.get?
-    view_post request if request.post?
+    view_get if request.get?
+    view_post if request.post?
   end
 
   private
 
-    def add_get(request)
+    def add_get
       if !session[:current_user_id].nil?
         @account_names = AccountsHelper.get_account_names session[:current_user_id]
         @category_names = get_category_names
@@ -37,7 +37,7 @@ class EntriesController < ApplicationController
       end
     end
 
-    def add_post(request)
+    def add_post
       @category_names = get_category_names
       entry_attributes = entry_params
       if entry_attributes[:account_name] == session[:account_name]
@@ -84,7 +84,7 @@ class EntriesController < ApplicationController
     end
 
     # Method for handling "deduct" web page get requests
-    def deduct_get(request)
+    def deduct_get
       if !session[:current_user_id].nil?
         @account_names = AccountsHelper.get_account_names session[:current_user_id]
         @category_names = get_category_names
@@ -104,7 +104,7 @@ class EntriesController < ApplicationController
     end
 
     # Method for handling "deduct" web page post requests
-    def deduct_post(request)
+    def deduct_post
       @category_names = get_category_names
       if !session[:category_name].nil?
         category_balance = get_category_balance session[:category_name]
@@ -179,7 +179,7 @@ class EntriesController < ApplicationController
       end
     end
 
-    def view_get(request)
+    def view_get
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
         @account_names = AccountsHelper.get_account_names user_id
@@ -206,7 +206,7 @@ class EntriesController < ApplicationController
       end
     end
 
-    def view_post(request)
+    def view_post
       if !session[:current_user_id].nil?
         session[:account_name] = params[:account_name]
         session[:category_name] = nil

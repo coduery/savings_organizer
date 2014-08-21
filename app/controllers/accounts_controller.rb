@@ -3,13 +3,13 @@ class AccountsController < ApplicationController
 
   # Method for handling get and post actions for accounts "create" web page
   def create
-    create_get(request) if request.get?
-    create_post(request) if request.post?
+    create_get if request.get?
+    create_post if request.post?
   end
 
   def view
-    view_get(request) if request.get?
-    view_post(request) if request.post?
+    view_get if request.get?
+    view_post if request.post?
   end
 
   private
@@ -19,13 +19,13 @@ class AccountsController < ApplicationController
       params.require(:account).permit(:account_name)
     end
 
-    def create_get(request)
+    def create_get
       if session[:current_user_id].nil?
         redirect_to users_signin_url
       end
     end
 
-    def create_post(request)
+    def create_post
       user_id = session[:current_user_id]
       account_attributes = account_params
       account_name = account_attributes[:account_name]
@@ -46,7 +46,7 @@ class AccountsController < ApplicationController
       redirect_to accounts_create_url
     end
 
-    def delete_category(request)
+    def delete_category
       record_destroyed = Category.destroy params[:delete].keys.first
       if record_destroyed
         categories = CategoriesHelper.get_categories(session[:current_user_id], session[:account_name])
@@ -59,7 +59,7 @@ class AccountsController < ApplicationController
       end
     end
 
-    def update_category(request)
+    def update_category
       category_id = params["save-update".to_sym].keys.first
       category = CategoriesHelper.get_category_with_id category_id
       update_category = false
@@ -139,7 +139,7 @@ class AccountsController < ApplicationController
       end
     end
 
-    def view_get(request)
+    def view_get
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
         @account_names = AccountsHelper.get_account_names user_id
@@ -167,14 +167,14 @@ class AccountsController < ApplicationController
       end
     end
 
-    def view_post(request)
+    def view_post
       if !params[:account_name].nil? && session[:account_name] != params[:account_name]
         session[:account_name] = params[:account_name]
         session[:category_name] = nil
       elsif !params["save-update".to_sym].nil?
-        update_category request
+        update_category
       elsif !params[:delete].nil?
-        delete_category request
+        delete_category
       end
       redirect_to accounts_view_url
     end

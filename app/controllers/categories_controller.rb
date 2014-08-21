@@ -3,13 +3,13 @@ class CategoriesController < ApplicationController
 
   # Method for handling get and post actions for categories "create" web page
   def create
-    create_get(request) if request.get?
-    create_post(request) if request.post?
+    create_get if request.get?
+    create_post if request.post?
   end
 
   def view
-    view_get(request) if request.get?
-    view_post(request) if request.post?
+    view_get if request.get?
+    view_post if request.post?
   end
 
   private
@@ -19,7 +19,7 @@ class CategoriesController < ApplicationController
       params.require(:category).permit(:account_name, :category_name, :savings_goal, :savings_goal_date)
     end
 
-    def create_get(request)
+    def create_get
       if !session[:current_user_id].nil?
         @account_names = AccountsHelper.get_account_names session[:current_user_id]
         if @account_names.nil?
@@ -33,7 +33,7 @@ class CategoriesController < ApplicationController
       end
     end
 
-    def create_post(request)
+    def create_post
       category_attributes = category_params
       if category_attributes[:account_name] == session[:account_name]
         account = Account.find_by(account_name: session[:account_name], user_id: session[:current_user_id] )
@@ -70,7 +70,7 @@ class CategoriesController < ApplicationController
       redirect_to categories_create_url
     end
 
-    def delete_entry(request)
+    def delete_entry
       entry_to_delete = Entry.find(params[:delete].keys.first)
       category_id = entry_to_delete[:category_id]
       valid_deletion = CategoriesHelper.are_revised_balances_valid?(category_id, entry_to_delete)
@@ -96,7 +96,7 @@ class CategoriesController < ApplicationController
                       savings history.".html_safe
     end
 
-    def update_entry(request) # TODO: This is a really long and complicated method that needs to be broken up into smaller methods
+    def update_entry # TODO: This is a really long and complicated method that needs to be broken up into smaller methods
       entry_id = params["save-update".to_sym].keys.first.to_i
       entry = EntriesHelper.get_entry_with_id entry_id
       original_entry_date = entry[:entry_date]
@@ -253,7 +253,7 @@ class CategoriesController < ApplicationController
       end
     end
 
-    def view_get(request)
+    def view_get
       if !session[:current_user_id].nil?
         @account_names = AccountsHelper.get_account_names session[:current_user_id]
         if !@account_names.nil?
@@ -291,16 +291,16 @@ class CategoriesController < ApplicationController
       end
     end
 
-    def view_post(request)
+    def view_post
       if !params[:account_name].nil? && session[:account_name] != params[:account_name]
         session[:account_name] = params[:account_name]
         session[:category_name] = nil
       elsif !params[:category_name].nil? && session[:category_name] != params[:category_name]
         session[:category_name] = params[:category_name]
       elsif !params["save-update".to_sym].nil?
-        update_entry request
+        update_entry
       elsif !params[:delete].nil?
-        delete_entry request
+        delete_entry
       end
       redirect_to categories_view_url
     end

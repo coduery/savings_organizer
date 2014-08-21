@@ -3,37 +3,37 @@ class UsersController < ApplicationController
 
   # Method for handling get and post actions for "users/manage" web page
   def manage
-    manage_get(request) if request.get?
-    manage_post(request) if request.post?
+    manage_get if request.get?
+    manage_post if request.post?
   end
 
   # Method for handling get and post actions for "users/registration" web page
   def registration
-    registration_get(request) if request.get?
-    registration_post(request) if request.post?
+    registration_get if request.get?
+    registration_post if request.post?
   end
 
   # Method for handling get and post actions for "users/signin" web page
   def signin
-    signin_get(request) if request.get?
-    signin_post(request) if request.post?
+    signin_get if request.get?
+    signin_post if request.post?
   end
 
   # Method for handling get and post actions for "users/view" web page
   def view
-    view_get(request) if request.get?
-    view_post(request) if request.post?
+    view_get if request.get?
+    view_post if request.post?
   end
 
   # Method for handling get and post actions for "users/welcome" web page
   def welcome
-    welcome_get(request) if request.get?
-    welcome_post(request) if request.post?
+    welcome_get if request.get?
+    welcome_post if request.post?
   end
 
   private
 
-    def delete_account(request)
+    def delete_account
       record_destroyed = Account.destroy(params[:delete].keys.first)
       if record_destroyed
         account_names = AccountsHelper.get_account_names(session[:current_user_id])
@@ -52,13 +52,13 @@ class UsersController < ApplicationController
       User.find_by user_name: "#{user_name}"
     end
 
-    def manage_get(request)
+    def manage_get
       if session[:current_user_id].nil?
         redirect_to users_signin_url
       end
     end
 
-    def manage_post(request)
+    def manage_post
       if !params[:delete].nil?
         user = find_user
         if user && user[:id] == params[:delete].keys.first.to_i &&
@@ -74,11 +74,11 @@ class UsersController < ApplicationController
       end
     end
 
-    def registration_get(request)
+    def registration_get
       flash[:notice] = nil
     end
 
-    def registration_post(request)
+    def registration_post
       user = User.new(user_params)
       if user.valid?
         user.save
@@ -90,7 +90,7 @@ class UsersController < ApplicationController
       end
     end
 
-    def signin_get(request)
+    def signin_get
       if !session[:current_user_id].nil? && flash[:notice].nil?
         flash[:notice] = "You have been signed out!"
         flash[:alert] = nil
@@ -103,7 +103,7 @@ class UsersController < ApplicationController
       session[:category_name] = nil
     end
 
-    def signin_post(request)
+    def signin_post
       session[:user_name] = params[:user_name]
       user = find_user
       if user && user.authenticate(params[:password])
@@ -120,7 +120,7 @@ class UsersController < ApplicationController
       end
     end
 
-    def update_account(request)
+    def update_account
       account_id = params["save-update".to_sym].keys.first
       account = Account.find_by(id: account_id, user_id: session[:current_user_id])
       update_account = false
@@ -155,7 +155,7 @@ class UsersController < ApplicationController
                                    :password_confirmation, :user_email)
     end
 
-    def view_get(request)
+    def view_get
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
         @account_names = AccountsHelper.get_account_names(user_id)
@@ -174,16 +174,16 @@ class UsersController < ApplicationController
       end
     end
 
-    def view_post(request)
+    def view_post
       if !params["save-update".to_sym].nil?
-        update_account request
+        update_account
       elsif !params[:delete].nil?
-        delete_account request
+        delete_account
       end
       redirect_to users_view_url
     end
 
-    def welcome_get(request)
+    def welcome_get
       if !session[:current_user_id].nil?
         user_id = session[:current_user_id]
         @user_name = session[:user_name]
@@ -207,7 +207,7 @@ class UsersController < ApplicationController
       end
     end
 
-    def welcome_post(request)
+    def welcome_post
       session[:account_name] = params[:account_name]
       session[:category_name] = nil
       redirect_to users_welcome_url
