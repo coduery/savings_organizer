@@ -35,7 +35,7 @@ module CategoriesHelper
         addition_category_entries_total += category_entry[:entry_amount]
       end
     end
-    addition_category_entries_total
+    addition_category_entries_total.round(2)
   end
 
   def self.get_categories(user_id, account_name)
@@ -85,7 +85,7 @@ module CategoriesHelper
         category_entries_prior_balance += category_entry[:entry_amount]
       end
     end
-    category_entries_prior_balance
+    category_entries_prior_balance.round(2)
   end
 
   def self.get_category_entries_total(category_id)
@@ -95,6 +95,14 @@ module CategoriesHelper
       category_entries_total += category_entry[:entry_amount]
     end
     category_entries_total.round(2)
+  end
+
+  def self.get_category_entry_ids(category_entries)
+    category_entry_ids = []
+    category_entries.each do |entry|
+      category_entry_ids.push entry[:id]
+    end
+    category_entry_ids
   end
 
   def self.get_category_name_id_mapping(account_categories)
@@ -129,7 +137,7 @@ module CategoriesHelper
         deduction_category_entries_total += category_entry[:entry_amount]
       end
     end
-    deduction_category_entries_total
+    deduction_category_entries_total.round(2)
   end
 
   def self.get_number_of_category_entries(category_id)
@@ -141,6 +149,34 @@ module CategoriesHelper
     !(params["savings_goal_date(1i)"]).blank? &&
     !(params["savings_goal_date(2i)"]).blank? &&
     !(params["savings_goal_date(3i)"]).blank?
+  end
+
+  def self.is_entry_new_date_amount_valid?(category_entries, entry_id, entry)
+    category_running_total = 0
+    category_entries.reverse.each do |category_entry|
+      if category_entry[:id] != entry_id
+        category_running_total += category_entry[:entry_amount]
+      end
+      if entry[:entry_date] < category_entry[:entry_date] &&
+         category_running_total + entry[:entry_amount] < 0
+          return false
+      end
+    end
+    return true
+  end
+
+  def self.is_previous_entry_history_still_valid?(category_entries, entry_id, entry)
+    category_running_total = 0
+    category_entries.reverse.each do |category_entry|
+      if category_entry[:id] != entry_id
+        category_running_total += category_entry[:entry_amount]
+      end
+      if entry[:entry_date] > category_entry[:entry_date] &&
+         category_running_total < 0
+          return false
+      end
+    end
+    return true
   end
 
   def self.is_goal_entry_valid?(params, date_valid)

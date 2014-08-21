@@ -260,6 +260,9 @@ describe CategoriesController do
               expect(assigns[:goal_percentage]).to eql 10.0
             end
 
+            it "assigns @category_entry_ids" do
+              expect(assigns[:category_entry_ids].first).to eql @entryDeduct[:id]
+            end
           end
 
           describe "if there are no category_entries," do
@@ -282,28 +285,28 @@ describe CategoriesController do
 
   describe "POST view," do
     describe "if account and category name not changed," do
-      before do
-        @user = User.new(user_name: "test_user", password: "test_pw",
-          password_confirmation: "test_pw", user_email: "test@test.com")
-        @user.save
-        session[:current_user_id] = @user[:id]
-        @account = Account.new(account_name: "test_account", user_id: @user[:id])
-        @account.save
-        session[:account_name] = @account.account_name
-        @category = Category.new(category_name: "test_category", account_id: @account[:id])
-        @category.save
-        session[:category_name] = @category.category_name
-        @entryAdd = Entry.new("entry_date(1i)" => "2020", "entry_date(2i)" => "12",
-                           "entry_date(3i)" => "30" , entry_amount: 123.45,
-                           category_id: @category[:id])
-        @entryAdd.save
-        @entryDeduct = Entry.new("entry_date(1i)" => "2020", "entry_date(2i)" => "12",
-                                 "entry_date(3i)" => "31" , entry_amount: -23.45,
-                                 category_id: @category[:id])
-        @entryDeduct.save
-      end
-
       describe "if delete entry submitted," do
+        before do
+          @user = User.new(user_name: "test_user", password: "test_pw",
+            password_confirmation: "test_pw", user_email: "test@test.com")
+          @user.save
+          session[:current_user_id] = @user[:id]
+          @account = Account.new(account_name: "test_account", user_id: @user[:id])
+          @account.save
+          session[:account_name] = @account.account_name
+          @category = Category.new(category_name: "test_category", account_id: @account[:id])
+          @category.save
+          session[:category_name] = @category.category_name
+          @entryAdd = Entry.new("entry_date(1i)" => "2020", "entry_date(2i)" => "12",
+                                "entry_date(3i)" => "30" , entry_amount: 123.45,
+                                category_id: @category[:id])
+          @entryAdd.save
+          @entryDeduct = Entry.new("entry_date(1i)" => "2020", "entry_date(2i)" => "12",
+                                   "entry_date(3i)" => "31" , entry_amount: -23.45,
+                                   category_id: @category[:id])
+          @entryDeduct.save
+        end
+
         describe "and valid deletion," do
           it "flashes notice message" do
             post :view, account_name: @account.account_name, category_name: @category.category_name,
@@ -317,8 +320,698 @@ describe CategoriesController do
             post :view, account_name: @account.account_name, category_name: @category.category_name,
                         delete: { @entryAdd[:id] => "Delete Entry"}
             flash[:alert].should eql "Invalid entry deletion!<br>
-                            Deletion would result in a negative
-                            balance in savings history.".html_safe
+                        Deletion would result in a negative
+                        balance in savings history.".html_safe
+          end
+        end
+      end
+
+      describe "if update entry submitted," do
+        before do
+          @user = User.new(user_name: "test_user", password: "test_pw",
+            password_confirmation: "test_pw", user_email: "test@test.com")
+          @user.save
+          session[:current_user_id] = @user[:id]
+          @account = Account.new(account_name: "test_account", user_id: @user[:id])
+          @account.save
+          session[:account_name] = @account.account_name
+          @category = Category.new(category_name: "test_category", account_id: @account[:id])
+          @category.save
+          session[:category_name] = @category.category_name
+          @entryAdd1 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "1",
+                                "entry_date(3i)" => "5" , entry_amount: 100,
+                                category_id: @category[:id])
+          @entryAdd1.save
+          @entryDeduct1 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "2",
+                                    "entry_date(3i)" => "5" , entry_amount: -50,
+                                    category_id: @category[:id])
+          @entryDeduct1.save
+        end
+
+        describe "if submitted entry date is an invalid format," do
+          it "flashes Invalid Date alert message" do
+            post :view, account_name: @account.account_name, category_name: @category.category_name,
+                        entry: { entry_date: "13/1/2014", entry_amount: @entryAdd1[:entry_amount] },
+                                 "save-update" => { @entryAdd1[:id] => "Save" }
+            flash[:alert].should eql "Invalid Entry Date Entered!"
+          end
+        end
+
+        describe "if updated deduction amount is blank," do
+          it "flashes Deduction amount cannot be blank alert message" do
+            post :view, account_name: @account.account_name, category_name: @category.category_name,
+                        entry: { entry_date: "2/5/2014", entry_amount: "" },
+                                 "save-update" => { @entryDeduct1[:id] => "Save" }
+            flash[:alert].should eql "Deduction amount cannot be blank and must be a positive number!"
+          end
+        end
+
+        describe "if updated deduction amount is negative," do
+          it "flashes Deduction amount must be positive alert message" do
+            post :view, account_name: @account.account_name, category_name: @category.category_name,
+                        entry: { entry_date: "2/5/2014", entry_amount: -100 },
+                                 "save-update" => { @entryDeduct1[:id] => "Save" }
+            flash[:alert].should eql "Deduction amount cannot be blank and must be a positive number!"
+          end
+        end
+
+        describe "if updated deduction amount is zero," do
+          it "flashes Deduction amount must be positive alert message" do
+            post :view, account_name: @account.account_name, category_name: @category.category_name,
+                        entry: { entry_date: "2/5/2014", entry_amount: 0 },
+                                 "save-update" => { @entryDeduct1[:id] => "Save" }
+            flash[:alert].should eql "Deduction amount cannot be blank and must be a positive number!"
+          end
+        end
+
+        describe "if updated addition amount is blank," do
+          it "flashes Addition amount cannot be blank alert message" do
+            post :view, account_name: @account.account_name, category_name: @category.category_name,
+                        entry: { entry_date: "1/5/2014", entry_amount: "" },
+                                 "save-update" => { @entryAdd1[:id] => "Save" }
+            flash[:alert].should eql "Addition amount cannot be blank and must be a positive number!"
+          end
+        end
+
+        describe "if updated addition amount is negative," do
+          it "flashes Addition amount must be positive alert message" do
+            post :view, account_name: @account.account_name, category_name: @category.category_name,
+                        entry: { entry_date: "1/5/2014", entry_amount: -100 },
+                                 "save-update" => { @entryAdd1[:id] => "Save" }
+            flash[:alert].should eql "Addition amount cannot be blank and must be a positive number!"
+          end
+        end
+
+        describe "if updated addition amount is zero," do
+          it "flashes Addition amount must be positive alert message" do
+            post :view, account_name: @account.account_name, category_name: @category.category_name,
+                        entry: { entry_date: "1/5/2014", entry_amount: 0 },
+                                 "save-update" => { @entryAdd1[:id] => "Save" }
+            flash[:alert].should eql "Addition amount cannot be blank and must be a positive number!"
+          end
+        end
+
+        describe "if flash alert nil," do
+          describe "if entry date or entry amount updated," do
+            describe "if original entry a deduction," do
+              describe "if date unchanged and amount changed," do
+                describe "if deduction greater than original deduction," do
+                  describe "if deduction does not result in negative balance," do
+                    it "flashes Update Successful message" do
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "2/5/2014", entry_amount: 100 },
+                                           "save-update" => { @entryDeduct1[:id] => "Save" }
+                      flash[:notice].should eql "Entry Updated Successfully!"
+                    end
+                  end
+
+                  describe "if deduction results in negative balance," do
+                    it "flashes Invalid Update alert" do
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "2/5/2014", entry_amount: 100.01 },
+                                           "save-update" => { @entryDeduct1[:id] => "Save" }
+                      flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                    end
+                  end
+
+                  describe "if deduction does not result in negative future balance," do
+                    it "flashes Update Successful message" do
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                                "entry_date(3i)" => "5" , entry_amount: -25,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "2/5/2014", entry_amount: 75 },
+                                           "save-update" => { @entryDeduct1[:id] => "Save" }
+                      flash[:notice].should eql "Entry Updated Successfully!"
+                    end
+                  end
+
+                  describe "if deduction results in negative future balance," do
+                    it "flashes Invalid Update alert" do
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                                "entry_date(3i)" => "5" , entry_amount: -25,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "2/5/2014", entry_amount: 75.01 },
+                                           "save-update" => { @entryDeduct1[:id] => "Save" }
+                      flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                    end
+                  end
+                end
+
+                describe "if deduction less than original deduction," do
+                  it "flashes Update Successful message" do
+                    post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                entry: { entry_date: "2/5/2014", entry_amount: 25 },
+                                         "save-update" => { @entryDeduct1[:id] => "Save" }
+                    flash[:notice].should eql "Entry Updated Successfully!"
+                  end
+                end
+              end
+
+              describe "if date changed and amount unchanged," do
+                describe "if new date earlier than original date," do
+                  describe "if new date results in a negative balance #1," do
+                    it "flashes Invalid Update alert" do
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "12/5/2013", entry_amount: 50 },
+                                           "save-update" => { @entryDeduct1[:id] => "Save" }
+                      flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                    end
+                  end
+
+                  describe "if new date results in a negative balance #2," do
+                    it "flashes Invalid Update alert" do
+                      @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                            "entry_date(3i)" => "5" , entry_amount: 50,
+                                            category_id: @category[:id])
+                      @entryAdd2.save
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                                "entry_date(3i)" => "5" , entry_amount: -50.01,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "3/5/2014", entry_amount: 50.01 },
+                                           "save-update" => { @entryDeduct2[:id] => "Save" }
+                      flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                    end
+                  end
+
+                  describe "if new date does not result in a negative balance," do
+                    it "flashes Update Successful message" do
+                      @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                            "entry_date(3i)" => "5" , entry_amount: 50,
+                                            category_id: @category[:id])
+                      @entryAdd2.save
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                                "entry_date(3i)" => "5" , entry_amount: -50,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "3/5/2014", entry_amount: 50 },
+                                           "save-update" => { @entryDeduct2[:id] => "Save" }
+                      flash[:notice].should eql "Entry Updated Successfully!"
+                    end
+                  end
+                end
+                
+                describe "if new date later than original date," do
+                  it "flashes Update Successful message" do
+                    post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                entry: { entry_date: "3/5/2014", entry_amount: 50 },
+                                         "save-update" => { @entryDeduct1[:id] => "Save" }
+                    flash[:notice].should eql "Entry Updated Successfully!"
+                  end
+                end
+              end
+
+              describe "if both date and amount changed," do
+                describe "if new date prior to original date," do
+                  describe "if new date deduction amount valid #1," do
+                    it "flashes Update Successful message" do
+                      @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                            "entry_date(3i)" => "5" , entry_amount: 50,
+                                            category_id: @category[:id])
+                      @entryAdd2.save
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                                "entry_date(3i)" => "5" , entry_amount: -25,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "3/5/2014", entry_amount: 50 },
+                                           "save-update" => { @entryDeduct2[:id] => "Save" }
+                      flash[:notice].should eql "Entry Updated Successfully!"
+                    end
+                  end
+
+                  describe "if new date deduction amount valid #2," do
+                    it "flashes Update Successful message" do
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                                "entry_date(3i)" => "5" , entry_amount: -25,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      @entryDeduct3 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                                "entry_date(3i)" => "5" , entry_amount: -20,
+                                                category_id: @category[:id])
+                      @entryDeduct3.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "3/5/2014", entry_amount: 25 },
+                                           "save-update" => { @entryDeduct3[:id] => "Save" }
+                      flash[:notice].should eql "Entry Updated Successfully!"
+                    end
+                  end
+
+                  describe "if new date deduction amount is not valid #1," do
+                    it "flashes Invalid Update alert" do
+                      @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                            "entry_date(3i)" => "5" , entry_amount: 50,
+                                            category_id: @category[:id])
+                      @entryAdd2.save
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                                "entry_date(3i)" => "5" , entry_amount: -25,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "3/5/2014", entry_amount: 50.01 },
+                                           "save-update" => { @entryDeduct2[:id] => "Save" }
+                      flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                    end
+                  end
+
+                  describe "if new date deduction amount is not valid #2," do
+                    it "flashes Invalid Update alert" do
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                                "entry_date(3i)" => "5" , entry_amount: -25,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      @entryDeduct3 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                                "entry_date(3i)" => "5" , entry_amount: -20,
+                                                category_id: @category[:id])
+                      @entryDeduct3.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "3/5/2014", entry_amount: 25.01 },
+                                           "save-update" => { @entryDeduct3[:id] => "Save" }
+                      flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                    end
+                  end
+                end
+
+                describe "if new date later than original date," do
+                  describe "if new date deduction amount valid #3," do
+                    it "flashes Update Successful message" do
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                                "entry_date(3i)" => "5" , entry_amount: -50,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                            "entry_date(3i)" => "5" , entry_amount: 50,
+                                            category_id: @category[:id])
+                      @entryAdd2.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "5/5/2014", entry_amount: 100 },
+                                           "save-update" => { @entryDeduct2[:id] => "Save" }
+                      flash[:notice].should eql "Entry Updated Successfully!"
+                    end
+                  end
+
+                  describe "if new date deduction amount is not valid #3," do
+                    it "flashes Invalid Update alert" do
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                                "entry_date(3i)" => "5" , entry_amount: -50,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                            "entry_date(3i)" => "5" , entry_amount: 50,
+                                            category_id: @category[:id])
+                      @entryAdd2.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "5/5/2014", entry_amount: 100.01 },
+                                           "save-update" => { @entryDeduct2[:id] => "Save" }
+                      flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                    end
+                  end
+                  
+                  describe "if new date deduction amount valid #4," do
+                    it "flashes Update Successful message" do
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                                "entry_date(3i)" => "5" , entry_amount: -25,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                            "entry_date(3i)" => "5" , entry_amount: 50,
+                                            category_id: @category[:id])
+                      @entryAdd2.save
+                      @entryDeduct3 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "6",
+                                                "entry_date(3i)" => "5" , entry_amount: -50,
+                                                category_id: @category[:id])
+                      @entryDeduct3.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "5/5/2014", entry_amount: 50 },
+                                           "save-update" => { @entryDeduct2[:id] => "Save" }
+                      flash[:notice].should eql "Entry Updated Successfully!"
+                    end
+                  end
+
+                  describe "if new date deduction amount is not valid #4," do
+                    it "flashes Invalid Update alert" do
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                                "entry_date(3i)" => "5" , entry_amount: -25,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                            "entry_date(3i)" => "5" , entry_amount: 50,
+                                            category_id: @category[:id])
+                      @entryAdd2.save
+                      @entryDeduct3 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "6",
+                                                "entry_date(3i)" => "5" , entry_amount: -50,
+                                                category_id: @category[:id])
+                      @entryDeduct3.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "5/5/2014", entry_amount: 50.01 },
+                                           "save-update" => { @entryDeduct2[:id] => "Save" }
+                      flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                    end
+                  end
+                end
+              end
+            end
+
+            describe "if original entry an addition," do
+              describe "if date unchanged and amount changed," do
+                describe "if addition less than original addition," do
+                  describe "if smaller addition does not result in negative future balance," do
+                    it "flashes Update Successful message" do
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "1/5/2014", entry_amount: 50 },
+                                           "save-update" => { @entryAdd1[:id] => "Save" }
+                      flash[:notice].should eql "Entry Updated Successfully!"
+                    end
+                  end
+
+                  describe "if smaller addition results in negative future balance," do
+                    it "flashes Invalid Update alert" do
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "1/5/2014", entry_amount: 49.99 },
+                                           "save-update" => { @entryAdd1[:id] => "Save" }
+                      flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                    end
+                  end
+                end
+
+                describe "if addition greater than original addition," do
+                  it "flashes Update Successful message" do
+                    post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                entry: { entry_date: "1/5/2014", entry_amount: 150 },
+                                         "save-update" => { @entryAdd1[:id] => "Save" }
+                    flash[:notice].should eql "Entry Updated Successfully!"
+                  end
+                end
+              end
+
+              describe "if date changed and amount unchanged," do
+                describe "if new date later than original date," do
+                  describe "results in negative balance," do
+                    it "flashes Invalid Update alert" do
+                      @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                            "entry_date(3i)" => "5" , entry_amount: 50,
+                                            category_id: @category[:id])
+                      @entryAdd2.save
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                                "entry_date(3i)" => "5" , entry_amount: -50.01,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "5/5/2014", entry_amount: 50 },
+                                           "save-update" => { @entryAdd2[:id] => "Save" }
+                      flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                    end
+                  end
+
+                  describe "does not result in negative balance," do
+                  it "flashes Update Successful message" do
+                      @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                            "entry_date(3i)" => "5" , entry_amount: 50,
+                                            category_id: @category[:id])
+                      @entryAdd2.save
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                                "entry_date(3i)" => "5" , entry_amount: -50,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "5/5/2014", entry_amount: 50 },
+                                           "save-update" => { @entryAdd2[:id] => "Save" }
+                      flash[:notice].should eql "Entry Updated Successfully!"
+                    end
+                  end
+                end
+
+                describe "if new date earlier than original date," do
+                  it "flashes Update Successful message" do
+                    @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                              "entry_date(3i)" => "5" , entry_amount: -50,
+                                              category_id: @category[:id])
+                    @entryDeduct2.save
+                    @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                          "entry_date(3i)" => "5" , entry_amount: 50,
+                                          category_id: @category[:id])
+                    @entryAdd2.save
+                    post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                entry: { entry_date: "3/5/2014", entry_amount: 50 },
+                                         "save-update" => { @entryAdd2[:id] => "Save" }
+                    flash[:notice].should eql "Entry Updated Successfully!"
+                  end
+                end
+              end
+
+              describe "if both date and amount changed," do
+                describe "if new date prior to original date," do
+                  describe "if new addition amount less than original amount," do
+                    describe "if new date amount valid" do
+                      it "flashes Update Successful message" do
+                        @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                                  "entry_date(3i)" => "5" , entry_amount: -50,
+                                                  category_id: @category[:id])
+                        @entryDeduct2.save
+                        @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                              "entry_date(3i)" => "5" , entry_amount: 50,
+                                              category_id: @category[:id])
+                        @entryAdd2.save
+                        @entryDeduct3 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "6",
+                                                  "entry_date(3i)" => "5" , entry_amount: -25,
+                                                  category_id: @category[:id])
+                        @entryDeduct3.save
+                        post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                    entry: { entry_date: "3/5/2014", entry_amount: 25 },
+                                             "save-update" => { @entryAdd2[:id] => "Save" }
+                        flash[:notice].should eql "Entry Updated Successfully!"
+                      end
+                    end
+
+                    describe "if new date amount not valid" do
+                      it "flashes Invalid Update alert" do
+                        @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                                  "entry_date(3i)" => "5" , entry_amount: -50,
+                                                  category_id: @category[:id])
+                        @entryDeduct2.save
+                        @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                              "entry_date(3i)" => "5" , entry_amount: 50,
+                                              category_id: @category[:id])
+                        @entryAdd2.save
+                        @entryDeduct3 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "6",
+                                                  "entry_date(3i)" => "5" , entry_amount: -25,
+                                                  category_id: @category[:id])
+                        @entryDeduct3.save
+                        post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                    entry: { entry_date: "3/5/2014", entry_amount: 24.99 },
+                                             "save-update" => { @entryAdd2[:id] => "Save" }
+                        flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                      end
+                    end
+                  end
+
+                  describe "if new addition amount greater than original amount," do
+                    it "flashes Update Successful message" do
+                      @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                                "entry_date(3i)" => "5" , entry_amount: -50,
+                                                category_id: @category[:id])
+                      @entryDeduct2.save
+                      @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                            "entry_date(3i)" => "5" , entry_amount: 25,
+                                            category_id: @category[:id])
+                      @entryAdd2.save
+                      @entryDeduct3 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "6",
+                                                "entry_date(3i)" => "5" , entry_amount: -25,
+                                                category_id: @category[:id])
+                      @entryDeduct3.save
+                      post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                  entry: { entry_date: "3/5/2014", entry_amount: 25.01 },
+                                           "save-update" => { @entryAdd2[:id] => "Save" }
+                      flash[:notice].should eql "Entry Updated Successfully!"
+                    end
+                  end
+                end
+
+                describe "if new date after original date," do
+                  describe "if new amount less than original amount," do
+                    describe "if date amount is valid #1," do
+                      it "flashes Update Successful message" do
+                        @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                                  "entry_date(3i)" => "5" , entry_amount: -25,
+                                                  category_id: @category[:id])
+                        @entryDeduct2.save
+                        @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                               "entry_date(3i)" => "5" , entry_amount: 50,
+                                               category_id: @category[:id])
+                        @entryAdd2.save
+                        @entryDeduct3 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                                  "entry_date(3i)" => "5" , entry_amount: -25,
+                                                  category_id: @category[:id])
+                        @entryDeduct3.save
+                        post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                    entry: { entry_date: "6/5/2014", entry_amount: 25 },
+                                             "save-update" => { @entryAdd2[:id] => "Save" }
+                        flash[:notice].should eql "Entry Updated Successfully!"
+                      end
+                    end
+
+                    describe "if date amount is not valid #1," do
+                      it "flashes Invalid Update alert" do
+                        @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                                  "entry_date(3i)" => "5" , entry_amount: -25,
+                                                  category_id: @category[:id])
+                        @entryDeduct2.save
+                        @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                               "entry_date(3i)" => "5" , entry_amount: 50,
+                                               category_id: @category[:id])
+                        @entryAdd2.save
+                        @entryDeduct3 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                                  "entry_date(3i)" => "5" , entry_amount: -25.01,
+                                                  category_id: @category[:id])
+                        @entryDeduct3.save
+                        post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                    entry: { entry_date: "6/5/2014", entry_amount: 25 },
+                                             "save-update" => { @entryAdd2[:id] => "Save" }
+                        flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                      end
+                    end
+
+                    describe "if date amount is valid #2," do
+                      it "flashes Update Successful message" do
+                        @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                               "entry_date(3i)" => "5" , entry_amount: 50.01,
+                                               category_id: @category[:id])
+                        @entryAdd2.save
+                        @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                                  "entry_date(3i)" => "5" , entry_amount: -50,
+                                                  category_id: @category[:id])
+                        @entryDeduct2.save
+                        @entryDeduct3 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "6",
+                                                  "entry_date(3i)" => "5" , entry_amount: -50,
+                                                  category_id: @category[:id])
+                        @entryDeduct3.save
+                        post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                    entry: { entry_date: "5/5/2014", entry_amount: 50 },
+                                             "save-update" => { @entryAdd2[:id] => "Save" }
+                        flash[:notice].should eql "Entry Updated Successfully!"
+                      end
+                    end
+
+                    describe "if date amount is not valid #2," do
+                      it "flashes Invalid Update alert" do
+                        @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                               "entry_date(3i)" => "5" , entry_amount: 50.01,
+                                               category_id: @category[:id])
+                        @entryAdd2.save
+                        @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                                  "entry_date(3i)" => "5" , entry_amount: -50,
+                                                  category_id: @category[:id])
+                        @entryDeduct2.save
+                        @entryDeduct3 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "6",
+                                                  "entry_date(3i)" => "5" , entry_amount: -50.01,
+                                                  category_id: @category[:id])
+                        @entryDeduct3.save
+                        post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                    entry: { entry_date: "5/5/2014", entry_amount: 50 },
+                                             "save-update" => { @entryAdd2[:id] => "Save" }
+                        flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                      end
+                    end
+                  end
+
+                  describe "if new amount greater than original amount," do
+                    describe "if date amount is valid" do
+                      it "flashes Update Successful message" do
+                        @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                                  "entry_date(3i)" => "5" , entry_amount: -25,
+                                                  category_id: @category[:id])
+                        @entryDeduct2.save
+                        @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                               "entry_date(3i)" => "5" , entry_amount: 50,
+                                               category_id: @category[:id])
+                        @entryAdd2.save
+                        @entryDeduct3 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                                  "entry_date(3i)" => "5" , entry_amount: -25,
+                                                  category_id: @category[:id])
+                        @entryDeduct3.save
+                        post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                    entry: { entry_date: "6/5/2014", entry_amount: 50.01 },
+                                             "save-update" => { @entryAdd2[:id] => "Save" }
+                        flash[:notice].should eql "Entry Updated Successfully!"
+                      end
+                    end
+                    
+                    describe "if date amount is not valid" do
+                      it "flashes Invalid Update alert" do
+                        @entryDeduct2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "3",
+                                                  "entry_date(3i)" => "5" , entry_amount: -25.01,
+                                                  category_id: @category[:id])
+                        @entryDeduct2.save
+                        @entryAdd2 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "4",
+                                               "entry_date(3i)" => "5" , entry_amount: 50,
+                                               category_id: @category[:id])
+                        @entryAdd2.save
+                        @entryDeduct3 = Entry.new("entry_date(1i)" => "2014", "entry_date(2i)" => "5",
+                                                  "entry_date(3i)" => "5" , entry_amount: -25,
+                                                  category_id: @category[:id])
+                        @entryDeduct3.save
+                        post :view, account_name: @account.account_name, category_name: @category.category_name,
+                                    entry: { entry_date: "6/5/2014", entry_amount: 50.01 },
+                                             "save-update" => { @entryAdd2[:id] => "Save" }
+                        flash[:alert].should eql "Invalid updated amount for specified date!<br>
+                      Amount would result in a negative balance in
+                      savings history."
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          end
+
+          describe "if addition entry date and amount parameters unchanged," do
+            it "flashes Entry Not Updated message" do
+              post :view, account_name: @account.account_name, category_name: @category.category_name,
+                          entry: { entry_date: "1/5/2014", entry_amount: 100 },
+                                   "save-update" => { @entryAdd1[:id] => "Save" }
+              flash[:alert].should eql "Entry Parameters Unchanged. Entry Not Updated!"
+            end
+          end
+
+          describe "if deduction entry date and amount parameters unchanged," do
+            it "flashes Entry Not Updated message" do
+              post :view, account_name: @account.account_name, category_name: @category.category_name,
+                          entry: { entry_date: "2/5/2014", entry_amount: 50 },
+                                   "save-update" => { @entryDeduct1[:id] => "Save" }
+              flash[:alert].should eql "Entry Parameters Unchanged. Entry Not Updated!"
+            end
           end
         end
       end

@@ -268,7 +268,7 @@ describe AccountsController do
               post :view, account_name: @account[:account_name],
                           category: { category_name: @category3[:category_name], savings_goal: "", savings_goal_date: "1/1/2020" },
                           "save-update" => { @category3[:id] => "Save" }
-              flash[:alert].should eql "Savings Goal Date cannot be set without a Savings Goal!"
+              flash[:alert].should eql "Savings Goal Target Date cannot be set without a Savings Goal!"
             end
           end
         end
@@ -301,7 +301,7 @@ describe AccountsController do
             post :view, account_name: @account[:account_name],
                         category: { category_name: @category1[:category_name], savings_goal: "",
                         savings_goal_date: "1/1/2020" }, "save-update" => { @category1[:id] => "Save" }
-            flash[:alert].should eql "Savings Goal Date cannot be set without a Savings Goal!"
+            flash[:alert].should eql "Savings Goal Target Date cannot be set without a Savings Goal!"
           end
         end
       end

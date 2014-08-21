@@ -4,19 +4,19 @@ function updateAccount(categoryName, categoryNameIdMapping) {
 
     for (var key in categoryNameIdHash) {
         if (categoryNameIdHash.hasOwnProperty(key)) {
-            var categoryNameId = "category-name-" + categoryNameIdHash[key].toString();
-            var savingsGoalId = "savings-goal-" + categoryNameIdHash[key].toString();
-            var savingsGoalDateId = "savings-goal-date-" + categoryNameIdHash[key].toString();
-            var updateButtonId = "update-" + categoryNameIdHash[key].toString();
-            var deleteButtonId = "delete-" + categoryNameIdHash[key].toString();
-            var categoryNameIdHidden = "category-name-" + categoryNameIdHash[key].toString() + "-hidden";
-            var savingsGoalIdHidden = "savings-goal-" + categoryNameIdHash[key].toString() + "-hidden";
-            var savingsGoalDateIdHidden = "savings-goal-date-" + categoryNameIdHash[key].toString() + "-hidden";
-            var saveButtonId = "save-update-" + categoryNameIdHash[key].toString();
-            var cancelButtonId = "cancel-update-" + categoryNameIdHash[key].toString();
+            var categoryNameId = "category-name-" + categoryNameIdHash[key];
+            var savingsGoalId = "savings-goal-" + categoryNameIdHash[key];
+            var savingsGoalDateId = "savings-goal-date-" + categoryNameIdHash[key];
+            var updateButtonId = "update-" + categoryNameIdHash[key];
+            var deleteButtonId = "delete-" + categoryNameIdHash[key];
+            var categoryNameIdHidden = "category-name-" + categoryNameIdHash[key] + "-hidden";
+            var savingsGoalIdHidden = "savings-goal-" + categoryNameIdHash[key] + "-hidden";
+            var savingsGoalDateIdHidden = "savings-goal-date-" + categoryNameIdHash[key] + "-hidden";
+            var saveButtonId = "save-update-" + categoryNameIdHash[key];
+            var cancelButtonId = "cancel-update-" + categoryNameIdHash[key];
 
             if (!updateButtonChecked) {
-                var updateButtonEnabled = $("#update-" + categoryNameIdHash[categoryName].toString()).parent().css('display').toString();
+                var updateButtonEnabled = $("#update-" + categoryNameIdHash[categoryName]).parent().css('display');
                 updateButtonChecked = true;
             }
 

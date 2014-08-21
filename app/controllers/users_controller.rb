@@ -42,6 +42,7 @@ class UsersController < ApplicationController
         else
           session[:account_name] = nil
         end
+        session[:category_name] = nil
         flash[:notice] = "Account Deleted Successfully!"
       end
     end
@@ -139,6 +140,7 @@ class UsersController < ApplicationController
           account.save
           flash[:notice] = "Account Updated Successfully!"
           session[:account_name] = account[:account_name]
+          session[:category_name] = nil
         elsif flash[:alert].nil?
           flash[:alert] = "Account Name Unchanged. Account Not Updated!"
         end
@@ -207,6 +209,7 @@ class UsersController < ApplicationController
 
     def welcome_post(request)
       session[:account_name] = params[:account_name]
+      session[:category_name] = nil
       redirect_to users_welcome_url
     end
 

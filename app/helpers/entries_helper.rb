@@ -8,6 +8,10 @@ module EntriesHelper
     category_ids
   end
 
+  def self.get_entry_with_id(entry_id)
+    Entry.where("id = ?", entry_id).first
+  end
+
   def self.get_number_of_account_entries(categories)
     number_of_account_entries = 0
     categories.each do |category|

@@ -106,7 +106,9 @@ class EntriesController < ApplicationController
     # Method for handling "deduct" web page post requests
     def deduct_post(request)
       @category_names = get_category_names
-      category_balance = get_category_balance session[:category_name]
+      if !session[:category_name].nil?
+        category_balance = get_category_balance session[:category_name]
+      end
       entry_attributes = entry_params
       if session[:account_name] == entry_attributes[:account_name] &&
          session[:category_name] == entry_attributes[:category_name]

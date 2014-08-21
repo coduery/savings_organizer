@@ -31,7 +31,7 @@
                   <th class="data_columns">Category</th>
                   <th class="data_columns">Savings</th>
                   <th class="data_columns">Dollar Goal</th>
-                  <th class="data_columns">Target Date</th>
+                  <th class="data_columns">Goal Target&nbspDate</th>
                 </tr>
               </thead>
 
@@ -85,10 +85,10 @@
                       <td class="table_button_cell"><%= button_tag "Update", type: "button", name: "update[#{category[:id]}]", id: "update-#{category[:id]}", onclick: "updateAccount('#{category[:category_name]}', '#{@category_name_id_mapping.to_json}')", class: "table_button" %></td>
                       <td class="table_button_cell"><%= submit_tag "Delete", name: "delete[#{category[:id]}]", id: "delete-#{category[:id]}", data: {confirm: "Warning! \nYou are about to delete your #{category[:category_name]} \ncategory and all its entries. \n\nProceed with Deleting Category?" }, class: "table_button" %></td>
 
-                      <td class="table_button_cell_no_display" ><%= f.submit "Save", name: "save-update[#{category[:id]}]", id: "save-update-#{category[:id]}", class: "table_button" %></td>
+                      <td class="table_button_cell_no_display"><%= f.submit "Save", name: "save-update[#{category[:id]}]", id: "save-update-#{category[:id]}", class: "table_button" %></td>
                     <% end %>
 
-                    <td class="table_button_cell_no_display" ><%= button_tag "Cancel", type: "button", name: "cancel-update[#{category[:id]}]", id: "cancel-update-#{category[:id]}", onclick: "updateAccount('#{category[:category_name]}', '#{@category_name_id_mapping.to_json}')", class: "table_button" %></td>
+                    <td class="table_button_cell_no_display"><%= button_tag "Cancel", type: "button", name: "cancel-update[#{category[:id]}]", id: "cancel-update-#{category[:id]}", onclick: "updateAccount('#{category[:category_name]}', '#{@category_name_id_mapping.to_json}')", class: "table_button" %></td>
 
                   </tr>
                 <% end %>

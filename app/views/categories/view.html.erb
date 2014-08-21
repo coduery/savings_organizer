@@ -26,7 +26,11 @@
             options_for_select(@category_names, session[:category_name]), onchange: "this.form.submit();" %>
           </span><br><br>
 
-          <span class="span_left_align"><%= session[:category_name] %> Total Savings: $ <%= number_with_precision(@category_balance, precision: 2) %></span><br><br>
+          <% if !@category_balance.nil? %>
+            <span class="span_left_align"><%= session[:category_name] %> Total Savings: $ <%= number_with_precision(@category_balance, precision: 2) %></span><br><br>
+          <% else %>
+            <span class="span_left_align"><%= session[:category_name] %> Total Savings: $ 0.00</span><br><br>
+          <% end %>
 
           <% if !@category[:savings_goal].nil? %>
             <span class="span_left_align">Dollar Goal: $ <%= number_with_precision(@category[:savings_goal], precision: 2) %></span>
@@ -47,60 +51,82 @@
           <% end %>
           <br><br><br>
 
-          <div id="data_table" data-number_categories="4">
+          <% if @category_entries.size > 0 %>
+            <div id="data_table" data-number_categories="4">
 
-            <table>
-              <thead>
-                <tr>
-                  <th class="data_columns">Date</th>
-                  <th class="data_columns">Deduction</th>
-                  <th class="data_columns">Addition</th>
-                  <th class="data_columns">Total Amount</th>
-                </tr>
-              </thead>
-
-              <tfoot>
-                <tr>
-                  <td class="data_columns">Totals</td>
-                  <td class="data_columns">
-                    <span class="span_right_align_table">
-                      $&nbsp<%= number_with_precision(@deduction_category_entries_total, precision: 2) %>
-                    </span>
-                  </td>
-                  <td class="data_columns">
-                    <span class="span_right_align_table">
-                      $&nbsp<%= number_with_precision(@addition_category_entries_total, precision: 2) %>
-                    </span>
-                  </td>
-                  <td class="data_columns">
-                    <span class="span_right_align_table">
-                      $&nbsp<%= number_with_precision(@category_balance, precision: 2) %>
-                    </span>
-                  </td>
-                </tr>
-              </tfoot>
-
-              <tbody>
-                <% total_amount = 0 %>
-                <% @category_entries.reverse.each do |category_entry| %>
+              <table>
+                <thead>
                   <tr>
-                    <td><%= category_entry[:entry_date].strftime("%-m/%-d/%Y") %></td>
-                    <% if category_entry[:entry_amount] < 0 %>
-                      <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(category_entry[:entry_amount], precision: 2) %></span></td>
-                      <td><span class="span_right_align_table">-</span></td>
-                    <% else %>
-                      <td><span class="span_right_align_table">-</span></td>
-                      <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(category_entry[:entry_amount], precision: 2) %></span></td>
-                    <% end %>
-                    <% total_amount += category_entry[:entry_amount] %>
-                    <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(total_amount, precision: 2) %></span></td>
-                    <td class="table_button_cell"><%= submit_tag "Update", disabled: true, name: "update[#{category_entry[:id]}]", class: "table_button" %></td>
-                    <td class="table_button_cell"><%= submit_tag "Delete", name: "delete[#{category_entry[:id]}]", data: {confirm: "Warning! \nYou are about to delete the #{category_entry[:entry_date].strftime("%-m/%-d/%Y")} entry. \n\nProceed with Deleting Entry?"}, class: "table_button" %></td>
+                    <th class="data_columns">Date</th>
+                    <th class="data_columns">Deduction</th>
+                    <th class="data_columns">Addition</th>
+                    <th class="data_columns">Cumulative Total</th>
                   </tr>
-                <% end %>
-              </tbody>
-            </table>
-          </div>
+                </thead>
+
+                <tfoot>
+                  <tr>
+                    <td class="data_columns">Totals</td>
+                    <td class="data_columns">
+                      <span class="span_right_align_table">
+                        $&nbsp<%= number_with_precision(-@deduction_category_entries_total, precision: 2) %>
+                      </span>
+                    </td>
+                    <td class="data_columns">
+                      <span class="span_right_align_table">
+                        $&nbsp<%= number_with_precision(@addition_category_entries_total, precision: 2) %>
+                      </span>
+                    </td>
+                    <td class="data_columns">
+                      <span class="span_right_align_table">
+                        $&nbsp<%= number_with_precision(@category_balance, precision: 2) %>
+                      </span>
+                    </td>
+                  </tr>
+                </tfoot>
+
+                <tbody>
+                  <% total_amount = 0 %>
+                  <% @category_entries.reverse.each do |category_entry| %>
+                    <tr>
+                      <td id="entry-date-<%= category_entry[:id] %>"><%= category_entry[:entry_date].strftime("%-m/%-d/%Y") %></td>
+
+                      <%= form_for :entry, url: categories_view_path, namespace: ("entry-" + category_entry[:id].to_s) do |f| %>
+                        <td class="table_cell_no_display" id="entry-date-<%= category_entry[:id] %>-hidden">
+                          <%= f.text_field :entry_date, value: category_entry[:entry_date].strftime("%-m/%-d/%Y"), class: "table_text_field" %>
+                        </td>
+
+                        <% if category_entry[:entry_amount] < 0 %>
+                          <td id="entry-amount-<%= category_entry[:id] %>"><span class="span_right_align_table">$&nbsp<%= number_with_precision(-category_entry[:entry_amount], precision: 2) %></span></td>
+                          <td class="table_cell_no_display" id="entry-amount-<%= category_entry[:id] %>-hidden">
+                            <%= f.text_field :entry_amount, value: number_with_precision(-category_entry[:entry_amount], precision: 2), class: "table_text_field" %>
+                          </td>
+                          <td><span class="span_right_align_table">-</span></td>
+                        <% else %>
+                          <td><span class="span_right_align_table">-</span></td>
+                          <td id="entry-amount-<%= category_entry[:id] %>"><span class="span_right_align_table">$&nbsp<%= number_with_precision(category_entry[:entry_amount], precision: 2) %></span></td>
+                          <td class="table_cell_no_display" id="entry-amount-<%= category_entry[:id] %>-hidden">
+                            <%= f.text_field :entry_amount, value: number_with_precision(category_entry[:entry_amount], precision: 2), class: "table_text_field" %>
+                          </td>
+                        <% end %>
+                        <% total_amount += category_entry[:entry_amount] %>
+                        <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(total_amount, precision: 2) %></span></td>
+
+                        <td class="table_button_cell"><%= button_tag "Update", type: "button", name: "update[#{category_entry[:id]}]", id: "update-#{category_entry[:id]}", onclick: "updateCategory('#{category_entry[:id]}', '#{@category_entry_ids.to_json}')", class: "table_button" %></td>
+                        <td class="table_button_cell"><%= submit_tag "Delete", name: "delete[#{category_entry[:id]}]", id: "delete-#{category_entry[:id]}", data: {confirm: "Warning! \nYou are about to delete the #{category_entry[:entry_date].strftime("%-m/%-d/%Y")} entry. \n\nProceed with Deleting Entry?"}, class: "table_button" %></td>
+
+                        <td class="table_button_cell_no_display"><%= f.submit "Save", name: "save-update[#{category_entry[:id]}]", id: "save-update-#{category_entry[:id]}", class: "table_button" %></td>
+
+                      <% end %>
+
+                      <td class="table_button_cell_no_display"><%= button_tag "Cancel", type: "button", name: "cancel-update[#{category_entry[:id]}]", id: "cancel-update-#{category_entry[:id]}", onclick: "updateCategory('#{category_entry[:id]}', '#{@category_entry_ids.to_json}')", class: "table_button" %></td>
+
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% end %>
 
           <div id="categories_linechart" data-category-name="<%= session[:category_name] %>" data-category-entries-dates-cumulative-amounts="<%= @category_entries_dates_cumulative_amounts.to_json %>"></div>
 

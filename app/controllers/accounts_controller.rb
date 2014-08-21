@@ -37,6 +37,7 @@ class AccountsController < ApplicationController
         if account.valid?
           account.save
           session[:account_name] = account_name
+          session[:category_name] = nil
           flash[:notice] = "Account Created Successfully!"
         else
           flash[:alert] = account.errors.first[1]
@@ -81,18 +82,31 @@ class AccountsController < ApplicationController
         params[:category][:savings_goal_date] = nil
       end
 
-      if flash[:alert].nil? && category[:savings_goal] != params[:category][:savings_goal]
+      if flash[:alert].nil? && category[:savings_goal].to_f != params[:category][:savings_goal].to_f
         category[:savings_goal] = params[:category][:savings_goal]
-        update_category = true
+        if category[:savings_goal].nil? && !params[:category][:savings_goal_date].nil?
+          flash[:alert] = "Savings Goal Target Date cannot be set without a Savings Goal!"
+          update_category = false
+        else
+          update_category = true
+        end
       end
 
-      if flash[:alert].nil? && category[:savings_goal_date] != params[:category][:savings_goal_date]
+      dates_equal = false
+      if (category[:savings_goal_date].nil? && params[:category][:savings_goal_date].nil?) ||
+         (!category[:savings_goal_date].nil? &&
+          category[:savings_goal_date].strftime("%-m/%-d/%Y") == params[:category][:savings_goal_date])
+        dates_equal = true
+      end
+
+      if flash[:alert].nil? && !dates_equal
         if !category[:savings_goal].nil?
           if !params[:category][:savings_goal_date].nil?
             begin
               date_array = params[:category][:savings_goal_date].split('/')
-              goal_date = Date.civil(date_array[2].to_i, date_array[0].to_i, date_array[1].to_i)
-            rescue ArgumentError
+              goal_date = Date.civil(date_array[2].to_i, date_array[0].to_i,
+                                     date_array[1].to_i)
+            rescue ArgumentError # TODO: replace with date validator, see validates_timeliness gem
               goal_date = nil
               flash[:alert] = "Invalid Target Date Entered!"
             end
@@ -103,7 +117,7 @@ class AccountsController < ApplicationController
         elsif params[:category][:savings_goal_date].nil?
           category[:savings_goal_date] = nil
         else
-          flash[:alert] = "Savings Goal Date cannot be set without a Savings Goal!"
+          flash[:alert] = "Savings Goal Target Date cannot be set without a Savings Goal!"
         end
         if flash[:alert].nil?
           update_category = true
@@ -156,6 +170,7 @@ class AccountsController < ApplicationController
     def view_post(request)
       if !params[:account_name].nil? && session[:account_name] != params[:account_name]
         session[:account_name] = params[:account_name]
+        session[:category_name] = nil
       elsif !params["save-update".to_sym].nil?
         update_category request
       elsif !params[:delete].nil?

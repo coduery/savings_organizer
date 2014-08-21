@@ -45,3 +45,57 @@ $(document).ready(function() {
         });
     }
 });
+
+
+function updateCategory(categoryEntryId, categoryEntryIds) {
+    var entryIds = categoryEntryIds.substring(1, categoryEntryIds.length - 1).split(/,/g);
+    var updateButtonChecked = false;
+
+    for (var i in entryIds) {
+        if (entryIds.hasOwnProperty(i)) {
+            var entryDateId = "entry-date-" + entryIds[i];
+            var entryAmountId = "entry-amount-" + entryIds[i];
+            var updateButtonId = "update-" + entryIds[i];
+            var deleteButtonId = "delete-" + entryIds[i];
+            var entryDateIdHidden = "entry-date-" + entryIds[i] + "-hidden";
+            var entryAmountIdHidden = "entry-amount-" + entryIds[i] + "-hidden";
+            var saveButtonId = "save-update-" + entryIds[i];
+            var cancelButtonId = "cancel-update-" + entryIds[i];
+
+            if (!updateButtonChecked) {
+                var updateButtonEnabled = $("#update-" + categoryEntryId).parent().css('display');
+                updateButtonChecked = true;
+            }
+
+            if (entryIds[i] != categoryEntryId) {
+                if (updateButtonEnabled != "none") {
+                    document.getElementById(updateButtonId).disabled=true;
+                    document.getElementById(deleteButtonId).disabled=true;
+                } else {
+                    document.getElementById(updateButtonId).disabled=false;
+                    document.getElementById(deleteButtonId).disabled=false;
+                }
+            } else if (entryIds[i] == categoryEntryId) {
+                if (updateButtonEnabled != "none") {
+                    document.getElementById(entryDateId).style.display="none";
+                    document.getElementById(entryAmountId).style.display="none";
+                    document.getElementById(updateButtonId).parentNode.style.display="none";
+                    document.getElementById(deleteButtonId).parentNode.style.display="none";
+                    document.getElementById(entryDateIdHidden).style.display="table-cell";
+                    document.getElementById(entryAmountIdHidden).style.display="table-cell";
+                    document.getElementById(saveButtonId).parentNode.style.display="table-cell";
+                    document.getElementById(cancelButtonId).parentNode.style.display="table-cell";
+                } else {
+                    document.getElementById(entryDateId).style.display="table-cell";
+                    document.getElementById(entryAmountId).style.display="table-cell";
+                    document.getElementById(updateButtonId).parentNode.style.display="table-cell";
+                    document.getElementById(deleteButtonId).parentNode.style.display="table-cell";
+                    document.getElementById(entryDateIdHidden).style.display="none";
+                    document.getElementById(entryAmountIdHidden).style.display="none";
+                    document.getElementById(saveButtonId).parentNode.style.display="none";
+                    document.getElementById(cancelButtonId).parentNode.style.display="none";
+                }
+            }
+        }
+    }
+}

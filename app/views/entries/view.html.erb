@@ -19,7 +19,7 @@
           options_for_select(@account_names, session[:account_name]), onchange: "this.form.submit();" %>
         </span><br><br>
 
-        <% if !@category_names.empty? %>
+        <% if !@category_names.empty? && !@consolidated_entries.empty? %>
 
           <div id="data_table" data-number_categories="<%= @category_names.size %>">
 
@@ -50,20 +50,18 @@
               </tfoot>
 
               <tbody>
-                <% if !@consolidated_entries.empty? %>
-                  <% @consolidated_entries.reverse.each do |consolidated_entry| %>
-                    <tr>
-                      <td><%= consolidated_entry[0] %></td>
-                      <% for i in 1..@category_names.size %>
-                        <% if !consolidated_entry[i].nil? %>
-                          <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(consolidated_entry[i], precision: 2) %></span></td>
-                        <% else %>
-                          <td><span class="span_right_align_table">-</span></td>
-                        <% end %>
+                <% @consolidated_entries.reverse.each do |consolidated_entry| %>
+                  <tr>
+                    <td><%= consolidated_entry[0] %></td>
+                    <% for i in 1..@category_names.size %>
+                      <% if !consolidated_entry[i].nil? %>
+                        <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(consolidated_entry[i], precision: 2) %></span></td>
+                      <% else %>
+                        <td><span class="span_right_align_table">-</span></td>
                       <% end %>
-                      <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(consolidated_entry[-1], precision: 2) %></span></td>
-                    </tr>
-                  <% end %>
+                    <% end %>
+                    <td><span class="span_right_align_table">$&nbsp<%= number_with_precision(consolidated_entry[-1], precision: 2) %></span></td>
+                  </tr>
                 <% end %>
               </tbody>
             </table>
