@@ -7,8 +7,20 @@ describe UsersController do
 
   describe "GET manage," do
     describe "if current_user_id is not nil," do
+      before do
+        @user = User.new(user_name: "test_user", password: "test_pw",
+                         password_confirmation: "test_pw", user_email: "test@test.com")
+        @user.save
+      end
+
+      it "sets user email value" do
+        session[:current_user_id] = @user[:id]
+        get :manage
+        expect(assigns(:user_email)).to eql @user[:user_email]
+      end
+
       it "renders users/manage page" do
-        session[:current_user_id] = 1
+        session[:current_user_id] = @user[:id]
         get :manage
         expect(response).to render_template("manage")
       end
@@ -16,6 +28,7 @@ describe UsersController do
 
     describe "if current_user_id is nil," do
       it "redirects to users/signin page" do
+        session[:current_user_id] = nil
         get :manage
         expect(response).to redirect_to("/users/signin")
       end
@@ -27,6 +40,46 @@ describe UsersController do
       @user = User.new(user_name: "test_user", password: "test_pw",
                        password_confirmation: "test_pw", user_email: "test@test.com")
       @user.save
+    end
+
+    describe "if params[:change-email] not nil," do
+      describe "if username valid and password authenticated," do
+        describe "if new password and password confirmation match," do
+          describe "if user saved successfully," do
+            it "flashes Email Changed Successfully message" do
+              post :manage, "change-email" => { @user[:id] => "Submit" },
+                "user_name" => @user.user_name, "password" => @user.password,
+                "user_email" => "testx@test.com", "user_email_confirm" => "testx@test.com"
+              flash.now[:notice].should eql "Email Changed Successfully!"
+            end
+          end
+
+          describe "if user not saved successfully," do
+            xit "flashes Unable to Change Email alert" do
+              # TODO: Do I need to stub or mock out the user object to get this to work??
+              flash.now[:alert].should eql "Unable to change email. Please try again later."
+            end
+          end
+        end
+
+        describe "if new password and password confirmation do not match," do
+          it "flashes Passwords do not match alert" do
+            post :manage, "change-email" => { @user[:id] => "Submit" },
+              "user_name" => @user.user_name, "password" => @user.password,
+              "user_email" => "test1@test.com", "user_email_confirm" => "test2@test.com"
+            flash.now[:alert].should eql "New Email and Confirmation do not match. Please try again."
+          end
+        end
+      end
+
+      describe "if username not valid or password not authenticated," do
+        it "flashes Invalid Credentials alert" do
+          post :manage, "change-email" => { @user[:id] => "Submit" },
+            "user_name" => @user.user_name, "password" => "notvalid",
+            "user_email" => "testx@test.com", "user_email_confirm" => "testx@test.com"
+          flash.now[:alert].should eql "Invalid user credentials.  Unable to change email address."
+        end
+      end
     end
 
     describe "if params[:delete] not nil," do
@@ -49,7 +102,7 @@ describe UsersController do
         it "flashes error message" do
           post :manage, delete: { @user[:id] => "Delete User Account" },
             "user_name" => @user.user_name, "password" => "notvalid"
-          flash[:alert].should eql "Invalid user credentials.  Unable to delete user account.  Try again."
+          flash[:alert].should eql "Invalid user credentials.  Unable to delete user account."
         end
       end
     end

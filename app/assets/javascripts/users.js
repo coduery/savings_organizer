@@ -209,16 +209,41 @@ function updateUser(accountName, accountNameIdMapping) {
     }
 }
 
-// JavaScript function for deleting a user's account
+// JavaScript function for use in changing a user's email address
+function changeUserEmail() {
+    var changeEmailDiv = document.getElementById("change-email-div");
+    if (changeEmailDiv.className == "hidden_class") {
+        document.getElementById("change-email-div").className = "";
+        hideManageUserButtons();
+    } else {
+        document.getElementById("change-email-div").className = "hidden_class";
+        showManageUserButtons();
+    }
+}
+
+
+// JavaScript function for use in deleting a user's account
 function deleteUserAccount() {
     var deleteUserDiv = document.getElementById("delete-user-div");
     if (deleteUserDiv.className == "hidden_class") {
         document.getElementById("delete-user-div").className = "";
-        document.getElementById("user-manage-buttons").className = "hidden_class";
-        document.getElementById("confirm_message").className = "hidden_class";
+        hideManageUserButtons();
     } else {
         document.getElementById("delete-user-div").className = "hidden_class";
-        document.getElementById("user-manage-buttons").className = "";
-        document.getElementById("confirm_message").className = "";
+        showManageUserButtons();
     }
+}
+
+function hideManageUserButtons() {
+    document.getElementById("user-manage-buttons").className = "hidden_class";
+    document.getElementById("confirm_message").className = "hidden_class";
+    h3Elements = document.getElementsByTagName("h3");
+    if (h3Elements.length > 0) {
+      h3Elements[0].parentNode.removeChild(h3Elements[0]);
+    }
+}
+
+function showManageUserButtons() {
+    document.getElementById("user-manage-buttons").className = "";
+    document.getElementById("confirm_message").className = "";
 }

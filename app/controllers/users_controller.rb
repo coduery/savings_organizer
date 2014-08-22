@@ -33,6 +33,27 @@ class UsersController < ApplicationController
 
   private
 
+    def change_email
+      user = find_user
+      if user && user[:id] == params["change-email".to_sym].keys.first.to_i &&
+                 user.authenticate(params[:password])
+        if params[:user_email] == params[:user_email_confirm]
+          user[:user_email] = params[:user_email]
+          is_saved = user.save
+          if is_saved
+            flash[:notice] = "Email Changed Successfully!"
+          else
+            flash.now[:alert] = "Unable to change email. Please try again later."
+          end
+          redirect_to users_manage_url
+        else
+          flash.now[:alert] = "New Email and Confirmation do not match. Please try again."
+        end
+      else
+        flash.now[:alert] = "Invalid user credentials.  Unable to change email address."
+      end
+    end
+
     def delete_account
       record_destroyed = Account.destroy(params[:delete].keys.first)
       if record_destroyed
@@ -47,6 +68,20 @@ class UsersController < ApplicationController
       end
     end
 
+    def delete_user
+      user = find_user
+      if user && user[:id] == params[:delete].keys.first.to_i &&
+                 user.authenticate(params[:password])
+        record_destroyed = User.destroy(user[:id])
+        if record_destroyed
+          flash[:notice] = "User Account Deleted Successfully!"
+        end
+        redirect_to users_signin_url
+      else
+        flash.now[:alert] = "Invalid user credentials.  Unable to delete user account."
+      end
+    end
+
     def find_user
       user_name = params[:user_name].downcase
       User.find_by user_name: "#{user_name}"
@@ -55,22 +90,16 @@ class UsersController < ApplicationController
     def manage_get
       if session[:current_user_id].nil?
         redirect_to users_signin_url
+      else
+        @user_email = User.find_by(id: session[:current_user_id])[:user_email]
       end
     end
 
     def manage_post
-      if !params[:delete].nil?
-        user = find_user
-        if user && user[:id] == params[:delete].keys.first.to_i &&
-                   user.authenticate(params[:password])
-          record_destroyed = User.destroy(user[:id])
-          if record_destroyed
-            flash[:notice] = "User Account Deleted Successfully!"
-          end
-          redirect_to users_signin_url
-        else
-          flash.now[:alert] = "Invalid user credentials.  Unable to delete user account.  Try again."
-        end
+      if !params["change-email".to_sym].nil?
+        change_email
+      elsif !params[:delete].nil?
+        delete_user
       end
     end
 

@@ -11,21 +11,54 @@
   <div id="center_private_layout">
 
     <div id="user-manage-buttons">
-      <span class="span_left_align"><input type="button" id="change-password-button" class="large_button" value="Change Password" disabled></span><br><br>
+      <span class="span_left_align"><input type="button" id="change-password-button" class="large_button" value="Change Password" disabled>
+        <span id="confirm_message">Confirmation Required</span>
+      </span><br><br>
 
-      <span class="span_left_align"><input type="button" id="change-username-button" class="large_button" value="Change Username" disabled></span><br><br>
+      <span class="span_left_align"><input type="button" id="change-username-button" class="large_button" value="Change Username" disabled>
+        <span id="confirm_message">Confirmation Required</span>
+      </span><br><br>
 
-      <span class="span_left_align"><input type="button" id="change-email-button" class="large_button" value="Change Email Address" disabled></span><br><br>
+      <span class="span_left_align"><input type="button" id="change-email-button" class="large_button" value="Change Email Address" onclick="changeUserEmail()">
+        <span id="confirm_message">Confirmation Required</span>
+      </span><br><br>
 
       <span class="span_left_align"><input type="button" id="delete-user-button" class="large_button" value="Delete User Account" onclick="deleteUserAccount()">
         <span id="confirm_message">Confirmation Required</span>
       </span>
     </div>
 
+    <div id="change-email-div" class="hidden_class">
+      <p>Change Email Address: <%= @user_email %></p>
+      <p>To proceed with changing your email address, please enter your username,
+         password, new email address, and new email address confirmation, then click Submit.
+      </p><br>
+      <%= form_for :user, url: users_manage_path do |f| %>
+
+        * Username:<br>
+        <%= text_field_tag "user_name", nil, class: "text_field" %><br><br>
+        * Password:<br>
+        <%= password_field_tag "password", nil, class: "text_field" %><br><br>
+        * New Email:<br>
+        <%= text_field_tag "user_email", nil, class: "text_field" %><br><br>
+        * Confirm New Email:<br>
+        <%= text_field_tag "user_email_confirm", nil, class: "text_field" %><br><br><br>
+        
+        <div id="bottom_layout">
+          <span class="span_left_align">* - Required Entry</span>
+          <span class="span_right_align">
+            <input type="button" class="button" value="Cancel" id="cancel-button" onclick="changeUserEmail()">
+            <%= f.submit "Submit", class: "button", name: "change-email[#{session[:current_user_id]}]",
+              data: {confirm: "You are about to change your email address. \n\nProceed with the Email Change?"}  %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+
     <div id="delete-user-div" class="hidden_class">
       <p>Delete User Account</p>
       <p class="warning">Warning: All user account information will be deleted!</p>
-      <p>To proceed with deleting account, please enter your username<br>
+      <p>To proceed with deleting account, please enter your username
          and password, then click Submit.  This action cannot be undone!
       </p><br>
       <%= form_for :user, url: users_manage_path do |f| %>
@@ -40,7 +73,7 @@
           <span class="span_right_align">
             <input type="button" class="button" value="Cancel" id="cancel-button" onclick="deleteUserAccount()">
             <%= f.submit "Submit", class: "button", name: "delete[#{session[:current_user_id]}]",
-              data: {confirm: "Warning! \nYou are about to delete your \nuser account and all its data. \n\nProceed with Deleting Your User Account?"} %>
+              data: {confirm: "Warning! \nYou are about to delete your user account and all its data. \n\nProceed with Deleting Your User Account?"} %>
           </span>
         </div>
       <% end %>

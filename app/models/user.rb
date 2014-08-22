@@ -20,7 +20,8 @@ class User < ActiveRecord::Base
     length: { minimum: 6, too_short: "Password too short.
                                       Minimum %{count} characters required!",
               maximum: 20, too_long: "Password too long.
-                                      Maximum %{count} characters allowed!" }
+                                      Maximum %{count} characters allowed!" },
+    on: :update, allow_blank: true
 
   EMAIL_REGEX_VALIDATION_PATTERN = /\A[\w+\-.]+@[a-z\d\-]+\.[a-z]+\z/i
 
