@@ -30,7 +30,7 @@
             <span class="span_left_align"><%= category_name %></span>
             <% category_text_field = (category_name.gsub(" ", "_") << "_entry_amount").to_sym %>
             <span class="span_right_align">
-              $ <%= f.text_field category_text_field, value: nil, onkeyup: "addEntries(#{@category_names})", class: "dollar_text_field" %>
+              $ <%= f.text_field category_text_field, value: nil, oninput: "addEntries(#{@category_names})", class: "dollar_text_field" %>
             </span><br><br>
           <% end %>
 
