@@ -13,6 +13,7 @@
       <%= text_field_tag "user_name", nil, class: "text_field" %><br><br>
       Password:<br>
       <%= password_field_tag "password", nil, class: "text_field" %><br><br><br>
+      <%= hidden_field_tag "client_time", "#{Time.now}" %>
     </div>
 
     <div id="bottom_layout">

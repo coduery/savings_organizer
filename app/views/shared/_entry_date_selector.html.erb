@@ -1,5 +1,5 @@
 <span class="span_left_align">* Entry Date:</span>
 <span class="span_right_align"><%= f.date_select :entry_date,
-  { start_year: Time.now.year - 1, end_year: Time.now.year + 1, use_short_month: true, order: [:month, :day, :year],
-    default: { :month => Time.now.month, :day => Time.now.day, :year => Time.now.year } } %>
+  { start_year: (Time.now - session[:time_difference]).year - 1, end_year: (Time.now - session[:time_difference]).year + 1, use_short_month: true, order: [:month, :day, :year],
+    default: { :month => (Time.now - session[:time_difference]).month, :day => (Time.now - session[:time_difference]).day, :year => (Time.now - session[:time_difference]).year } } %>
 </span><br><br>

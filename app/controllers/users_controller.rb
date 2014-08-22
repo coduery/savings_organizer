@@ -113,6 +113,8 @@ class UsersController < ApplicationController
         if !account_names.nil?
           session[:account_name] = account_names.first
         end
+        time_difference = Time.parse(params[:client_time]).utc_offset - Time.now.utc_offset
+        session[:time_difference] = time_difference
         redirect_to users_welcome_url
       else
         flash[:alert] = "Credentials Invalid. Please try again!"
