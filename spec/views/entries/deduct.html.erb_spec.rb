@@ -15,6 +15,7 @@ describe "entries/deduct.html.erb page" do
     @category = Category.new(category_name: "test_category", account_id:
                              Account.find_by(account_name: "test_account")[:id])
     @category.save
+    page.set_rack_session(:time_difference => 7200)
     visit '/entries/deduct'
   end
 

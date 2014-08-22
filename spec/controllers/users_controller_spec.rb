@@ -150,7 +150,7 @@ describe UsersController do
 
     describe "when user authenticated," do
       before do
-        post :signin, "user_name" => @user.user_name, "password" => @user.password
+        post :signin, "user_name" => @user.user_name, "password" => @user.password, "client_time" => Time.now
       end
 
       it "flashes success message" do
