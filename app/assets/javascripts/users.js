@@ -233,6 +233,18 @@ function changeUserEmail() {
     }
 }
 
+// JavaScript function for use in changing a user's username
+function changeUsername() {
+    var changeUsername = document.getElementById("change-username-div");
+    if (changeUsername.className == "hidden_class") {
+        document.getElementById("change-username-div").className = "";
+        hideManageUserButtons();
+    } else {
+        document.getElementById("change-username-div").className = "hidden_class";
+        showManageUserButtons();
+    }
+}
+
 // JavaScript function for use in deleting a user's account
 function deleteUserAccount() {
     var deleteUserDiv = document.getElementById("delete-user-div");

@@ -78,6 +78,24 @@ class UsersController < ApplicationController
       end
     end
 
+    def change_username
+      user = find_user
+      if user && user[:id] == params["change-username".to_sym].keys.first.to_i &&
+                 user.authenticate(params[:password])
+        user[:user_name] = params[:new_user_name]
+        is_saved = user.save
+        if is_saved
+          session[:user_name] = params[:new_user_name]
+          flash[:notice] = "Username Changed Successfully!"
+        else
+          flash[:alert] = user.errors.first[1]
+        end
+        redirect_to users_manage_url
+      else
+        flash.now[:alert] = "Invalid user credentials.  Unable to change username."
+      end
+    end
+
     def delete_account
       record_destroyed = Account.destroy(params[:delete].keys.first)
       if record_destroyed
@@ -115,7 +133,8 @@ class UsersController < ApplicationController
       if session[:current_user_id].nil?
         redirect_to users_signin_url
       else
-        @user_email = User.find_by(id: session[:current_user_id])[:user_email]
+        user = User.find_by(id: session[:current_user_id])
+        @user_email = user[:user_email]
       end
     end
 
@@ -124,6 +143,8 @@ class UsersController < ApplicationController
         change_password
       elsif !params["change-email".to_sym].nil?
         change_email
+      elsif !params["change-username".to_sym].nil?
+        change_username
       elsif !params[:delete].nil?
         delete_user
       end

@@ -126,6 +126,49 @@ describe UsersController do
       end
     end
 
+    describe "if params[:change-username] not nil," do
+      describe "if username valid and password authenticated," do
+        describe "if user saved successfully," do
+          it "flashes Username Changed Successfully message" do
+            post :manage, "change-username" => { @user[:id] => "Submit" },
+              "user_name" => @user.user_name, "password" => @user.password,
+              "new_user_name" => "new_test_user"
+            flash.now[:notice].should eql "Username Changed Successfully!"
+          end
+        end
+
+        describe "if new username left blank," do
+          it "flashes Invalid Username alert" do
+            post :manage, "change-username" => { @user[:id] => "Submit" },
+              "user_name" => @user.user_name, "password" => @user.password,
+              "new_user_name" => ""
+            flash.now[:alert].should eql "Username not valid. Please try again!"
+          end
+        end
+
+        describe "if username already taken," do
+          it "flashes Username already taken alert" do
+            user2 = User.new(user_name: "test_user2", password: "test_pw2",
+                             password_confirmation: "test_pw2", user_email: "test2@test.com")
+            user2.save
+            post :manage, "change-username" => { @user[:id] => "Submit" },
+              "user_name" => @user.user_name, "password" => @user.password,
+              "new_user_name" => "test_user2"
+            flash.now[:alert].should eql "Username already taken. Please try another!"
+          end
+        end
+      end
+
+      describe "if username not valid or password not authenticated," do
+        it "flashes Invalid Credentials alert" do
+          post :manage, "change-username" => { @user[:id] => "Submit" },
+            "user_name" => @user.user_name, "password" => "notvalid",
+            "new_user_name" => "new_test_user"
+          flash.now[:alert].should eql "Invalid user credentials.  Unable to change username."
+        end
+      end
+    end
+
     describe "if params[:delete] not nil," do
       describe "username and password valid," do
         before do
