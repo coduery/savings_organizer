@@ -23,12 +23,15 @@ class User < ActiveRecord::Base
                                       Maximum %{count} characters allowed!" },
     on: :update, allow_blank: true
 
+  validates_confirmation_of :password
+
   EMAIL_REGEX_VALIDATION_PATTERN = /\A[\w+\-.]+@[a-z\d\-]+\.[a-z]+\z/i
 
   validates :user_email,
     presence: { message: "Email addess not valid. Please try again!" },
     length:   { maximum: 40, too_long: "Email too long.
                                       Maximum %{count} characters allowed!" },
-    format:   { with: EMAIL_REGEX_VALIDATION_PATTERN, message: "Invalid email address" }
+    format:   { with: EMAIL_REGEX_VALIDATION_PATTERN,
+                message: "Invalid email address format." }
 
 end

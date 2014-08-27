@@ -11,11 +11,7 @@
   <div id="center_private_layout">
 
     <div id="user-manage-buttons">
-      <span class="span_left_align"><input type="button" id="change-password-button" class="large_button" value="Change Password" disabled>
-        <span id="confirm_message">Confirmation Required</span>
-      </span><br><br>
-
-      <span class="span_left_align"><input type="button" id="change-username-button" class="large_button" value="Change Username" disabled>
+      <span class="span_left_align"><input type="button" id="change-password-button" class="large_button" value="Change Password" onclick="changePassword()">
         <span id="confirm_message">Confirmation Required</span>
       </span><br><br>
 
@@ -23,9 +19,40 @@
         <span id="confirm_message">Confirmation Required</span>
       </span><br><br>
 
+      <span class="span_left_align"><input type="button" id="change-username-button" class="large_button" value="Change Username" disabled>
+        <span id="confirm_message">Confirmation Required</span>
+      </span><br><br>
+
       <span class="span_left_align"><input type="button" id="delete-user-button" class="large_button" value="Delete User Account" onclick="deleteUserAccount()">
         <span id="confirm_message">Confirmation Required</span>
       </span>
+    </div>
+
+    <div id="change-password-div" class="hidden_class">
+      <p>Change Password</p>
+      <p>To proceed with changing your password, please enter your username,
+         old password, new password, and new password confirmation, then click Submit.
+      </p><br>
+      <%= form_for :user, url: users_manage_path do |f| %>
+
+        * Username:<br>
+        <%= text_field_tag "user_name", nil, class: "text_field" %><br><br>
+        * Old Password:<br>
+        <%= password_field_tag "password", nil, class: "text_field" %><br><br>
+        * New Password:<br>
+        <%= password_field_tag "new_password", nil, class: "text_field" %><br><br>
+        * New Password Confirmation:<br>
+        <%= password_field_tag "new_password_confirm", nil, class: "text_field" %><br><br><br>
+        
+        <div id="bottom_layout">
+          <span class="span_left_align">* - Required Entry</span>
+          <span class="span_right_align">
+            <input type="button" class="button" value="Cancel" id="cancel-button" onclick="changePassword()">
+            <%= f.submit "Submit", class: "button", name: "change-password[#{session[:current_user_id]}]",
+              data: {confirm: "You are about to change your password. \n\nProceed with the Password Change?"}  %>
+          </span>
+        </div>
+      <% end %>
     </div>
 
     <div id="change-email-div" class="hidden_class">

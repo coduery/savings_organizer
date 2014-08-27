@@ -42,9 +42,51 @@ describe UsersController do
       @user.save
     end
 
-    describe "if params[:change-email] not nil," do
+    describe "if params[:change-password] not nil," do
       describe "if username valid and password authenticated," do
         describe "if new password and password confirmation match," do
+          describe "if user saved successfully," do
+            it "flashes Password Changed Successfully message" do
+              post :manage, "change-password" => { @user[:id] => "Submit" },
+                "user_name" => @user.user_name, "password" => @user.password,
+                "new_password" => "new_test_pw", "new_password_confirm" => "new_test_pw"
+              flash[:notice].should eql "Password Changed Successfully!"
+            end
+          end
+        end
+
+        describe "if new password is blank," do
+          it "flashes Password Cannot be Blank alert" do
+            post :manage, "change-password" => { @user[:id] => "Submit" },
+              "user_name" => @user.user_name, "password" => @user.password,
+              "new_password" => "", "new_password_confirm" => ""
+            flash.now[:alert].should eql "Password cannot be blank!"
+          end
+        end
+
+        describe "if new password and password confirmation do not match," do
+          it "flashes Password Must be Identical alert" do
+            post :manage, "change-password" => { @user[:id] => "Submit" },
+              "user_name" => @user.user_name, "password" => @user.password,
+              "new_password" => "new_test_pw1", "new_password_confirm" => "new_test_pw2"
+            flash.now[:alert].should eql "New Password and Confirmation Must be Identical."
+          end
+        end
+      end
+
+      describe "if username not valid or password not authenticated," do
+        it "flashes Invalid Credentials alert" do
+          post :manage, "change-password" => { @user[:id] => "Submit" },
+            "user_name" => @user.user_name, "password" => "notvalid",
+            "new_passord" => "new_test_pw", "new_password_confirm" => "new_test_pw"
+          flash.now[:alert].should eql "Invalid user credentials.  Unable to change password."
+        end
+      end
+    end
+
+    describe "if params[:change-email] not nil," do
+      describe "if username valid and password authenticated," do
+        describe "if new email and email confirmation match," do
           describe "if user saved successfully," do
             it "flashes Email Changed Successfully message" do
               post :manage, "change-email" => { @user[:id] => "Submit" },
@@ -55,15 +97,17 @@ describe UsersController do
           end
 
           describe "if user not saved successfully," do
-            xit "flashes Unable to Change Email alert" do
-              # TODO: Do I need to stub or mock out the user object to get this to work??
-              flash.now[:alert].should eql "Unable to change email. Please try again later."
+            it "flashes Invalid Email Address alert" do
+              post :manage, "change-email" => { @user[:id] => "Submit" },
+                "user_name" => @user.user_name, "password" => @user.password,
+                "user_email" => "invalid_email", "user_email_confirm" => "invalid_email"
+              flash.now[:alert].should eql "Invalid email address format."
             end
           end
         end
 
-        describe "if new password and password confirmation do not match," do
-          it "flashes Passwords do not match alert" do
+        describe "if new email and email confirmation do not match," do
+          it "flashes Emails do not match alert" do
             post :manage, "change-email" => { @user[:id] => "Submit" },
               "user_name" => @user.user_name, "password" => @user.password,
               "user_email" => "test1@test.com", "user_email_confirm" => "test2@test.com"

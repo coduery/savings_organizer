@@ -209,6 +209,18 @@ function updateUser(accountName, accountNameIdMapping) {
     }
 }
 
+// JavaScript function for use in changing a user's password
+function changePassword() {
+    var changePassword = document.getElementById("change-password-div");
+    if (changePassword.className == "hidden_class") {
+        document.getElementById("change-password-div").className = "";
+        hideManageUserButtons();
+    } else {
+        document.getElementById("change-password-div").className = "hidden_class";
+        showManageUserButtons();
+    }
+}
+
 // JavaScript function for use in changing a user's email address
 function changeUserEmail() {
     var changeEmailDiv = document.getElementById("change-email-div");
@@ -220,7 +232,6 @@ function changeUserEmail() {
         showManageUserButtons();
     }
 }
-
 
 // JavaScript function for use in deleting a user's account
 function deleteUserAccount() {

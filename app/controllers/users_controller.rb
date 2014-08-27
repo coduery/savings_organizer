@@ -43,7 +43,7 @@ class UsersController < ApplicationController
           if is_saved
             flash[:notice] = "Email Changed Successfully!"
           else
-            flash.now[:alert] = "Unable to change email. Please try again later."
+            flash[:alert] = user.errors.first[1]
           end
           redirect_to users_manage_url
         else
@@ -51,6 +51,30 @@ class UsersController < ApplicationController
         end
       else
         flash.now[:alert] = "Invalid user credentials.  Unable to change email address."
+      end
+    end
+
+    def change_password
+      user = find_user
+      if user && user[:id] == params["change-password".to_sym].keys.first.to_i &&
+                 user.authenticate(params[:password])
+        if params[:new_password] == "" || params[:new_password_confirm] == ""
+          flash.now[:alert] = "Password cannot be blank!"
+        elsif params[:new_password] == params[:new_password_confirm]
+          user.password = params[:new_password]
+          user.password_confirmation = params[:new_password_confirm]
+          is_saved = user.save
+          if is_saved
+            flash[:notice] = "Password Changed Successfully!"
+          else
+            flash[:alert] = user.errors.first[1]
+          end
+          redirect_to users_manage_url
+        else
+          flash.now[:alert] = "New Password and Confirmation Must be Identical."
+        end
+      else
+        flash.now[:alert] = "Invalid user credentials.  Unable to change password."
       end
     end
 
@@ -96,7 +120,9 @@ class UsersController < ApplicationController
     end
 
     def manage_post
-      if !params["change-email".to_sym].nil?
+      if !params["change-password".to_sym].nil?
+        change_password
+      elsif !params["change-email".to_sym].nil?
         change_email
       elsif !params[:delete].nil?
         delete_user
